@@ -1,0 +1,15 @@
+name = "atelier-api"
+compatibility_date = "2024-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "atelier-db"
+database_id = "TBD"
+
+[[kv_namespaces]]
+binding = "SESSION_KV"
+id = "TBD"
+
+[[r2_buckets]]
+binding = "ASSETS"
+bucket_name = "atelier-assets"
