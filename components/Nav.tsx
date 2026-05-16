@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import { Show, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { cn } from "@/lib/utils";
@@ -15,7 +16,7 @@ const links = [
   { href: "/#pricing", label: "Pricing" },
 ];
 
-export function Nav() {
+export function Nav({ authEnabled = false }: { authEnabled?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -59,12 +60,33 @@ export function Nav() {
         </ul>
 
         <div className="hidden items-center gap-2 md:flex">
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/auth/signin">Sign in</Link>
-          </Button>
-          <Button asChild size="sm">
-            <Link href="/auth/signup">Start free</Link>
-          </Button>
+          {authEnabled ? (
+            <>
+              <Show when="signed-out">
+                <Button asChild variant="ghost" size="sm">
+                  <Link href="/auth/signin">Sign in</Link>
+                </Button>
+                <Button asChild size="sm">
+                  <Link href="/auth/signup">Start free</Link>
+                </Button>
+              </Show>
+              <Show when="signed-in">
+                <Button asChild variant="ghost" size="sm">
+                  <Link href="/builder">Open builder</Link>
+                </Button>
+                <UserButton />
+              </Show>
+            </>
+          ) : (
+            <>
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/auth/signin">Sign in</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href="/auth/signup">Start free</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         <button
@@ -93,16 +115,42 @@ export function Nav() {
               </li>
             ))}
             <li className="mt-2 flex gap-2">
-              <Button asChild variant="subtle" size="sm" className="flex-1">
-                <Link href="/auth/signin" onClick={() => setOpen(false)}>
-                  Sign in
-                </Link>
-              </Button>
-              <Button asChild size="sm" className="flex-1">
-                <Link href="/auth/signup" onClick={() => setOpen(false)}>
-                  Start free
-                </Link>
-              </Button>
+              {authEnabled ? (
+                <>
+                  <Show when="signed-out">
+                    <Button asChild variant="subtle" size="sm" className="flex-1">
+                      <Link href="/auth/signin" onClick={() => setOpen(false)}>
+                        Sign in
+                      </Link>
+                    </Button>
+                    <Button asChild size="sm" className="flex-1">
+                      <Link href="/auth/signup" onClick={() => setOpen(false)}>
+                        Start free
+                      </Link>
+                    </Button>
+                  </Show>
+                  <Show when="signed-in">
+                    <Button asChild size="sm" className="flex-1">
+                      <Link href="/builder" onClick={() => setOpen(false)}>
+                        Open builder
+                      </Link>
+                    </Button>
+                  </Show>
+                </>
+              ) : (
+                <>
+                  <Button asChild variant="subtle" size="sm" className="flex-1">
+                    <Link href="/auth/signin" onClick={() => setOpen(false)}>
+                      Sign in
+                    </Link>
+                  </Button>
+                  <Button asChild size="sm" className="flex-1">
+                    <Link href="/auth/signup" onClick={() => setOpen(false)}>
+                      Start free
+                    </Link>
+                  </Button>
+                </>
+              )}
             </li>
           </ul>
         </div>
