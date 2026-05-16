@@ -11,6 +11,7 @@ import { NextResponse } from "next/server";
 import { createProject, DbUnavailableError } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import type { Json, ProjectInsert } from "@/lib/db/types";
+import type { SiteMeta } from "@/lib/gis/types";
 
 export const runtime = "nodejs";
 
@@ -46,7 +47,8 @@ export async function POST(req: Request) {
       : "Untitled project";
   const address = typeof body.address === "string" ? body.address : null;
   const parcelGeojson = (body.parcelGeojson ?? null) as Json | null;
-  const meta = (body.meta ?? null) as ProjectInsert["meta"];
+  // The client posts a flat SiteMeta; persist it namespaced under `meta.site`.
+  const siteMeta = (body.meta ?? null) as SiteMeta | null;
 
   // No authenticated owner — the client falls back to localStorage.
   const session = await getSession();
@@ -60,7 +62,7 @@ export async function POST(req: Request) {
     slug: makeSlug(name),
     address,
     parcel_geojson: parcelGeojson,
-    meta,
+    meta: siteMeta ? { site: siteMeta } : null,
   };
 
   try {

@@ -6,6 +6,8 @@
  * tooling dependency; keep them in sync when migrations change.
  */
 
+import type { SiteMeta } from "@/lib/gis/types";
+
 /** A generic JSON value, used for `jsonb` columns. */
 export type Json =
   | string
@@ -57,12 +59,13 @@ export interface ProfileRow {
 export type PlanGraph = { [key: string]: Json | undefined };
 
 /**
- * Site-intelligence payload stored in `projects.meta` (W2 — Site Intelligence).
- * The lot picker writes neighbour buildings, streets, and the elevation grid
- * here; the column is freeform jsonb so the shape can evolve without a
- * migration. Treated as structured JSON at the schema layer.
+ * The `projects.meta` payload. Worker domains are namespaced as sibling keys:
+ * W2 (Site Intelligence) owns `meta.site`; future workers add their own key
+ * and never overwrite `site`.
  */
-export type ProjectMeta = { [key: string]: Json | undefined };
+export interface ProjectMeta {
+  site?: SiteMeta;
+}
 
 /** `public.projects` row. */
 export interface ProjectRow {
