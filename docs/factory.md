@@ -51,6 +51,12 @@ and a list of known non-blocking issues.
 The foreman signs off by merging in GitHub after eyeballing the preview. If a
 gate fails, the PR doesn't merge.
 
+**Final gate (every agent run):** the agent posts a final report including
+`git status`, the `npm run typecheck` / `npm run lint` / `npm run build` exit
+states, and a one-paragraph summary. No final report = the run is incomplete =
+no merge. The foreman runs the protocol in `docs/factory/diagnostic.md` on any
+agent run that exits without a final report.
+
 ## The transition trigger
 
 The factory stays fully internal until **all 12 product quality bars are green
