@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "vitest run",
     "gen:placeholders": "node scripts/gen-placeholders.mjs"
   },
   "dependencies": {
@@ -45,6 +46,7 @@
     "eslint-config-next": "^15.1.6",
     "sharp": "^0.33.5",
     "tailwindcss": "^4.0.0",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vitest": "^4.1.6"
   }
 }
