@@ -25,8 +25,8 @@ and merges every result.
 | 2–3 | §3 Export I/O        | sheet engine + DWG + minimal IFC4 | Merged | `1d61044` |
 | 2–3 | §5 SEO               | sitemap, robots, 10 showcase pages | Merged | `1d61044` |
 | 2–3 | §7 Moat pages        | partner / match / GC-network / gallery | Merged | `1d61044` |
-| 4   | §4 Client portal     | branded portal page + deposit UI | Dispatched | — |
-| 4   | §6 UX moves          | command palette + toasts | Dispatched | — |
+| 4   | §4 Client portal     | branded portal page + deposit UI | Merged | `218f16e` |
+| 4   | §6 UX moves          | command palette + toasts | Merged | `218f16e` |
 | 5   | §8 Hardening         | error boundaries, kernel tests | Queued | — |
 | —   | §9 Launch            | release sequence (not a code task) | Manual | — |
 
