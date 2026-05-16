@@ -16,7 +16,7 @@ is implemented yet; the stubs compile and the existing v1.1 site is untouched.
 
 | Section | Area | Status | Scaffolded surfaces |
 |---|---|---|---|
-| 1 | Floor-plan engine | Scaffolded | `lib/kernel/types.ts`, `lib/kernel/plan.ts`, `lib/kernel/codeCheck.ts`, `components/builder/PlanCanvas.tsx` |
+| 1 | Floor-plan engine | §1.1 + §1.3 done | `generatePlan` solver + `validatePlan` IRC engine implemented; §1.2 canvas + §1.4 persistence pending |
 | 2 | 3D viewport | Scaffolded | `lib/kernel/scene.ts`, `components/builder/Viewport3D.tsx` |
 | 3 | Sheet set / export | Scaffolded | `lib/sheets/engine.ts`, `lib/io/dwg.ts`, `lib/io/ifc4.ts`, `lib/io/gltf.ts` |
 | 4 | Client portal | Scaffolded | `app/p/[slug]/[token]/page.tsx`, `app/api/stripe-webhook/route.ts` |
