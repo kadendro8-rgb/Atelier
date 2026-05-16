@@ -2,8 +2,20 @@
 
 import { useEffect, useState } from 'react';
 
+type ParsedRequirements = {
+  sqft: number;
+  beds: number;
+  baths: number;
+  style: string;
+  story_count: number;
+  lot_size: string;
+  must_haves: string[];
+  optional_features: string[];
+  code_jurisdiction_hint: string;
+};
+
 export default function FloorPlanPage() {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<ParsedRequirements | null>(null);
 
   useEffect(() => {
     // In a real app we'd fetch the parsed JSON from context or a database
