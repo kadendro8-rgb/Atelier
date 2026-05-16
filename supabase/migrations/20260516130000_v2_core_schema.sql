@@ -3,10 +3,11 @@
 -- Source: the Enterprise Build Plan, Phase 0 / Day 3. Version-controlled here;
 -- apply via the Supabase SQL editor or `supabase db push`.
 --
--- NOTE: this introduces `saved_briefs` for the /builder email-capture flow.
--- An earlier migration created a `leads` table for the same purpose and the
--- /api/save-brief route still writes to `leads` — reconcile before applying
--- (either keep `leads` and drop `saved_briefs` here, or migrate the route).
+-- NOTE: `leads` (migration 20260516120000) is the single email-capture table.
+-- An earlier draft of this migration introduced a duplicate `saved_briefs`;
+-- it has been reconciled away — instead of a new table we fold the extra
+-- columns (`source`, `resume_token`) into `leads` via ALTER below. The
+-- /api/save-brief route keeps writing to `leads` unchanged.
 
 -- Profiles (auth.users is auto-created by Supabase Auth)
 create table public.profiles (
@@ -109,15 +110,10 @@ create table public.outreach_events (
   occurred_at timestamptz not null default now()
 );
 
--- Saved briefs (the email-capture from /builder)
-create table public.saved_briefs (
-  id uuid primary key default gen_random_uuid(),
-  email text not null,
-  brief jsonb not null,
-  source text,
-  resume_token text unique default encode(gen_random_bytes(16),'hex'),
-  created_at timestamptz not null default now()
-);
+-- Saved briefs: reconciled into the existing `leads` table rather than a
+-- duplicate `saved_briefs`. Fold in the extra email-capture columns.
+alter table public.leads add column if not exists source text;
+alter table public.leads add column if not exists resume_token text unique default encode(gen_random_bytes(16),'hex');
 
 -- GMV tracking
 create table public.gmv_events (
