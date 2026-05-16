@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #0b0a09;
+  --color-ink-2: #100e0b;
+  --color-surface: #15130f;
+  --color-surface-2: #1d1a14;
+  --color-surface-3: #262119;
+  --color-border: #2c281f;
+  --color-border-bright: #423a2c;
+  --color-foreground: #f5f1e8;
+  --color-muted: #a89e8c;
+  --color-muted-2: #79705f;
+  --color-copper: #d28a55;
+  --color-copper-bright: #ecab78;
+  --color-copper-dim: #8a5a38;
+  --color-sage: #8fa183;
+
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 1rem;
+
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-marquee-rev: marquee-rev 44s linear infinite;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes marquee-rev {
+    from { transform: translateX(-50%); }
+    to { transform: translateX(0); }
+  }
+  @keyframes acc-down {
+    from { height: 0; opacity: 0; }
+    to { height: var(--radix-accordion-content-height); opacity: 1; }
+  }
+  @keyframes acc-up {
+    from { height: var(--radix-accordion-content-height); opacity: 1; }
+    to { height: 0; opacity: 0; }
+  }
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: var(--color-copper);
+  color: var(--color-ink);
+}
+
+/* Thin scrollbar that matches the dark palette */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-bright) transparent;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Subtle film grain / warmth overlay helper */
+.bg-grain {
+  background-image: radial-gradient(
+     rgba(210, 138, 85, 0.06) 1px,
+    transparent 1px
+  );
+  background-size: 4px 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
