@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { authEnabled } from "@/lib/auth";
 import { BuilderWorkspace } from "@/components/builder/BuilderWorkspace";
 
 export const metadata: Metadata = {
@@ -9,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function BuilderPage() {
-  return <BuilderWorkspace authEnabled={authEnabled} />;
+  return <BuilderWorkspace />;
 }

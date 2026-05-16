@@ -22,7 +22,7 @@ const tiers: Tier[] = [
     cadence: "/ month",
     blurb: "For the independent designer testing the water.",
     cta: "Start free",
-    href: "/auth/signup",
+    href: "/builder",
     features: [
       "5 home designs / month",
       "Floor plans + 2 renders each",
@@ -37,7 +37,7 @@ const tiers: Tier[] = [
     cadence: "/ month",
     blurb: "For the working builder running real projects.",
     cta: "Start free trial",
-    href: "/auth/signup",
+    href: "/builder",
     featured: true,
     features: [
       "Unlimited home designs",
@@ -54,7 +54,7 @@ const tiers: Tier[] = [
     cadence: "",
     blurb: "For multi-office practices and production builders.",
     cta: "Talk to sales",
-    href: "/auth/signup",
+    href: "/builder",
     features: [
       "Everything in Studio",
       "Unlimited seats + SSO",

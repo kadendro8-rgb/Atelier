@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
-import { Show, UserButton } from "@clerk/nextjs";
+import { ArrowRight, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { cn } from "@/lib/utils";
@@ -16,7 +15,7 @@ const links = [
   { href: "/#pricing", label: "Pricing" },
 ];
 
-export function Nav({ authEnabled = false }: { authEnabled?: boolean }) {
+export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -59,34 +58,12 @@ export function Nav({ authEnabled = false }: { authEnabled?: boolean }) {
           ))}
         </ul>
 
-        <div className="hidden items-center gap-2 md:flex">
-          {authEnabled ? (
-            <>
-              <Show when="signed-out">
-                <Button asChild variant="ghost" size="sm">
-                  <Link href="/auth/signin">Sign in</Link>
-                </Button>
-                <Button asChild size="sm">
-                  <Link href="/auth/signup">Start free</Link>
-                </Button>
-              </Show>
-              <Show when="signed-in">
-                <Button asChild variant="ghost" size="sm">
-                  <Link href="/builder">Open builder</Link>
-                </Button>
-                <UserButton />
-              </Show>
-            </>
-          ) : (
-            <>
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/auth/signin">Sign in</Link>
-              </Button>
-              <Button asChild size="sm">
-                <Link href="/auth/signup">Start free</Link>
-              </Button>
-            </>
-          )}
+        <div className="hidden md:block">
+          <Button asChild size="sm">
+            <Link href="/builder">
+              Open the builder <ArrowRight className="size-4" />
+            </Link>
+          </Button>
         </div>
 
         <button
@@ -114,43 +91,12 @@ export function Nav({ authEnabled = false }: { authEnabled?: boolean }) {
                 </Link>
               </li>
             ))}
-            <li className="mt-2 flex gap-2">
-              {authEnabled ? (
-                <>
-                  <Show when="signed-out">
-                    <Button asChild variant="subtle" size="sm" className="flex-1">
-                      <Link href="/auth/signin" onClick={() => setOpen(false)}>
-                        Sign in
-                      </Link>
-                    </Button>
-                    <Button asChild size="sm" className="flex-1">
-                      <Link href="/auth/signup" onClick={() => setOpen(false)}>
-                        Start free
-                      </Link>
-                    </Button>
-                  </Show>
-                  <Show when="signed-in">
-                    <Button asChild size="sm" className="flex-1">
-                      <Link href="/builder" onClick={() => setOpen(false)}>
-                        Open builder
-                      </Link>
-                    </Button>
-                  </Show>
-                </>
-              ) : (
-                <>
-                  <Button asChild variant="subtle" size="sm" className="flex-1">
-                    <Link href="/auth/signin" onClick={() => setOpen(false)}>
-                      Sign in
-                    </Link>
-                  </Button>
-                  <Button asChild size="sm" className="flex-1">
-                    <Link href="/auth/signup" onClick={() => setOpen(false)}>
-                      Start free
-                    </Link>
-                  </Button>
-                </>
-              )}
+            <li className="mt-2">
+              <Button asChild size="sm" className="w-full">
+                <Link href="/builder" onClick={() => setOpen(false)}>
+                  Open the builder
+                </Link>
+              </Button>
             </li>
           </ul>
         </div>

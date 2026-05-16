@@ -4,7 +4,6 @@ import { useCallback, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { X } from "lucide-react";
-import { UserButton } from "@clerk/nextjs";
 import { Logo } from "@/components/Logo";
 import {
   buildDesign,
@@ -31,11 +30,7 @@ function optionsFor(design: Design): PlanOptions {
   };
 }
 
-export function BuilderWorkspace({
-  authEnabled = false,
-}: {
-  authEnabled?: boolean;
-}) {
+export function BuilderWorkspace() {
   const [step, setStep] = useState<StepKey>("brief");
   const [design, setDesign] = useState<Design | null>(null);
   const [planOpts, setPlanOpts] = useState<PlanOptions | null>(null);
@@ -101,16 +96,13 @@ export function BuilderWorkspace({
             }}
           />
 
-          <div className="flex items-center gap-3">
-            {authEnabled && <UserButton />}
-            <Link
-              href="/"
-              className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs text-muted transition-colors hover:border-border-bright hover:text-foreground"
-            >
-              <X className="size-3.5" />
-              <span className="hidden sm:inline">Exit</span>
-            </Link>
-          </div>
+          <Link
+            href="/"
+            className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs text-muted transition-colors hover:border-border-bright hover:text-foreground"
+          >
+            <X className="size-3.5" />
+            <span className="hidden sm:inline">Exit</span>
+          </Link>
         </div>
       </header>
 

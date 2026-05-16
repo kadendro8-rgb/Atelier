@@ -77,12 +77,12 @@ export function Hero() {
             className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row"
           >
             <Button asChild size="lg" className="w-full sm:w-auto">
-              <Link href="/auth/signup">
+              <Link href="/builder">
                 Start designing free <ArrowRight className="size-4" />
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
-              <Link href="/builder">See a live build</Link>
+              <Link href="/#how">See how it works</Link>
             </Button>
           </motion.div>
           <p className="mt-3 text-xs text-muted-2">

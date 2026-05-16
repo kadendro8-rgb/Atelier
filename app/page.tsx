@@ -1,4 +1,3 @@
-import { authEnabled } from "@/lib/auth";
 import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/sections/Hero";
 import { HowItWorks } from "@/components/sections/HowItWorks";
@@ -13,7 +12,7 @@ import { Footer } from "@/components/sections/Footer";
 export default function HomePage() {
   return (
     <>
-      <Nav authEnabled={authEnabled} />
+      <Nav />
       <main id="main">
         <Hero />
         <HowItWorks />
