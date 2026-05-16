@@ -30,9 +30,8 @@
     "react-hook-form": "^7.76.0",
     "tailwind-merge": "^2.6.0",
     "three": "^0.184.0",
-    "zod": "^4.4.3"
-    "stripe": "^22.1.1",
-    "tailwind-merge": "^2.6.0"
+    "zod": "^4.4.3",
+    "stripe": "^22.1.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",
