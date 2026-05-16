@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { X } from "lucide-react";
+import { Info, X } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import {
   buildDesign,
@@ -22,6 +22,9 @@ import { GeneratingOverlay } from "./GeneratingOverlay";
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+const AI_FALLBACK_NOTICE =
+  "AI parser briefly unavailable. We used the local parser — quality is good but you can regenerate in a moment for the full result.";
+
 function optionsFor(design: Design): PlanOptions {
   return {
     garageBays: design.params.garageBays,
@@ -35,12 +38,15 @@ export function BuilderWorkspace() {
   const [design, setDesign] = useState<Design | null>(null);
   const [planOpts, setPlanOpts] = useState<PlanOptions | null>(null);
   const [generating, setGenerating] = useState(false);
+  const [aiNotice, setAiNotice] = useState<string | null>(null);
   const reduce = useReducedMotion();
 
   const handleSubmit = useCallback(
     async (brief: string) => {
       setGenerating(true);
+      setAiNotice(null);
       let params;
+      let notice: string | null = null;
       try {
         const [res] = await Promise.all([
           fetch("/api/design", {
@@ -51,16 +57,24 @@ export function BuilderWorkspace() {
           delay(reduce ? 0 : 1700),
         ]);
         const data = await res.json();
-        params =
-          data?.source === "ai" && data.params
-            ? normalizeParams(data.params, brief)
-            : parseBriefLocally(brief);
+        if (data?.source === "ai" && data.params) {
+          params = normalizeParams(data.params, brief);
+        } else {
+          params = parseBriefLocally(brief);
+          // A `notice` on a fallback means the AI call actually failed —
+          // a key-less demo run returns a quiet fallback with no notice.
+          if (data?.source === "fallback" && data?.notice) {
+            notice = AI_FALLBACK_NOTICE;
+          }
+        }
       } catch {
         params = parseBriefLocally(brief);
+        notice = AI_FALLBACK_NOTICE;
       }
       const next = buildDesign(params);
       setDesign(next);
       setPlanOpts(optionsFor(next));
+      setAiNotice(notice);
       setGenerating(false);
       setStep("plan");
     },
@@ -70,6 +84,7 @@ export function BuilderWorkspace() {
   const restart = useCallback(() => {
     setDesign(null);
     setPlanOpts(null);
+    setAiNotice(null);
     setStep("brief");
   }, []);
 
@@ -107,6 +122,24 @@ export function BuilderWorkspace() {
       </header>
 
       <main className="relative flex-1 px-4 py-10 sm:px-6 sm:py-14">
+        {aiNotice && (
+          <div className="mx-auto mb-6 max-w-2xl">
+            <div className="flex items-start gap-3 rounded-lg border border-copper/60 bg-copper/5 px-4 py-3">
+              <Info className="mt-0.5 size-4 shrink-0 text-copper" />
+              <p className="flex-1 text-xs leading-relaxed text-muted">
+                {aiNotice}
+              </p>
+              <button
+                type="button"
+                onClick={() => setAiNotice(null)}
+                aria-label="Dismiss"
+                className="text-muted-2 transition-colors hover:text-foreground"
+              >
+                <X className="size-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
         <AnimatePresence mode="wait">
           <motion.div
             key={step}
