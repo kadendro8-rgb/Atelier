@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import { SectionPlaceholder } from "@/components/v2/SectionPlaceholder";
+import { PortalClient } from "@/components/portal/PortalClient";
+import { buildPortalProject } from "@/lib/portal-mock";
 
 export const metadata: Metadata = {
-  title: "Client portal",
+  title: "Client portal · Atelier",
+  description: "Review your custom-home design and fund the project.",
   robots: { index: false },
 };
 
@@ -11,12 +13,7 @@ export default async function ClientPortalPage({
 }: {
   params: Promise<{ slug: string; token: string }>;
 }) {
-  const { slug } = await params;
-  return (
-    <SectionPlaceholder
-      section="v2.0 · Section 4"
-      title="Client portal"
-      blurb={`Branded portal for "${slug}" — interactive plans, renders, spec, documents, and a Stripe Connect deposit. Scaffolded; build tracked in docs/v2-roadmap.md.`}
-    />
-  );
+  const { slug, token } = await params;
+  const project = buildPortalProject(slug, token);
+  return <PortalClient project={project} />;
 }
