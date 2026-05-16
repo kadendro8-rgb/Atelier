@@ -150,12 +150,16 @@ export default function FloorPlanPage() {
             )}
 
             <Button
-              onClick={() => router.push("/builder/brief")}
+              onClick={() => router.push("/#pricing")}
               size="lg"
               className="mt-5"
             >
-              Approve &amp; continue to site <ArrowRight className="size-4" />
+              Continue to pricing <ArrowRight className="size-4" />
             </Button>
+            <p className="mt-2 text-center text-xs text-muted-2">
+              That&apos;s the interactive demo — see plans and pricing to keep
+              building.
+            </p>
           </div>
         </div>
       </motion.div>
