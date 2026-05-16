@@ -56,6 +56,14 @@ export interface ProfileRow {
  */
 export type PlanGraph = { [key: string]: Json | undefined };
 
+/**
+ * Site-intelligence payload stored in `projects.meta` (W2 — Site Intelligence).
+ * The lot picker writes neighbour buildings, streets, and the elevation grid
+ * here; the column is freeform jsonb so the shape can evolve without a
+ * migration. Treated as structured JSON at the schema layer.
+ */
+export type ProjectMeta = { [key: string]: Json | undefined };
+
 /** `public.projects` row. */
 export interface ProjectRow {
   id: string;
@@ -67,6 +75,7 @@ export interface ProjectRow {
   parcel_geojson: Json | null;
   brief: Json | null;
   plan_graph: PlanGraph | null;
+  meta: ProjectMeta | null;
   status: ProjectStatus;
   share_token: string | null;
   design_fee_cents: number | null;
@@ -86,6 +95,7 @@ export interface ProjectInsert {
   parcel_geojson?: Json | null;
   brief?: Json | null;
   plan_graph?: PlanGraph | null;
+  meta?: ProjectMeta | null;
   status?: ProjectStatus;
   design_fee_cents?: number | null;
   deposit_cents?: number | null;
