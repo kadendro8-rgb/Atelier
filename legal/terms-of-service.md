@@ -1,0 +1,3 @@
+# Terms of Service
+
+Welcome to Atelier Design, Inc. ("Atelier"). By using our services, you agree to these terms...
