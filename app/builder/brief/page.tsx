@@ -35,6 +35,7 @@ export default function BriefPage() {
   const [activeChip, setActiveChip] = useState<string | null>(null);
   const [stage, setStage] = useState(-1);
   const [saveOpen, setSaveOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const router = useRouter();
   const reduce = useReducedMotion();
@@ -55,33 +56,42 @@ export default function BriefPage() {
   async function generate() {
     if (!ready) return;
     setStage(0);
+    setError(null);
     const started = Date.now();
-
-    const request = fetch("/api/parse-brief", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ brief: brief.trim() }),
-    })
-      .then((r) => r.json())
-      .catch(() => null);
 
     const t1 = window.setTimeout(() => setStage(1), 900);
     const t2 = window.setTimeout(() => setStage(2), 2600);
 
-    const data = await request;
+    let parsed: unknown = null;
+    try {
+      const res = await fetch("/api/parse-brief", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ brief: brief.trim() }),
+      });
+      if (!res.ok) throw new Error(`parse-brief responded ${res.status}`);
+      const data = await res.json();
+      parsed = data?.parsed ?? null;
+    } catch (err) {
+      console.error("parse-brief request failed:", err);
+    } finally {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    }
+
+    if (!parsed) {
+      setStage(-1);
+      setError("Couldn't generate the design just now. Please try again.");
+      return;
+    }
+
     const elapsed = Date.now() - started;
     if (elapsed < 3800) {
       await new Promise((r) => setTimeout(r, 3800 - elapsed));
     }
-    window.clearTimeout(t1);
-    window.clearTimeout(t2);
 
     localStorage.setItem("atelier:brief", brief.trim());
-    if (data?.parsed) {
-      localStorage.setItem("atelier:parsed", JSON.stringify(data.parsed));
-    } else {
-      localStorage.removeItem("atelier:parsed");
-    }
+    localStorage.setItem("atelier:parsed", JSON.stringify(parsed));
 
     setStage(3);
     window.setTimeout(() => router.push("/builder/floor-plan"), 550);
@@ -190,6 +200,12 @@ export default function BriefPage() {
               </Button>
             </div>
           </div>
+
+          {error && (
+            <p className="mt-3 text-xs text-red-400" role="alert">
+              {error}
+            </p>
+          )}
         </div>
       </motion.div>
 
@@ -230,6 +246,7 @@ function SaveDialog({
 }) {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<"form" | "saving" | "done">("form");
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -244,14 +261,27 @@ function SaveDialog({
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setState("saving");
+    setError(null);
     try {
-      await fetch("/api/save-brief", {
+      const res = await fetch("/api/save-brief", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, brief }),
       });
+      if (!res.ok) {
+        const body = (await res.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        setError(
+          body?.error ?? "Could not save your brief. Please try again.",
+        );
+        setState("form");
+        return;
+      }
     } catch {
-      // best-effort — still confirm to the user
+      setError("Network error — please try again.");
+      setState("form");
+      return;
     }
     setState("done");
   }
@@ -310,6 +340,11 @@ function SaveDialog({
               placeholder="you@company.com"
               className="mt-4 w-full rounded-lg border border-border bg-ink p-3 text-sm text-foreground placeholder:text-muted-2 focus-visible:border-copper focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper/30"
             />
+            {error && (
+              <p className="mt-2 text-xs text-red-400" role="alert">
+                {error}
+              </p>
+            )}
             <div className="mt-4 flex justify-end gap-2">
               <Button
                 type="button"
