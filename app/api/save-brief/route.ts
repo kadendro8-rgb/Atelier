@@ -1,10 +1,7 @@
-import { promises as fs } from "fs";
-import path from "path";
 import { NextResponse } from "next/server";
+import { getSupabaseAdmin } from "@/lib/supabase";
 
 export const runtime = "nodejs";
-
-type Lead = { email: string; brief: string; savedAt: string };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -26,26 +23,23 @@ export async function POST(req: Request) {
     );
   }
 
-  const lead: Lead = { email, brief, savedAt: new Date().toISOString() };
+  const supabase = getSupabaseAdmin();
 
-  // Best-effort local persistence. On a read-only serverless filesystem this
-  // is skipped gracefully; durable storage (Cloudflare KV) is tracked in
-  // docs/v2-spec.md.
-  try {
-    const dir = path.join(process.cwd(), "data");
-    const file = path.join(dir, "leads.json");
-    await fs.mkdir(dir, { recursive: true });
-    let leads: Lead[] = [];
-    try {
-      leads = JSON.parse(await fs.readFile(file, "utf8")) as Lead[];
-    } catch {
-      leads = [];
-    }
-    leads.push(lead);
-    await fs.writeFile(file, JSON.stringify(leads, null, 2));
-  } catch (err) {
-    console.error("save-brief: could not persist lead to disk:", err);
+  // Supabase not configured (e.g. local dev without secrets) — accept the
+  // lead so the flow isn't blocked, but report that it wasn't persisted.
+  if (!supabase) {
+    console.warn("save-brief: Supabase not configured; lead not persisted.");
+    return NextResponse.json({ success: true, persisted: false });
   }
 
-  return NextResponse.json({ success: true });
+  const { error } = await supabase.from("leads").insert({ email, brief });
+  if (error) {
+    console.error("save-brief: Supabase insert failed:", error.message);
+    return NextResponse.json(
+      { error: "Could not save your brief right now. Please try again." },
+      { status: 502 },
+    );
+  }
+
+  return NextResponse.json({ success: true, persisted: true });
 }
