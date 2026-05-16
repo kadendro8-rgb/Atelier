@@ -27,7 +27,8 @@ and merges every result.
 | 2–3 | §7 Moat pages        | partner / match / GC-network / gallery | Merged | `1d61044` |
 | 4   | §4 Client portal     | branded portal page + deposit UI | Merged | `218f16e` |
 | 4   | §6 UX moves          | command palette + toasts | Merged | `218f16e` |
-| 5   | §8 Hardening         | error boundaries, kernel tests | Queued | — |
+| 5   | §1.2 + integration  | `PlanCanvas` + plan kernel wired into the builder | Merged | `c5e6021` |
+| 5   | §8 Hardening         | error boundary + 35 passing kernel tests | Merged | `c5e6021` |
 | —   | §9 Launch            | release sequence (not a code task) | Manual | — |
 
 ## Verification gate
