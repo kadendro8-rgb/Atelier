@@ -12,23 +12,23 @@ type LineItem = {
 const lineItems: LineItem[] = [
   {
     label: "Paid design consultations",
-    detail: "18 booked × $850 — the meeting now bills",
-    amount: 15300,
+    detail: "22 measure visits × $300 — the measure visit now bills",
+    amount: 6600,
   },
   {
-    label: "Design deposits collected",
-    detail: "11 signed-off designs × $8,500 in-portal",
-    amount: 93500,
+    label: "Job deposits collected",
+    detail: "14 signed-off designs × $6,500 in-portal",
+    amount: 91000,
   },
   {
-    label: "Renders & revision upsells",
-    detail: "Extra angles and what-if options clients add",
-    amount: 6200,
+    label: "Upgrade upsells",
+    detail: "Fire features, lighting, and material upgrades added on the render",
+    amount: 11400,
   },
   {
-    label: "Outsourced drafting, eliminated",
-    detail: "No more $4,800/mo to an external draftsperson",
-    amount: 4800,
+    label: "Outsourced rendering, eliminated",
+    detail: "No more $250/design to a freelance 3D artist",
+    amount: 3500,
   },
   {
     label: "Atelier Studio subscription",
@@ -44,9 +44,9 @@ const total = lineItems.reduce(
 );
 
 const copyPoints = [
-  "The design phase used to be a cost center — weeks of unpaid drafting before a single dollar came in.",
-  "Atelier flips it. The consultation bills, the design lands same-day, and the deposit clears before the client cools off.",
-  "One builder, no new hires. The numbers on the right are a single salesperson's month.",
+  "The design phase used to be a cost center — evenings spent hand-drawing a sketch before a single dollar came in.",
+  "Atelier flips it. The measure visit bills, the render lands on-site, and the deposit clears before the client cools off.",
+  "One contractor, no new hires. The numbers on the right are a single estimator's month.",
 ];
 
 export function TheMath() {
@@ -81,7 +81,7 @@ export function TheMath() {
             <div className="rounded-card border border-border-bright bg-surface">
               <div className="border-b border-border px-6 py-4">
                 <p className="text-xs uppercase tracking-[0.16em] text-muted-2">
-                  Monthly revenue, one builder
+                  Monthly revenue, one contractor
                 </p>
               </div>
 

@@ -8,24 +8,24 @@ import { Reveal } from "@/components/Reveal";
 
 const faqs = [
   {
-    q: "Are Atelier's plans actually permit-ready?",
-    a: "Atelier produces a coordinated, dimensioned sheet set that validates against the local code edition — egress, spans, stairs, and setbacks included. Most jurisdictions still require a licensed architect or engineer of record to stamp the set, and Atelier exports cleanly into their workflow. It removes the drafting, not the professional sign-off.",
+    q: "Are Atelier's designs accurate enough to build from?",
+    a: "Atelier produces a scaled, dimensioned layout with a line-item material takeoff — pavers, base, concrete, square footages, and quantities your crew works straight off of. Where a job needs a permit, like a pool or a structure, Atelier exports cleanly into your engineer's workflow. It removes the drawing, not the professional sign-off where one is required.",
   },
   {
-    q: "Do I need to know CAD or architecture software?",
-    a: "No. If you can describe a home to a client, you can drive Atelier. The whole interface is a conversation plus direct drag-to-edit on the plan — there is nothing to install and no command line to memorize.",
+    q: "Do I need to know CAD or design software?",
+    a: "No. If you can describe a backyard to a client, you can drive Atelier. The whole interface is a conversation plus direct drag-to-edit on the layout — there is nothing to install and no command line to memorize.",
   },
   {
-    q: "Where does the parcel and zoning data come from?",
-    a: "Atelier pulls parcel boundaries, setbacks, and easements from county GIS and assessor records across 3,100+ U.S. jurisdictions. When a lot isn't on file you can trace it manually, and Atelier still applies the zoning district's rules to the buildable envelope.",
+    q: "Where does the property data come from?",
+    a: "Atelier pulls parcel boundaries, setbacks, and the property line from county GIS and assessor records across 3,100+ U.S. jurisdictions. When a lot isn't on file you can trace it manually, and Atelier still scales the design to the real yard.",
   },
   {
     q: "How does the client portal collect a deposit?",
-    a: "Each project gets a branded portal where your client reviews plans and renders, approves the design, and pays the deposit by card or ACH. Payouts run on Stripe, land in your account, and the portal logs the approval so there's a clear record before the build starts.",
+    a: "Each project gets a branded portal where your client reviews the layout and renders, approves the design, and pays the deposit by card or ACH. Payouts run on Stripe, land in your account, and the portal logs the approval so there's a clear record before the job starts.",
   },
   {
-    q: "Can my draftsperson or architect still use their own tools?",
-    a: "Yes. Atelier exports DWG, PDF, and IFC, so your existing partners pick up the design in AutoCAD, Revit, or ArchiCAD without re-drawing it. Atelier handles the first 80% — the concept, the iteration, the client buy-in — and hands off a clean file.",
+    q: "Can I still use my own supplier and takeoff?",
+    a: "Yes. Atelier exports the estimate and material list as PDF and CSV, so you can price it through your own supplier or drop it into the takeoff tool you already use. Atelier handles the first 80% — the layout, the iteration, the client buy-in — and hands off clean numbers.",
   },
   {
     q: "What happens after my free designs are used up?",
@@ -42,7 +42,7 @@ export function FAQ() {
             FAQ
           </p>
           <h2 className="mt-3 font-display text-3xl tracking-tight sm:text-4xl">
-            The questions builders ask first
+            The questions contractors ask first
           </h2>
         </Reveal>
 

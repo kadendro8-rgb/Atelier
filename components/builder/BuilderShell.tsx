@@ -2,36 +2,45 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Check, X } from "lucide-react";
+import { Check, Compass, X } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { replayGuidedTour } from "@/components/builder/GuidedTour";
+import type { ProjectType } from "@/lib/db/types";
 import { cn } from "@/lib/utils";
 
-export type BuilderStepKey =
-  | "lot"
-  | "brief"
-  | "floor-plan"
-  | "site"
-  | "renders"
-  | "portal";
+export type BuilderStepKey = "lot" | "brief" | "floor-plan" | "package";
 
 const STEPS: { key: BuilderStepKey; label: string; href?: string }[] = [
   { key: "lot", label: "Lot", href: "/builder" },
   { key: "brief", label: "Brief", href: "/builder/brief" },
   { key: "floor-plan", label: "Floor plan", href: "/builder/floor-plan" },
-  { key: "site", label: "Site" },
-  { key: "renders", label: "Renders" },
-  { key: "portal", label: "Portal" },
+  { key: "package", label: "Deliver" },
 ];
+
+/**
+ * Per-step labels keyed by project type. Only the steps that read differently
+ * are overridden — a hardscape job has no "Floor plan", it has a "Layout".
+ */
+const STEP_LABEL_OVERRIDES: Partial<
+  Record<ProjectType, Partial<Record<BuilderStepKey, string>>>
+> = {
+  hardscape: { "floor-plan": "Layout" },
+};
 
 /** Shared chrome for every builder step — top bar plus a 6-step progress rail. */
 export function BuilderShell({
   current,
+  projectType = "home",
   children,
 }: {
   current: BuilderStepKey;
+  /** Active project type — re-labels steps that read differently per type. */
+  projectType?: ProjectType;
   children: ReactNode;
 }) {
   const currentIndex = STEPS.findIndex((s) => s.key === current);
+  const labelFor = (step: (typeof STEPS)[number]) =>
+    STEP_LABEL_OVERRIDES[projectType]?.[step.key] ?? step.label;
 
   return (
     <div className="flex min-h-dvh flex-col bg-ink">
@@ -71,7 +80,7 @@ export function BuilderShell({
                   >
                     {done ? <Check className="size-2.5 sm:size-3" /> : i + 1}
                   </span>
-                  <span className="hidden md:inline">{step.label}</span>
+                  <span className="hidden md:inline">{labelFor(step)}</span>
                 </span>
               );
               return (
@@ -80,7 +89,10 @@ export function BuilderShell({
                   className="flex items-center gap-1 sm:gap-1.5"
                 >
                   {done && step.href ? (
-                    <Link href={step.href} aria-label={`Back to ${step.label}`}>
+                    <Link
+                      href={step.href}
+                      aria-label={`Back to ${labelFor(step)}`}
+                    >
                       {chip}
                     </Link>
                   ) : (
@@ -101,13 +113,24 @@ export function BuilderShell({
             })}
           </ol>
 
-          <Link
-            href="/"
-            className="flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1.5 text-xs text-muted transition-colors hover:border-border-bright hover:text-foreground"
-          >
-            <X className="size-3.5" />
-            <span className="hidden sm:inline">Exit</span>
-          </Link>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={replayGuidedTour}
+              aria-label="Replay the guided tour"
+              className="flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1.5 text-xs text-muted transition-colors hover:border-border-bright hover:text-foreground"
+            >
+              <Compass className="size-3.5 text-copper" />
+              <span className="hidden sm:inline">Tour</span>
+            </button>
+            <Link
+              href="/"
+              className="flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1.5 text-xs text-muted transition-colors hover:border-border-bright hover:text-foreground"
+            >
+              <X className="size-3.5" />
+              <span className="hidden sm:inline">Exit</span>
+            </Link>
+          </div>
         </div>
       </header>
 

@@ -2,11 +2,16 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Menu, X } from "lucide-react";
+import { Menu, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
+import { TRIAL_CTA } from "@/lib/cta";
 import { cn } from "@/lib/utils";
 
+// Re-exported for callers that historically imported the CTA from the nav.
+export { TRIAL_CTA };
+
+// Section anchors on the marketing page.
 const links = [
   { href: "/#how", label: "How it works" },
   { href: "/#workflow", label: "Workflow" },
@@ -14,6 +19,13 @@ const links = [
   { href: "/#features", label: "Features" },
   { href: "/#math", label: "The math" },
   { href: "/#pricing", label: "Pricing" },
+];
+
+// Standalone destination pages, kept in a separate group so the nav stays clean.
+const pageLinks = [
+  { href: "/gallery", label: "Gallery" },
+  { href: "/match", label: "Find a contractor" },
+  { href: "/gc-network", label: "For contractors" },
 ];
 
 export function Nav() {
@@ -57,12 +69,24 @@ export function Nav() {
               </Link>
             </li>
           ))}
+          <li aria-hidden="true" className="mx-1 h-4 w-px bg-border" />
+          {pageLinks.map((l) => (
+            <li key={l.href}>
+              <Link
+                href={l.href}
+                className="rounded-full px-3.5 py-2 text-sm text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper"
+              >
+                {l.label}
+              </Link>
+            </li>
+          ))}
         </ul>
 
         <div className="hidden md:block">
           <Button asChild size="sm">
-            <Link href="/builder">
-              Open the builder <ArrowRight className="size-4" />
+            <Link href={TRIAL_CTA.href}>
+              <Sparkles className="size-4" />
+              {TRIAL_CTA.label}
             </Link>
           </Button>
         </div>
@@ -92,10 +116,23 @@ export function Nav() {
                 </Link>
               </li>
             ))}
+            <li aria-hidden="true" className="my-1.5 h-px bg-border" />
+            {pageLinks.map((l) => (
+              <li key={l.href}>
+                <Link
+                  href={l.href}
+                  onClick={() => setOpen(false)}
+                  className="block rounded-lg px-3 py-2.5 text-sm text-muted hover:bg-surface-2 hover:text-foreground"
+                >
+                  {l.label}
+                </Link>
+              </li>
+            ))}
             <li className="mt-2">
               <Button asChild size="sm" className="w-full">
-                <Link href="/builder" onClick={() => setOpen(false)}>
-                  Open the builder
+                <Link href={TRIAL_CTA.href} onClick={() => setOpen(false)}>
+                  <Sparkles className="size-4" />
+                  {TRIAL_CTA.label}
                 </Link>
               </Button>
             </li>
