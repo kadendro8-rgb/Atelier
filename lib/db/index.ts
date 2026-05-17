@@ -10,6 +10,8 @@
  */
 import { getSupabaseAdmin } from "@/lib/supabase";
 import type {
+  GmvEventInsert,
+  GmvEventRow,
   LeadRow,
   PlanGraph,
   ProjectInsert,
@@ -144,4 +146,24 @@ export async function savePlanGraph(
   graph: PlanGraph,
 ): Promise<ProjectRow> {
   return updateProject(projectId, { plan_graph: graph });
+}
+
+/**
+ * Record a GMV (gross-merchandise-value) event for revenue tracking — e.g. a
+ * paid deposit, a design fee, a stamp fee. Inserts into `gmv_events` and
+ * returns the created row.
+ * @throws DbUnavailableError when Supabase is not configured.
+ * @throws DbQueryError on an unexpected query failure.
+ */
+export async function logGmvEvent(
+  event: GmvEventInsert,
+): Promise<GmvEventRow> {
+  const { data: row, error } = await requireClient()
+    .from("gmv_events")
+    .insert(event)
+    .select("*")
+    .single();
+
+  if (error) throw new DbQueryError("logGmvEvent", error.message);
+  return row as GmvEventRow;
 }
