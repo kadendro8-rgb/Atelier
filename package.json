@@ -5,32 +5,51 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "typecheck": "tsc --noEmit",
     "start": "next start",
     "lint": "next lint",
+    "test": "vitest run",
     "gen:placeholders": "node scripts/gen-placeholders.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.96.0",
+    "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-slot": "^1.1.2",
     "@radix-ui/react-tabs": "^1.1.3",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "@supabase/ssr": "^0.10.3",
+    "@supabase/supabase-js": "^2.105.4",
+    "@vercel/speed-insights": "^2.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
+    "dxf-writer": "^1.18.4",
     "framer-motion": "^12.4.0",
     "lucide-react": "^0.469.0",
+    "maplibre-gl": "^5.24.0",
     "next": "^15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "tailwind-merge": "^2.6.0"
+    "react-hook-form": "^7.76.0",
+    "sonner": "^2.0.7",
+    "stripe": "^22.1.1",
+    "tailwind-merge": "^2.6.0",
+    "three": "^0.184.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.184.1",
     "eslint": "^9.18.0",
     "eslint-config-next": "^15.1.6",
     "sharp": "^0.33.5",
     "tailwindcss": "^4.0.0",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vitest": "^4.1.6"
   }
 }

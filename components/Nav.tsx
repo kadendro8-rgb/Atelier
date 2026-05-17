@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { ArrowRight, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { cn } from "@/lib/utils";
@@ -58,12 +58,11 @@ export function Nav() {
           ))}
         </ul>
 
-        <div className="hidden items-center gap-2 md:flex">
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/auth/signin">Sign in</Link>
-          </Button>
+        <div className="hidden md:block">
           <Button asChild size="sm">
-            <Link href="/auth/signup">Start free</Link>
+            <Link href="/builder">
+              Open the builder <ArrowRight className="size-4" />
+            </Link>
           </Button>
         </div>
 
@@ -92,15 +91,10 @@ export function Nav() {
                 </Link>
               </li>
             ))}
-            <li className="mt-2 flex gap-2">
-              <Button asChild variant="subtle" size="sm" className="flex-1">
-                <Link href="/auth/signin" onClick={() => setOpen(false)}>
-                  Sign in
-                </Link>
-              </Button>
-              <Button asChild size="sm" className="flex-1">
-                <Link href="/auth/signup" onClick={() => setOpen(false)}>
-                  Start free
+            <li className="mt-2">
+              <Button asChild size="sm" className="w-full">
+                <Link href="/builder" onClick={() => setOpen(false)}>
+                  Open the builder
                 </Link>
               </Button>
             </li>

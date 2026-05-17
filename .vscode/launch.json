@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "type": "chrome",
+            "name": "https://openvsx.eclipsecontent.org/swiftlang/swift-vscode/2.17.20260513/swiftlang.swift-vscode-2.17.20260513.vsix",
+            "request": "launch",
+            "url": "https://openvsx.eclipsecontent.org/swiftlang/swift-vscode/2.17.20260513/swiftlang.swift-vscode-2.17.20260513.vsix"
+        }
+    ]
+}

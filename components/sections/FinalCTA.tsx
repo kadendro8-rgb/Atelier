@@ -26,7 +26,7 @@ export function FinalCTA() {
 
         <div className="mt-9 flex justify-center">
           <Button asChild size="lg">
-            <Link href="/auth/signup">
+            <Link href="/builder">
               Design your first home <ArrowRight className="size-4" />
             </Link>
           </Button>
