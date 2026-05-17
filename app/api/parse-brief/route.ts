@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
-import { parseBriefFallback, type ParsedRequirements } from "@/lib/builder";
+import { coerceParsedRequirements, parseBriefFallback } from "@/lib/builder";
 
 export const runtime = "nodejs";
 
@@ -12,34 +12,6 @@ const SYSTEM = `You are Atelier's design-intake engine. Parse the builder's plai
 Infer sensible values for anything the brief leaves unstated. Return JSON only — no prose, no code fences.`;
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
-/** Coerce a raw model object into a safe ParsedRequirements. */
-function coerce(raw: unknown, brief: string): ParsedRequirements {
-  const fb = parseBriefFallback(brief);
-  if (!raw || typeof raw !== "object") return fb;
-  const r = raw as Record<string, unknown>;
-
-  const num = (v: unknown, d: number) =>
-    typeof v === "number" && Number.isFinite(v) ? v : d;
-  const str = (v: unknown, d: string) =>
-    typeof v === "string" && v.trim() ? v.trim() : d;
-  const strArr = (v: unknown) =>
-    Array.isArray(v)
-      ? v.filter((x): x is string => typeof x === "string").slice(0, 8)
-      : [];
-
-  return {
-    sqft: Math.round(num(r.sqft, fb.sqft)),
-    beds: Math.round(num(r.beds, fb.beds)),
-    baths: num(r.baths, fb.baths),
-    style: str(r.style, fb.style),
-    story_count: Math.round(num(r.story_count, fb.story_count)),
-    lot_size: str(r.lot_size, fb.lot_size),
-    must_haves: strArr(r.must_haves).length ? strArr(r.must_haves) : fb.must_haves,
-    optional_features: strArr(r.optional_features),
-    code_jurisdiction_hint: str(r.code_jurisdiction_hint, fb.code_jurisdiction_hint),
-  };
-}
 
 /** Call Claude with bounded retries on transient failures. */
 async function callClaude(client: Anthropic, brief: string): Promise<unknown> {
@@ -99,7 +71,10 @@ export async function POST(req: Request) {
   try {
     const client = new Anthropic({ apiKey, maxRetries: 0 });
     const raw = await callClaude(client, brief);
-    return NextResponse.json({ source: "ai", parsed: coerce(raw, brief) });
+    return NextResponse.json({
+      source: "ai",
+      parsed: coerceParsedRequirements(raw, brief),
+    });
   } catch (err) {
     console.error("parse-brief: Claude API failed, using local parser:", err);
     return NextResponse.json({

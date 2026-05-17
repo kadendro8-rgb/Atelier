@@ -22,13 +22,9 @@ import {
   DbUnavailableError,
   type PlanGraph as DbPlanGraph,
 } from "@/lib/db";
+import { validatePlanPutBody } from "./validate";
 
 export const runtime = "nodejs";
-
-interface PutBody {
-  projectId?: unknown;
-  planGraph?: unknown;
-}
 
 export async function GET(req: Request) {
   const projectId = new URL(req.url).searchParams.get("projectId");
@@ -49,22 +45,15 @@ export async function GET(req: Request) {
 }
 
 export async function PUT(req: Request) {
-  let body: PutBody;
+  let body: unknown;
   try {
-    body = (await req.json()) as PutBody;
+    body = await req.json();
   } catch {
     return NextResponse.json({ error: "Malformed request." }, { status: 400 });
   }
 
-  const projectId = body.projectId;
-  const planGraph = body.planGraph;
-  if (
-    typeof projectId !== "string" ||
-    projectId.trim().length === 0 ||
-    typeof planGraph !== "object" ||
-    planGraph === null ||
-    Array.isArray(planGraph)
-  ) {
+  const valid = validatePlanPutBody(body);
+  if (!valid) {
     return NextResponse.json(
       { error: "Expected { projectId: string, planGraph: object }." },
       { status: 400 },
@@ -73,7 +62,7 @@ export async function PUT(req: Request) {
 
   try {
     // The kernel PlanGraph is structured JSON; cast at the DB boundary.
-    await savePlanGraph(projectId, planGraph as DbPlanGraph);
+    await savePlanGraph(valid.projectId, valid.planGraph as DbPlanGraph);
     return NextResponse.json({ persisted: true });
   } catch (err) {
     if (!(err instanceof DbUnavailableError)) {

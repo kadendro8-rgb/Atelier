@@ -1,14 +1,43 @@
+import { resolve } from "node:path";
+import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
 
-// The floor-plan kernel is pure logic, so a Node environment is sufficient —
-// no DOM is needed. Coverage is scoped to `lib/kernel/` per v2-spec §8.
+// Tests default to a Node environment — the floor-plan kernel and the rest of
+// `lib/` are pure logic. Component tests opt into jsdom per-file with a
+// `// @vitest-environment jsdom` docblock. See docs/v2-spec.md §8.
 export default defineConfig({
+  // Transforms JSX/TSX for the component tests.
+  plugins: [react()],
+  resolve: {
+    // Mirror the `@/*` path alias from tsconfig.json so tests import the same
+    // way application code does.
+    alias: { "@": resolve(__dirname, ".") },
+  },
   test: {
     environment: "node",
-    include: ["lib/kernel/**/*.test.ts"],
+    include: [
+      "lib/**/*.test.{ts,tsx}",
+      "app/**/*.test.{ts,tsx}",
+      "components/**/*.test.{ts,tsx}",
+    ],
+    setupFiles: ["./vitest.setup.ts"],
     coverage: {
-      include: ["lib/kernel/**/*.ts"],
-      exclude: ["lib/kernel/**/*.test.ts"],
+      provider: "v8",
+      include: [
+        "lib/**/*.{ts,tsx}",
+        "app/api/**/*.{ts,tsx}",
+        "components/**/*.{ts,tsx}",
+      ],
+      exclude: ["**/*.test.{ts,tsx}", "**/*.d.ts"],
+      // The kernel is the spec-mandated coverage floor (v2-spec §8).
+      thresholds: {
+        "lib/kernel/**/*.ts": {
+          statements: 80,
+          branches: 80,
+          functions: 80,
+          lines: 80,
+        },
+      },
     },
   },
 });
