@@ -61,7 +61,7 @@ export function HowItWorks() {
                   {/* Content side */}
                   <div className={`flex-1 ${i % 2 === 1 ? "lg:text-right" : ""}`}>
                     <div className={`inline-flex items-center gap-3 ${i % 2 === 1 ? "lg:flex-row-reverse" : ""}`}>
-                      <span className="flex size-12 items-center justify-center rounded-xl border border-border-bright bg-surface-2 font-display text-lg text-copper">
+                      <span className="flex size-12 items-center justify-center rounded-xl border border-border-bright bg-surface-2 font-display text-lg text-copper transition-all duration-300 hover:border-copper hover:bg-copper/10">
                         {step.n}
                       </span>
                       <step.icon className="size-5 text-muted-2" />
@@ -76,14 +76,14 @@ export function HowItWorks() {
 
                   {/* Center node */}
                   <div className="relative hidden lg:flex lg:items-center lg:justify-center">
-                    <div className="relative z-10 flex size-16 items-center justify-center rounded-full border border-copper bg-surface">
-                      <div className="size-4 rounded-full bg-copper shadow-[0_0_20px_rgba(245,158,11,0.5)]" />
+                    <div className="relative z-10 flex size-16 items-center justify-center rounded-full border border-copper bg-surface transition-all duration-500 hover:scale-110">
+                      <div className="size-4 rounded-full bg-copper shadow-[0_0_20px_rgba(212,165,116,0.5)]" />
                     </div>
                   </div>
 
                   {/* Visual side */}
                   <div className="flex-1">
-                    <div className="overflow-hidden rounded-2xl border border-border bg-surface">
+                    <div className="overflow-hidden rounded-2xl border border-border bg-surface transition-all duration-400 hover:border-border-bright">
                       <div className="relative h-64 border-b border-border bg-ink-2 p-5 lg:h-72">
                         <Mockup index={i} />
                       </div>
@@ -110,17 +110,17 @@ function Mockup({ index }: { index: number }) {
 function ChatMockup() {
   return (
     <div className="flex h-full flex-col justify-end gap-3">
-      <div className="max-w-[80%] rounded-xl rounded-tl-sm bg-surface-2 px-4 py-3 text-sm leading-relaxed text-muted">
+      <div className="max-w-[80%] rounded-xl rounded-tl-sm bg-surface-2 px-4 py-3 text-sm leading-relaxed text-muted transition-all duration-300 hover:bg-surface-3">
         Flagstone patio off the kitchen, ~480 sq ft, with a fire-pit lounge.
       </div>
       <div className="ml-auto max-w-[80%] rounded-xl rounded-tr-sm bg-copper/10 px-4 py-3 text-sm leading-relaxed text-copper-bright">
         Got it — laying out the patio and checking the lot now.
       </div>
-      <div className="flex items-center gap-3 rounded-xl border border-border-bright bg-ink px-4 py-3">
+      <div className="flex items-center gap-3 rounded-xl border border-border-bright bg-ink px-4 py-3 transition-all duration-300 hover:border-copper">
         <span className="flex-1 text-sm text-muted-2">
           Add a paver walkway to the driveway
         </span>
-        <span className="grid size-8 place-items-center rounded-lg bg-copper text-ink">
+        <span className="grid size-8 place-items-center rounded-lg bg-copper text-ink transition-all duration-300 hover:bg-copper-bright hover:scale-105">
           <ArrowUp className="size-4" />
         </span>
       </div>
@@ -155,8 +155,8 @@ function LayoutMockup() {
           y="68"
           width="106"
           height="82"
-          fill="rgba(245,158,11,0.1)"
-          stroke="#f59e0b"
+          fill="rgba(212,165,116,0.1)"
+          stroke="#d4a574"
           strokeWidth="1.5"
         />
         <text x="14" y="30" fill="#71717a" fontSize="9">
@@ -168,12 +168,12 @@ function LayoutMockup() {
         <text x="130" y="28" fill="#71717a" fontSize="9">
           Kitchen
         </text>
-        <text x="130" y="112" fill="#f59e0b" fontSize="9">
+        <text x="130" y="112" fill="#d4a574" fontSize="9">
           Great room
         </text>
       </svg>
 
-      <div className="absolute right-4 top-3 w-40 rounded-xl border border-border-bright bg-surface-2 p-3 shadow-xl">
+      <div className="absolute right-4 top-3 w-40 rounded-xl border border-border-bright bg-surface-2 p-3 shadow-xl transition-all duration-300 hover:border-copper">
         <div className="flex items-center gap-2 text-sm font-medium text-foreground">
           <Pencil className="size-3.5 text-copper" />
           Great room
@@ -211,8 +211,8 @@ function MapMockup() {
         {/* the parcel */}
         <polygon
           points="166,96 222,94 226,148 168,150"
-          fill="rgba(245,158,11,0.15)"
-          stroke="#f59e0b"
+          fill="rgba(212,165,116,0.15)"
+          stroke="#d4a574"
           strokeWidth="2"
         />
         {/* buildable envelope */}
@@ -223,9 +223,9 @@ function MapMockup() {
           strokeWidth="1.5"
           strokeDasharray="4 3"
         />
-        <circle cx="196" cy="122" r="4" fill="#f59e0b" />
+        <circle cx="196" cy="122" r="4" fill="#d4a574" />
       </svg>
-      <div className="absolute left-4 top-4 rounded-lg border border-border-bright bg-ink/90 px-3 py-2 text-xs text-foreground backdrop-blur">
+      <div className="absolute left-4 top-4 rounded-lg border border-border-bright bg-ink/90 px-3 py-2 text-xs text-foreground backdrop-blur transition-all duration-300 hover:border-copper">
         <span className="text-copper">Cedar Lane</span> &middot; 0.61 ac
       </div>
       <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-lg border border-sage/40 bg-ink/90 px-3 py-2 text-xs text-sage backdrop-blur">
@@ -252,20 +252,20 @@ function PortalMockup() {
         {["Plans", "Renders", "Spec"].map((t) => (
           <div
             key={t}
-            className="rounded-lg border border-border bg-surface-2 px-3 py-4 text-center text-xs text-muted"
+            className="rounded-lg border border-border bg-surface-2 px-3 py-4 text-center text-xs text-muted transition-all duration-300 hover:border-border-bright hover:bg-surface-3"
           >
             {t}
           </div>
         ))}
       </div>
-      <div className="mt-auto rounded-xl border border-border-bright bg-surface-2 p-4">
+      <div className="mt-auto rounded-xl border border-border-bright bg-surface-2 p-4 transition-all duration-300 hover:border-copper">
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted">Design deposit</span>
           <span className="font-display text-xl text-foreground">$8,500</span>
         </div>
         <button
           type="button"
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-copper py-3 text-sm font-semibold text-ink transition-colors hover:bg-copper-bright"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-copper py-3 text-sm font-semibold text-ink transition-all duration-300 ease-out hover:bg-copper-bright hover:scale-[1.02]"
         >
           <Lock className="size-4" />
           Pay deposit & start build

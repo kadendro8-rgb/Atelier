@@ -126,14 +126,14 @@ export function Features() {
 
         {/* Bottom CTA */}
         <Reveal delay={0.3} className="mt-12 text-center">
-          <div className="inline-flex items-center gap-3 rounded-full border border-border bg-surface px-6 py-3">
+          <div className="inline-flex items-center gap-3 rounded-full border border-border bg-surface px-6 py-3 transition-all duration-300 hover:border-border-bright">
             <Shield className="size-5 text-sage" />
             <span className="text-sm text-muted">
               Enterprise-grade security. SOC 2 Type II compliant.
             </span>
             <Link
               href="/#pricing"
-              className="flex items-center gap-1 text-sm font-medium text-copper hover:text-copper-bright transition-colors"
+              className="flex items-center gap-1 text-sm font-medium text-copper transition-colors duration-200 hover:text-copper-bright"
             >
               Learn more <ArrowRight className="size-4" />
             </Link>
@@ -155,13 +155,13 @@ function FeatureCard({
 
   if (variant === "large") {
     return (
-      <article className="group relative h-full overflow-hidden rounded-2xl border border-border bg-surface p-8 transition-all duration-300 hover:border-border-bright lg:p-10">
+      <article className="group relative h-full overflow-hidden rounded-2xl border border-border bg-surface p-8 transition-all duration-400 ease-out hover:border-border-bright lg:p-10">
         {/* Background gradient */}
-        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-copper/10 blur-3xl transition-all duration-500 group-hover:bg-copper/20" />
+        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-copper/8 blur-3xl transition-all duration-700 ease-out group-hover:bg-copper/15 group-hover:scale-110" />
 
         <div className="relative flex h-full flex-col lg:flex-row lg:items-center lg:gap-12">
           <div className="flex-1">
-            <div className="flex size-14 items-center justify-center rounded-2xl border border-border-bright bg-surface-2 text-copper transition-all duration-300 group-hover:border-copper group-hover:bg-copper/10">
+            <div className="flex size-14 items-center justify-center rounded-2xl border border-border-bright bg-surface-2 text-copper transition-all duration-400 ease-out group-hover:border-copper group-hover:bg-copper/10 group-hover:scale-105">
               <Icon className="size-7" />
             </div>
 
@@ -188,8 +188,8 @@ function FeatureCard({
 
   if (variant === "medium") {
     return (
-      <article className="group relative h-full overflow-hidden rounded-2xl border border-border bg-surface p-7 transition-all duration-300 hover:border-border-bright">
-        <div className="flex size-12 items-center justify-center rounded-xl border border-border-bright bg-surface-2 text-copper transition-all duration-300 group-hover:border-copper group-hover:bg-copper/10">
+      <article className="group relative h-full overflow-hidden rounded-2xl border border-border bg-surface p-7 transition-all duration-400 ease-out hover:border-border-bright">
+        <div className="flex size-12 items-center justify-center rounded-xl border border-border-bright bg-surface-2 text-copper transition-all duration-400 ease-out group-hover:border-copper group-hover:bg-copper/10 group-hover:scale-105">
           <Icon className="size-6" />
         </div>
 
@@ -211,9 +211,9 @@ function FeatureCard({
   }
 
   return (
-    <article className="group relative h-full overflow-hidden rounded-2xl border border-border bg-surface p-6 transition-all duration-300 hover:border-border-bright">
+    <article className="group relative h-full overflow-hidden rounded-2xl border border-border bg-surface p-6 transition-all duration-400 ease-out hover:border-border-bright">
       <div className="flex items-start justify-between gap-4">
-        <div className="flex size-10 items-center justify-center rounded-lg border border-border-bright bg-surface-2 text-copper transition-all duration-300 group-hover:border-copper group-hover:bg-copper/10">
+        <div className="flex size-10 items-center justify-center rounded-lg border border-border-bright bg-surface-2 text-copper transition-all duration-400 ease-out group-hover:border-copper group-hover:bg-copper/10 group-hover:scale-105">
           <Icon className="size-5" />
         </div>
         <div className="text-right">

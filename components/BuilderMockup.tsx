@@ -29,18 +29,18 @@ export function BuilderMockup() {
   return (
     <div className="relative mx-auto max-w-5xl">
       {/* Browser chrome mockup */}
-      <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl">
+      <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl shadow-black/30">
         {/* Browser address bar */}
         <div className="flex items-center gap-3 border-b border-border bg-surface-2 px-4 py-3">
           <div className="flex gap-1.5">
-            <div className="size-3 rounded-full bg-border-bright" />
-            <div className="size-3 rounded-full bg-border-bright" />
-            <div className="size-3 rounded-full bg-border-bright" />
+            <div className="size-3 rounded-full bg-border-bright transition-colors duration-300 hover:bg-muted-2" />
+            <div className="size-3 rounded-full bg-border-bright transition-colors duration-300 hover:bg-muted-2" />
+            <div className="size-3 rounded-full bg-border-bright transition-colors duration-300 hover:bg-muted-2" />
           </div>
           <div className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-surface px-4 py-1.5 text-sm">
             <span className="text-muted-2">atelier.design/builder</span>
             <span className="flex items-center gap-1 rounded-full bg-sage/20 px-2 py-0.5 text-xs text-sage">
-              <span className="size-1.5 rounded-full bg-sage" />
+              <span className="size-1.5 rounded-full bg-sage animate-pulse" />
               Live
             </span>
           </div>
@@ -71,7 +71,7 @@ export function BuilderMockup() {
                     onClick={() => type.available && setSelected(type.id)}
                     disabled={!type.available}
                     className={cn(
-                      "relative flex items-center gap-2 rounded-xl border px-4 py-3 text-left text-sm transition-all",
+                      "relative flex items-center gap-2 rounded-xl border px-4 py-3 text-left text-sm transition-all duration-300",
                       isSelected
                         ? "border-copper bg-copper/10 text-foreground"
                         : type.available
@@ -105,7 +105,7 @@ export function BuilderMockup() {
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="123 Cedar Lane, Zionsville, IN"
-                  className="w-full rounded-xl border border-border bg-surface-2 py-3 pl-10 pr-4 text-sm placeholder:text-muted-2 focus:border-copper focus:outline-none focus:ring-1 focus:ring-copper"
+                  className="w-full rounded-xl border border-border bg-surface-2 py-3 pl-10 pr-4 text-sm placeholder:text-muted-2 transition-all duration-300 focus:border-copper focus:outline-none focus:ring-1 focus:ring-copper"
                 />
               </div>
             </div>
@@ -122,7 +122,7 @@ export function BuilderMockup() {
           </div>
 
           {/* Right side - Context panel */}
-          <div className="rounded-xl border border-border bg-surface-2/50 p-6">
+          <div className="rounded-xl border border-border bg-surface-2/50 p-6 transition-all duration-300">
             <div className="space-y-4">
               <div className="space-y-1">
                 <p className="text-xs uppercase tracking-wider text-muted-2">
