@@ -46,6 +46,9 @@ import type {
   PolygonFeature,
   SiteMeta,
 } from "@/lib/gis/types";
+import type { ProjectType } from "@/lib/db/types";
+import { PROJECT_TYPES } from "@/lib/project-types";
+import { ProjectTypePicker } from "@/components/builder/ProjectTypePicker";
 import { MapPicker, type MapPickerHandle } from "./MapPicker";
 
 /** Default map centre — the continental US, before a search. */
@@ -73,12 +76,21 @@ const INITIAL_STEPS: GisStep[] = [
   { key: "streets", label: "Tracing streets…", state: "pending" },
 ];
 
+/** localStorage key for the persisted project-type choice. */
+const PROJECT_TYPE_KEY = "atelier:projectType";
+
+/** Narrow an arbitrary string to a known, registered `ProjectType`. */
+function isProjectType(value: string): value is ProjectType {
+  return PROJECT_TYPES.some((t) => t.id === value);
+}
+
 export default function LotPickerPage() {
   const router = useRouter();
   const reduce = useReducedMotion();
   const mapRef = useRef<MapPickerHandle>(null);
 
   const [phase, setPhase] = useState<Phase>("search");
+  const [projectType, setProjectType] = useState<ProjectType>("home");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<GeocodeResult[]>([]);
   const [searching, setSearching] = useState(false);
@@ -113,6 +125,27 @@ export default function LotPickerPage() {
   useEffect(() => {
     if (restored && parcel) mapRef.current?.setParcel(parcel);
   }, [restored, parcel]);
+
+  // --- Restore the persisted project-type choice ---------------------------
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem(PROJECT_TYPE_KEY);
+      if (stored && isProjectType(stored)) setProjectType(stored);
+    } catch {
+      // Storage unavailable (private mode / disabled) — keep the `home` default.
+    }
+  }, []);
+
+  /** Update and persist the chosen project type. */
+  const selectProjectType = useCallback((next: ProjectType) => {
+    setProjectType(next);
+    track("project_type_selected", { projectType: next });
+    try {
+      window.localStorage.setItem(PROJECT_TYPE_KEY, next);
+    } catch {
+      // Persisting is best-effort — the in-memory choice still threads through.
+    }
+  }, []);
 
   // --- Address autocomplete (250ms debounce) ------------------------------
   useEffect(() => {
@@ -311,6 +344,7 @@ export default function LotPickerPage() {
           address: input.address ?? null,
           parcelGeojson: input.parcel ?? null,
           meta: input.meta ?? null,
+          projectType,
         }),
       });
       if (res.ok) {
@@ -368,8 +402,25 @@ export default function LotPickerPage() {
           </p>
         </div>
 
+        {/* Project-type picker */}
+        <div className="mt-8">
+          <h2 className="font-display text-sm tracking-tight text-foreground">
+            What are you building?
+          </h2>
+          <p className="mt-1 text-xs text-muted-2">
+            Pick the type — more designers come online soon.
+          </p>
+          <div className="mt-3">
+            <ProjectTypePicker
+              value={projectType}
+              onChange={selectProjectType}
+              disabled={gathering}
+            />
+          </div>
+        </div>
+
         {/* Address search */}
-        <div className="relative mt-8">
+        <div className="relative mt-6">
           <div className="relative">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-2" />
             {searching && (

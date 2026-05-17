@@ -10,7 +10,7 @@
 import { NextResponse } from "next/server";
 import { createProject, DbUnavailableError } from "@/lib/db";
 import { getSession } from "@/lib/auth";
-import type { Json, ProjectInsert } from "@/lib/db/types";
+import type { Json, ProjectInsert, ProjectType } from "@/lib/db/types";
 import type { SiteMeta } from "@/lib/gis/types";
 
 export const runtime = "nodejs";
@@ -20,6 +20,24 @@ interface ProjectBody {
   address?: unknown;
   parcelGeojson?: unknown;
   meta?: unknown;
+  projectType?: unknown;
+}
+
+/** The valid `projects.project_type` values; mirrors the `ProjectType` union. */
+const PROJECT_TYPES: readonly ProjectType[] = [
+  "home",
+  "hardscape",
+  "room",
+  "garage",
+  "gym",
+];
+
+/** Validate the client-supplied project type, defaulting to `'home'`. */
+function parseProjectType(value: unknown): ProjectType {
+  return typeof value === "string" &&
+    (PROJECT_TYPES as readonly string[]).includes(value)
+    ? (value as ProjectType)
+    : "home";
 }
 
 /** Build a URL-safe slug with a short random suffix for uniqueness. */
@@ -49,6 +67,7 @@ export async function POST(req: Request) {
   const parcelGeojson = (body.parcelGeojson ?? null) as Json | null;
   // The client posts a flat SiteMeta; persist it namespaced under `meta.site`.
   const siteMeta = (body.meta ?? null) as SiteMeta | null;
+  const projectType = parseProjectType(body.projectType);
 
   // No authenticated owner — the client falls back to localStorage.
   const session = await getSession();
@@ -63,6 +82,7 @@ export async function POST(req: Request) {
     address,
     parcel_geojson: parcelGeojson,
     meta: siteMeta ? { site: siteMeta } : null,
+    project_type: projectType,
   };
 
   try {
