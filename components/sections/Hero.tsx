@@ -2,24 +2,26 @@
 
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight, Sparkles, MapPin, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CountUp } from "@/components/CountUp";
-import { HeroMockup } from "@/components/HeroMockup";
+import { BuilderMockup } from "@/components/BuilderMockup";
 
 const stats = [
-  { to: 9, suffix: " hrs", label: "Median time to permit-ready" },
-  { to: 24000, separator: true, suffix: "+", label: "Custom homes designed" },
-  { to: 3.1, decimals: 1, suffix: "x", label: "More proposals won" },
+  { to: 0, suffix: " min", label: "From a backyard walk-through to a render the client can see" },
+  { to: 8, prefix: "$", suffix: "0", label: "Typical deposit collected in-portal, same visit" },
+  { to: 0, suffix: "0+", label: "More jobs won against a hand-drawn sketch" },
 ];
 
 const logos = [
-  "Hearthstone Builders",
-  "Cedar & Co.",
-  "Marlowe Residential",
-  "North Ridge",
-  "Bluewater Homes",
-  "Fieldstone Design",
+  "Stoneline Hardscapes",
+  "Cedar & Co. Outdoor Living",
+  "Marlowe Landscape",
+  "North Ridge Hardscape",
+  "Atelier Verified Installers",
+  "Bluewater Pools & Patios",
+  "Fieldstone Paver Co.",
+  "Province Outdoor Living",
 ];
 
 export function Hero() {
@@ -29,19 +31,6 @@ export function Hero() {
     <section className="relative min-h-screen overflow-hidden pt-24 pb-16 sm:pt-32">
       {/* Background effects */}
       <div className="pointer-events-none absolute inset-0 -z-10">
-        {/* Main gradient orb */}
-        <div
-          aria-hidden="true"
-          className="absolute left-1/2 top-0 h-[800px] w-[1000px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-copper/10 blur-[120px]"
-        />
-        {/* Secondary accent */}
-        <div
-          aria-hidden="true"
-          className="absolute right-0 top-1/3 h-[400px] w-[400px] rounded-full bg-copper/5 blur-[80px]"
-        />
-        {/* Grid pattern */}
-        <div className="bg-grid absolute inset-0 opacity-30" />
-        {/* Fade out grid at bottom */}
         <div className="absolute inset-x-0 bottom-0 h-96 bg-gradient-to-t from-ink to-transparent" />
       </div>
 
@@ -54,12 +43,9 @@ export function Hero() {
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             className="inline-flex items-center gap-2 rounded-full border border-border-bright bg-surface/80 px-4 py-2 text-sm backdrop-blur-sm"
           >
-            <span className="relative flex size-2">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-copper opacity-75" />
-              <span className="relative inline-flex size-2 rounded-full bg-copper" />
-            </span>
+            <Sparkles className="size-4 text-copper" />
             <span className="text-muted">
-              Trusted by <span className="text-foreground font-medium">2,400+</span> builders nationwide
+              The design studio for outdoor-living contractors
             </span>
           </motion.div>
 
@@ -70,9 +56,10 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             className="mt-8 font-display text-4xl leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl"
           >
-            <span className="text-balance">Design custom homes in an</span>{" "}
-            <span className="text-gradient-copper">afternoon</span>
-            <span className="text-balance">, not a quarter</span>
+            <span className="text-balance">Design the backyard</span>{" "}
+            <span className="text-gradient-copper italic">before</span>
+            <br />
+            <span className="text-balance">you leave the driveway.</span>
           </motion.h1>
 
           {/* Subheadline */}
@@ -82,9 +69,10 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
             className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl"
           >
-            Turn client conversations into permit-ready designs. Floor plans, 
-            site fits, photoreal renders, and collected deposits — all before 
-            the consultation ends.
+            Describe the patio, pool deck, or full backyard your client wants.
+            Atelier returns a sited layout, photoreal renders, a line-item
+            estimate, and a client portal that collects the deposit — before you
+            pack up the truck.
           </motion.p>
 
           {/* CTAs */}
@@ -96,16 +84,14 @@ export function Hero() {
           >
             <Button asChild size="lg" className="w-full sm:w-auto">
               <Link href="/builder">
-                Start designing free
-                <ArrowRight className="size-4" />
+                <Sparkles className="size-4" />
+                Start free — 3 designs, no card
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="w-full sm:w-auto group">
               <Link href="/#how">
-                <span className="flex items-center justify-center size-6 rounded-full bg-surface-3 group-hover:bg-copper/20 transition-colors mr-1">
-                  <Play className="size-3 fill-current" />
-                </span>
-                Watch demo
+                See how it works
+                <ArrowRight className="size-4" />
               </Link>
             </Button>
           </motion.div>
@@ -117,7 +103,7 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="mt-4 text-sm text-muted-2"
           >
-            No card required &middot; 3 free designs &middot; Cancel anytime
+            Open the builder now — no signup, no card. Your first three designs are free.
           </motion.p>
         </div>
 
@@ -129,27 +115,32 @@ export function Hero() {
           className="mx-auto mt-16 max-w-4xl"
         >
           <div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-3">
-            {stats.map((s, i) => (
-              <div
-                key={s.label}
-                className="relative bg-surface px-6 py-8 text-center transition-colors hover:bg-surface-2"
-              >
-                {i > 0 && (
-                  <div className="absolute left-0 top-1/2 hidden h-12 w-px -translate-y-1/2 bg-border sm:block" />
-                )}
-                <div className="font-display text-4xl tracking-tight text-foreground stat-value lg:text-5xl">
-                  <CountUp
-                    to={s.to}
-                    decimals={s.decimals ?? 0}
-                    suffix={s.suffix}
-                    separator={s.separator}
-                  />
-                </div>
-                <p className="mt-2 text-sm text-muted">
-                  {s.label}
-                </p>
+            <div className="relative bg-surface px-6 py-8 text-center transition-colors hover:bg-surface-2">
+              <div className="font-display text-4xl tracking-tight text-foreground stat-value lg:text-5xl">
+                <CountUp to={0} suffix=" min" />
               </div>
-            ))}
+              <p className="mt-2 text-sm text-muted">
+                From a backyard walk-through to a render the client can see
+              </p>
+            </div>
+            <div className="relative bg-surface px-6 py-8 text-center transition-colors hover:bg-surface-2">
+              <div className="absolute left-0 top-1/2 hidden h-12 w-px -translate-y-1/2 bg-border sm:block" />
+              <div className="font-display text-4xl tracking-tight text-foreground stat-value lg:text-5xl">
+                $<CountUp to={8} suffix="0" />
+              </div>
+              <p className="mt-2 text-sm text-muted">
+                Typical deposit collected in-portal, same visit
+              </p>
+            </div>
+            <div className="relative bg-surface px-6 py-8 text-center transition-colors hover:bg-surface-2">
+              <div className="absolute left-0 top-1/2 hidden h-12 w-px -translate-y-1/2 bg-border sm:block" />
+              <div className="font-display text-4xl tracking-tight text-foreground stat-value lg:text-5xl">
+                <CountUp to={0} suffix="0+" />
+              </div>
+              <p className="mt-2 text-sm text-muted">
+                More jobs won against a hand-drawn sketch
+              </p>
+            </div>
           </div>
         </motion.div>
 
@@ -161,17 +152,19 @@ export function Hero() {
           className="mt-16"
         >
           <p className="mb-6 text-center text-xs uppercase tracking-[0.2em] text-muted-2">
-            Trusted by leading builders
+            Trusted on the job site by
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
-            {logos.map((name) => (
-              <span
-                key={name}
-                className="text-sm font-medium text-muted-2 transition-colors hover:text-muted"
-              >
-                {name}
-              </span>
-            ))}
+          <div className="relative overflow-hidden">
+            <div className="flex animate-marquee items-center gap-12">
+              {[...logos, ...logos].map((name, i) => (
+                <span
+                  key={`${name}-${i}`}
+                  className="whitespace-nowrap text-sm font-medium text-muted-2 transition-colors hover:text-muted"
+                >
+                  {name}
+                </span>
+              ))}
+            </div>
           </div>
         </motion.div>
 
@@ -182,14 +175,7 @@ export function Hero() {
           transition={{ duration: 0.9, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
           className="mt-16"
         >
-          <div className="relative">
-            {/* Glow behind mockup */}
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 -z-10 translate-y-8 rounded-3xl bg-copper/20 blur-3xl"
-            />
-            <HeroMockup />
-          </div>
+          <BuilderMockup />
         </motion.div>
       </div>
     </section>

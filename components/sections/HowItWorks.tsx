@@ -7,20 +7,20 @@ const steps = [
   {
     n: "01",
     icon: MessageSquare,
-    title: "Describe the home",
-    body: "Talk to Atelier the way you&apos;d brief a draftsperson. Square footage, bed count, the lot, the must-haves — plain language is the only input.",
+    title: "Describe the space",
+    body: "Tell Atelier what the client wants — a paver patio, a pool deck, an outdoor kitchen, the whole yard. Plain language, measured in feet, is the only input.",
   },
   {
     n: "02",
     icon: PenTool,
-    title: "Refine the plan",
-    body: "Atelier returns a real floor plan. Drag a wall, swap a room, resize the garage — every edit re-checks egress, spans, and code.",
+    title: "Refine the layout",
+    body: "Atelier returns a real scaled layout. Move the patio edge, swap pavers for stamped concrete, add a fire feature — the estimate updates with every change.",
   },
   {
     n: "03",
     icon: Map,
-    title: "Site it on the parcel",
-    body: "Drop the plan onto the client&apos;s actual lot. Setbacks, easements, and the buildable envelope are drawn from county GIS.",
+    title: "Site it on the lot",
+    body: "Drop the design onto the client's actual property. Grade, drainage, setbacks for pools and structures, and the usable yard are drawn from county GIS.",
   },
   {
     n: "04",
@@ -40,12 +40,12 @@ export function HowItWorks() {
             How it works
           </p>
           <h2 className="mt-4 font-display text-3xl tracking-tight sm:text-4xl lg:text-5xl">
-            Four steps from phone call to{" "}
-            <span className="text-gradient-copper">funded project</span>
+            Four steps from a backyard walk-through to a{" "}
+            <span className="text-gradient-copper">signed job</span>
           </h2>
           <p className="mt-5 text-lg text-muted">
-            No CAD license, no outsourced drafting, no six-week wait. 
-            The whole loop happens while your client is still excited.
+            No CAD license, no landscape-architect design fee, no two-week wait
+            for a drawing. The whole loop happens in the client&apos;s backyard.
           </p>
         </Reveal>
 
@@ -101,7 +101,7 @@ export function HowItWorks() {
 
 function Mockup({ index }: { index: number }) {
   if (index === 0) return <ChatMockup />;
-  if (index === 1) return <FloorPlanMockup />;
+  if (index === 1) return <LayoutMockup />;
   if (index === 2) return <MapMockup />;
   return <PortalMockup />;
 }
@@ -111,14 +111,14 @@ function ChatMockup() {
   return (
     <div className="flex h-full flex-col justify-end gap-3">
       <div className="max-w-[80%] rounded-xl rounded-tl-sm bg-surface-2 px-4 py-3 text-sm leading-relaxed text-muted">
-        Three-bed ranch, 1,850 sq ft, on the Cedar Lane lot. Open kitchen.
+        Flagstone patio off the kitchen, ~480 sq ft, with a fire-pit lounge.
       </div>
       <div className="ml-auto max-w-[80%] rounded-xl rounded-tr-sm bg-copper/10 px-4 py-3 text-sm leading-relaxed text-copper-bright">
-        Got it — generating the plan and checking the lot now.
+        Got it — laying out the patio and checking the lot now.
       </div>
       <div className="flex items-center gap-3 rounded-xl border border-border-bright bg-ink px-4 py-3">
         <span className="flex-1 text-sm text-muted-2">
-          Add a screened porch off the kitchen
+          Add a paver walkway to the driveway
         </span>
         <span className="grid size-8 place-items-center rounded-lg bg-copper text-ink">
           <ArrowUp className="size-4" />
@@ -128,8 +128,8 @@ function ChatMockup() {
   );
 }
 
-/* 02 - floor plan with edit popover */
-function FloorPlanMockup() {
+/* 02 - layout with edit popover */
+function LayoutMockup() {
   return (
     <div className="relative h-full">
       <svg
@@ -160,13 +160,13 @@ function FloorPlanMockup() {
           strokeWidth="1.5"
         />
         <text x="14" y="30" fill="#71717a" fontSize="9">
-          Bed 2
+          Patio A
         </text>
         <text x="14" y="110" fill="#71717a" fontSize="9">
-          Bed 3
+          Fire pit
         </text>
         <text x="130" y="28" fill="#71717a" fontSize="9">
-          Primary
+          Kitchen
         </text>
         <text x="130" y="112" fill="#f59e0b" fontSize="9">
           Great room
@@ -230,7 +230,7 @@ function MapMockup() {
       </div>
       <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-lg border border-sage/40 bg-ink/90 px-3 py-2 text-xs text-sage backdrop-blur">
         <span className="size-2.5 rounded border border-dashed border-sage" />
-        Buildable envelope
+        Buildable envelope · setbacks applied
       </div>
     </div>
   );
@@ -242,7 +242,7 @@ function PortalMockup() {
     <div className="flex h-full flex-col gap-4 p-1">
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium text-foreground">
-          Hillside Residence
+          Cedar Lane Backyard
         </span>
         <span className="flex items-center gap-1.5 rounded-full bg-sage/10 px-2.5 py-1 text-xs text-sage">
           <ShieldCheck className="size-3.5" /> Approved

@@ -2,17 +2,21 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Menu, X } from "lucide-react";
+import { Sparkles, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/#how", label: "How it works" },
+  { href: "/#workflow", label: "Workflow" },
+  { href: "/#showcase", label: "Showcase" },
   { href: "/#features", label: "Features" },
-  { href: "/#testimonials", label: "Testimonials" },
-  { href: "/#math", label: "ROI" },
+  { href: "/#math", label: "The math" },
   { href: "/#pricing", label: "Pricing" },
+  { href: "/gallery", label: "Gallery" },
+  { href: "/find-contractor", label: "Find a contractor" },
+  { href: "/for-contractors", label: "For contractors" },
 ];
 
 export function Nav() {
@@ -45,12 +49,12 @@ export function Nav() {
           <span className="font-display text-xl tracking-tight">Atelier</span>
         </Link>
 
-        <ul className="hidden items-center gap-1 md:flex">
+        <ul className="hidden items-center gap-1 lg:flex">
           {links.map((l) => (
             <li key={l.href}>
               <Link
                 href={l.href}
-                className="rounded-lg px-4 py-2 text-sm text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper"
+                className="rounded-lg px-3 py-2 text-sm text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper"
               >
                 {l.label}
               </Link>
@@ -58,24 +62,18 @@ export function Nav() {
           ))}
         </ul>
 
-        <div className="hidden items-center gap-3 md:flex">
-          <Link
-            href="/login"
-            className="rounded-lg px-4 py-2 text-sm text-muted transition-colors hover:text-foreground"
-          >
-            Sign in
-          </Link>
+        <div className="hidden items-center gap-3 lg:flex">
           <Button asChild size="sm">
             <Link href="/builder">
-              Start free
-              <ArrowRight className="size-4" />
+              <Sparkles className="size-4" />
+              Start free — 3 designs, no card
             </Link>
           </Button>
         </div>
 
         <button
           type="button"
-          className="rounded-lg p-2 text-foreground md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper"
+          className="rounded-lg p-2 text-foreground lg:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper"
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
@@ -86,7 +84,7 @@ export function Nav() {
 
       {/* Mobile menu */}
       {open && (
-        <div className="border-t border-border bg-ink/95 backdrop-blur-xl md:hidden">
+        <div className="border-t border-border bg-ink/95 backdrop-blur-xl lg:hidden">
           <ul className="flex flex-col gap-1 px-5 py-4">
             {links.map((l) => (
               <li key={l.href}>
@@ -99,20 +97,11 @@ export function Nav() {
                 </Link>
               </li>
             ))}
-            <li className="mt-3 border-t border-border pt-3">
-              <Link
-                href="/login"
-                onClick={() => setOpen(false)}
-                className="block rounded-xl px-4 py-3 text-base text-muted hover:bg-surface-2 hover:text-foreground"
-              >
-                Sign in
-              </Link>
-            </li>
             <li className="mt-2">
               <Button asChild size="lg" className="w-full">
                 <Link href="/builder" onClick={() => setOpen(false)}>
-                  Start free
-                  <ArrowRight className="size-4" />
+                  <Sparkles className="size-4" />
+                  Start free — 3 designs, no card
                 </Link>
               </Button>
             </li>
