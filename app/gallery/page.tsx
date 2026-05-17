@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { BedDouble, Bath, Images, Ruler, X } from "lucide-react";
+import { Images, Layers, Ruler, Squircle, X } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { cn } from "@/lib/utils";
 import {
@@ -81,8 +81,8 @@ export default function GalleryPage() {
             The design gallery
           </h1>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
-            Real custom homes designed in Atelier, approved and built — shared
-            with the builder&apos;s permission. Filter by style, region, and
+            Real backyards designed in Atelier, approved and installed — shared
+            with the contractor&apos;s permission. Filter by style, region, and
             budget to find a starting point.
           </p>
         </motion.div>
@@ -228,7 +228,7 @@ function GalleryCard({
           {project.title}
         </h3>
         <p className="mt-0.5 text-xs text-muted-2">
-          Built by {project.builder}
+          Installed by {project.contractor}
         </p>
 
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted">
@@ -237,12 +237,12 @@ function GalleryCard({
             {project.sqft.toLocaleString("en-US")} sf
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <BedDouble className="size-3.5 text-copper" />
-            {project.beds} bd
+            <Layers className="size-3.5 text-copper" />
+            {project.zones} {project.zones === 1 ? "zone" : "zones"}
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <Bath className="size-3.5 text-copper" />
-            {project.baths} ba
+            <Squircle className="size-3.5 text-copper" />
+            {project.material}
           </span>
         </div>
 

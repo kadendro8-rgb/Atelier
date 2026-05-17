@@ -7,12 +7,20 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { cn } from "@/lib/utils";
 
+// Section anchors on the marketing page.
 const links = [
   { href: "/#how", label: "How it works" },
   { href: "/#showcase", label: "Showcase" },
   { href: "/#features", label: "Features" },
   { href: "/#math", label: "The math" },
   { href: "/#pricing", label: "Pricing" },
+];
+
+// Standalone destination pages, kept in a separate group so the nav stays clean.
+const pageLinks = [
+  { href: "/gallery", label: "Gallery" },
+  { href: "/match", label: "Find a contractor" },
+  { href: "/gc-network", label: "For contractors" },
 ];
 
 export function Nav() {
@@ -56,6 +64,17 @@ export function Nav() {
               </Link>
             </li>
           ))}
+          <li aria-hidden="true" className="mx-1 h-4 w-px bg-border" />
+          {pageLinks.map((l) => (
+            <li key={l.href}>
+              <Link
+                href={l.href}
+                className="rounded-full px-3.5 py-2 text-sm text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper"
+              >
+                {l.label}
+              </Link>
+            </li>
+          ))}
         </ul>
 
         <div className="hidden md:block">
@@ -81,6 +100,18 @@ export function Nav() {
         <div className="border-t border-border bg-ink/95 backdrop-blur-xl md:hidden">
           <ul className="flex flex-col gap-1 px-5 py-4">
             {links.map((l) => (
+              <li key={l.href}>
+                <Link
+                  href={l.href}
+                  onClick={() => setOpen(false)}
+                  className="block rounded-lg px-3 py-2.5 text-sm text-muted hover:bg-surface-2 hover:text-foreground"
+                >
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+            <li aria-hidden="true" className="my-1.5 h-px bg-border" />
+            {pageLinks.map((l) => (
               <li key={l.href}>
                 <Link
                   href={l.href}

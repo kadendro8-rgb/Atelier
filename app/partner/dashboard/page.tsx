@@ -8,57 +8,57 @@ import {
   CalendarClock,
   CheckCircle2,
   ClipboardCheck,
-  FileSignature,
+  CircleCheckBig,
   Ruler,
-  Stamp,
+  ShieldCheck,
   Wallet,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
-  STAMP_QUEUE,
+  REVIEW_QUEUE,
   formatUsd,
-  type StampProject,
-  type StampStatus,
+  type ReviewProject,
+  type ReviewStatus,
 } from "@/lib/network-mock";
 
-const FILTERS: { key: StampStatus | "all"; label: string }[] = [
+const FILTERS: { key: ReviewStatus | "all"; label: string }[] = [
   { key: "all", label: "All" },
   { key: "new", label: "New" },
   { key: "in-review", label: "In review" },
-  { key: "ready", label: "Ready to stamp" },
+  { key: "ready", label: "Ready to approve" },
 ];
 
-const STATUS_STYLES: Record<StampStatus, { label: string; cls: string }> = {
+const STATUS_STYLES: Record<ReviewStatus, { label: string; cls: string }> = {
   new: { label: "New", cls: "border-copper/40 bg-copper/10 text-copper-bright" },
   "in-review": {
     label: "In review",
     cls: "border-border-bright bg-surface-3 text-muted",
   },
   ready: {
-    label: "Ready to stamp",
+    label: "Ready to approve",
     cls: "border-sage/40 bg-sage/10 text-sage",
   },
 };
 
 export default function PartnerDashboardPage() {
-  const [filter, setFilter] = useState<StampStatus | "all">("all");
+  const [filter, setFilter] = useState<ReviewStatus | "all">("all");
   const reduce = useReducedMotion();
 
   const queue = useMemo(
     () =>
       filter === "all"
-        ? STAMP_QUEUE
-        : STAMP_QUEUE.filter((p) => p.status === filter),
+        ? REVIEW_QUEUE
+        : REVIEW_QUEUE.filter((p) => p.status === filter),
     [filter],
   );
 
   const stats = useMemo(() => {
-    const pipeline = STAMP_QUEUE.reduce((sum, p) => sum + p.stampFee, 0);
-    const ready = STAMP_QUEUE.filter((p) => p.status === "ready").length;
-    const sqft = STAMP_QUEUE.reduce((sum, p) => sum + p.sqft, 0);
-    return { pipeline, ready, sqft, total: STAMP_QUEUE.length };
+    const pipeline = REVIEW_QUEUE.reduce((sum, p) => sum + p.reviewFee, 0);
+    const ready = REVIEW_QUEUE.filter((p) => p.status === "ready").length;
+    const sqft = REVIEW_QUEUE.reduce((sum, p) => sum + p.sqft, 0);
+    return { pipeline, ready, sqft, total: REVIEW_QUEUE.length };
   }, []);
 
   const reveal = reduce
@@ -84,8 +84,8 @@ export default function PartnerDashboardPage() {
             </span>
           </Link>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-muted">
-            <Stamp className="size-3.5 text-copper" />
-            Stamp partner
+            <ShieldCheck className="size-3.5 text-copper" />
+            Review partner
           </span>
         </div>
       </header>
@@ -99,9 +99,9 @@ export default function PartnerDashboardPage() {
             Welcome back, Dana
           </h1>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
-            Review incoming projects, stamp the sheet sets, and get paid via
-            Stripe Connect. You keep 80% of every stamp fee — Atelier&apos;s
-            cut is 20%.
+            Review incoming backyard designs, sign off on the layouts and
+            material specs, and get paid via Stripe Connect. You keep 80% of
+            every review fee — Atelier&apos;s cut is 20%.
           </p>
         </motion.div>
 
@@ -116,7 +116,7 @@ export default function PartnerDashboardPage() {
           />
           <StatCard
             icon={<CheckCircle2 className="size-4 text-sage" />}
-            label="Ready to stamp"
+            label="Ready to approve"
             value={String(stats.ready)}
           />
           <StatCard
@@ -206,7 +206,7 @@ function ProjectCard({
   index,
   reduce,
 }: {
-  project: StampProject;
+  project: ReviewProject;
   index: number;
   reduce: boolean;
 }) {
@@ -221,7 +221,7 @@ function ProjectCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-[11px] uppercase tracking-wide text-muted-2">
-            {project.builder}
+            {project.contractor}
           </p>
           <h3 className="mt-0.5 font-display text-lg tracking-tight">
             {project.project}
@@ -243,7 +243,7 @@ function ProjectCard({
           label="Size"
           value={`${project.sqft.toLocaleString("en-US")} sf`}
         />
-        <Fact label="Your fee" value={formatUsd(project.stampFee)} />
+        <Fact label="Your fee" value={formatUsd(project.reviewFee)} />
         <Fact label="Project" value={project.id} />
       </dl>
 
@@ -258,7 +258,7 @@ function ProjectCard({
         >
           {project.status === "ready" ? (
             <>
-              <FileSignature className="size-4" /> Stamp
+              <CircleCheckBig className="size-4" /> Approve
             </>
           ) : (
             <>

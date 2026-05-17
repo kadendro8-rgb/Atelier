@@ -9,14 +9,14 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const CREW_SIZES = [
-  "1–5 homes / year",
-  "6–15 homes / year",
-  "16–40 homes / year",
-  "40+ homes / year",
+  "1–15 projects / year",
+  "16–40 projects / year",
+  "41–90 projects / year",
+  "90+ projects / year",
 ] as const;
 
 const PERKS = [
-  "Pre-qualified clients with a finished design in hand",
+  "Pre-qualified homeowners with a finished backyard design in hand",
   "Only a 1% referral fee, and only on a signed contract",
   "No exclusivity — keep building your own pipeline",
 ] as const;
@@ -89,7 +89,7 @@ export default function GcNetworkPage() {
           </Link>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-muted">
             <Network className="size-3.5 text-copper" />
-            GC network
+            Installer network
           </span>
         </div>
       </header>
@@ -109,6 +109,10 @@ export default function GcNetworkPage() {
               out to {form.email} about onboarding {form.company} into the{" "}
               {form.region} market.
             </p>
+            <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-muted-2">
+              Once you&apos;re live, you&apos;ll start seeing backyard projects
+              that already have a sited design and a homeowner ready to build.
+            </p>
             <Link href="/" className="mt-8">
               <Button variant="outline" size="md">
                 Back to Atelier
@@ -123,11 +127,12 @@ export default function GcNetworkPage() {
                 v2.0 · Section 7.2
               </span>
               <h1 className="mt-4 font-display text-3xl tracking-tight sm:text-4xl">
-                Join the GC network
+                Join the installer network
               </h1>
               <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
-                Get matched with clients who already have a finished, stamped
-                design — and a budget — for a home in your market.
+                Get matched with homeowners who already have a finished,
+                sited design — and a budget — for a patio, pool deck, or full
+                backyard in your market.
               </p>
             </div>
 
@@ -153,7 +158,7 @@ export default function GcNetworkPage() {
                     id="company"
                     value={form.company}
                     onChange={(v) => set("company", v)}
-                    placeholder="Hearthstone Builders"
+                    placeholder="Stoneline Hardscapes"
                   />
                 </Field>
                 <Field label="Market / region" htmlFor="region">
@@ -166,12 +171,15 @@ export default function GcNetworkPage() {
                 </Field>
               </div>
 
-              <Field label="Contractor license number" htmlFor="license">
+              <Field
+                label="Contractor / landscape license number"
+                htmlFor="license"
+              >
                 <TextInput
                   id="license"
                   value={form.license}
                   onChange={(v) => set("license", v)}
-                  placeholder="e.g. IN-GC-0042817"
+                  placeholder="e.g. IN-LC-0042817"
                 />
               </Field>
 
@@ -238,10 +246,20 @@ export default function GcNetworkPage() {
                 <Send className="size-4" /> Submit application
               </Button>
               <p className="mt-3 text-center text-xs text-muted-2">
-                We verify every license before a builder receives client
+                We verify every license before a contractor receives homeowner
                 introductions.
               </p>
             </form>
+
+            <p className="mt-6 text-center text-xs text-muted-2">
+              Already a review partner?{" "}
+              <Link
+                href="/partner/dashboard"
+                className="text-copper-bright underline-offset-4 hover:underline"
+              >
+                Open your dashboard
+              </Link>
+            </p>
           </motion.div>
         )}
       </main>
