@@ -15,15 +15,18 @@ import {
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { MATCHED_GCS, type MatchedGc } from "@/lib/network-mock";
+import {
+  MATCHED_CONTRACTORS,
+  type MatchedContractor,
+} from "@/lib/network-mock";
 
-const BUDGETS = ["$350k–$600k", "$600k–$850k", "$850k+"] as const;
+const BUDGETS = ["$15k–$40k", "$40k–$80k", "$80k+"] as const;
 const BUILD_TYPES = [
-  "Modern farmhouse",
-  "Lake home",
-  "Ranch",
-  "Craftsman",
-  "Contemporary",
+  "Paver patio",
+  "Pool deck",
+  "Outdoor kitchen",
+  "Full backyard",
+  "Retaining walls",
 ] as const;
 const TIMELINES = [
   "Ready now",
@@ -101,7 +104,7 @@ export default function MatchPage() {
           </Link>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-muted">
             <Handshake className="size-3.5 text-copper" />
-            Builder match
+            Contractor match
           </span>
         </div>
       </header>
@@ -115,11 +118,12 @@ export default function MatchPage() {
                 v2.0 · Section 7.2
               </span>
               <h1 className="mt-4 font-display text-3xl tracking-tight sm:text-4xl">
-                Find the right builder
+                Find the right contractor
               </h1>
               <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
                 Answer five quick questions and Atelier surfaces three vetted
-                general contractors who build in your market and price range.
+                outdoor-living contractors who build in your market and price
+                range.
               </p>
             </div>
 
@@ -213,7 +217,7 @@ export default function MatchPage() {
                 3 matches found
               </span>
               <h1 className="mt-4 font-display text-3xl tracking-tight sm:text-4xl">
-                Builders for {quiz.location}
+                Contractors for {quiz.location}
               </h1>
               <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
                 Vetted for {quiz.buildType.toLowerCase()} builds in the{" "}
@@ -223,10 +227,10 @@ export default function MatchPage() {
             </div>
 
             <ul className="mt-8 grid gap-3">
-              {MATCHED_GCS.map((gc, i) => (
-                <GcMatchCard
-                  key={gc.id}
-                  gc={gc}
+              {MATCHED_CONTRACTORS.map((contractor, i) => (
+                <ContractorMatchCard
+                  key={contractor.id}
+                  contractor={contractor}
                   index={i}
                   reduce={Boolean(reduce)}
                 />
@@ -306,12 +310,12 @@ function ChipGroup({
   );
 }
 
-function GcMatchCard({
-  gc,
+function ContractorMatchCard({
+  contractor,
   index,
   reduce,
 }: {
-  gc: MatchedGc;
+  contractor: MatchedContractor;
   index: number;
   reduce: boolean;
 }) {
@@ -325,33 +329,37 @@ function GcMatchCard({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="font-display text-lg tracking-tight">{gc.name}</h3>
+            <h3 className="font-display text-lg tracking-tight">
+              {contractor.name}
+            </h3>
             <span className="rounded-full border border-border-bright bg-surface-2 px-2 py-0.5 text-[10px] font-medium text-copper-bright">
-              {gc.priceBand}
+              {contractor.priceBand}
             </span>
           </div>
-          <p className="mt-1 text-sm text-muted">{gc.tagline}</p>
+          <p className="mt-1 text-sm text-muted">{contractor.tagline}</p>
         </div>
         <div className="flex items-center gap-1 text-sm">
           <Star className="size-4 fill-copper text-copper" />
-          <span className="font-medium text-foreground">{gc.rating}</span>
-          <span className="text-xs text-muted-2">({gc.reviews})</span>
+          <span className="font-medium text-foreground">
+            {contractor.rating}
+          </span>
+          <span className="text-xs text-muted-2">({contractor.reviews})</span>
         </div>
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-muted">
         <span className="inline-flex items-center gap-1.5">
           <MapPin className="size-3.5 text-copper" />
-          {gc.region}
+          {contractor.region}
         </span>
         <span className="inline-flex items-center gap-1.5">
           <Award className="size-3.5 text-copper" />
-          {gc.homesBuilt}+ homes built
+          {contractor.projectsBuilt}+ backyards built
         </span>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-1.5">
-        {gc.specialties.map((s) => (
+        {contractor.specialties.map((s) => (
           <span
             key={s}
             className="rounded-full border border-border bg-surface-2 px-2.5 py-1 text-[10px] text-muted"

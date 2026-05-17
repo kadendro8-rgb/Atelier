@@ -4,7 +4,7 @@ import { buildPortalProject } from "@/lib/portal-mock";
 
 export const metadata: Metadata = {
   title: "Client portal · Atelier",
-  description: "Review your custom-home design and fund the project.",
+  description: "Review your design and fund the project.",
   robots: { index: false },
 };
 
