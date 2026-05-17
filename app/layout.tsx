@@ -3,6 +3,7 @@ import { Fraunces, Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { CommandPalette } from "@/components/CommandPalette";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const inter = Inter({
