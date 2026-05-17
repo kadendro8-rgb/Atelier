@@ -24,6 +24,8 @@ import {
   webSiteSchema,
 } from "@/lib/marketing";
 import type { CalendarSlot, Platform, SocialPost } from "@/lib/marketing";
+import { checkMarketingAccess } from "@/lib/marketing/access";
+import { clientKey, rateLimit } from "@/lib/marketing/rateLimit";
 
 export const runtime = "nodejs";
 
@@ -72,6 +74,24 @@ const bodySchema = z.discriminatedUnion("action", [
 ]);
 
 export async function POST(req: Request) {
+  // Gate: the marketing engine is an internal tool, not a public surface.
+  const access = await checkMarketingAccess();
+  if (!access.allowed) {
+    return NextResponse.json(
+      { ok: false, error: access.reason },
+      { status: access.status },
+    );
+  }
+
+  // Bound abuse and Anthropic spend per client.
+  const limit = rateLimit(clientKey(req.headers));
+  if (!limit.ok) {
+    return NextResponse.json(
+      { ok: false, error: "Rate limit exceeded — try again shortly." },
+      { status: 429, headers: { "retry-after": String(limit.retryAfter) } },
+    );
+  }
+
   let parsed;
   try {
     parsed = bodySchema.safeParse(await req.json());

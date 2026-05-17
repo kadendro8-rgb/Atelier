@@ -63,16 +63,37 @@ the header of `scripts/marketing-agent.mjs`.
 - Articles ship with FAQ schema and an AEO answer paragraph.
 - The publish queue runs end-to-end in dry-run mode.
 
+## Access & deployment
+
+The studio (`/marketing`) and its API (`/api/marketing`) are an **internal
+tool**, not a public product surface:
+
+- **Auth gate** — restricted to `admin` / `staff` profiles
+  (`lib/marketing/access.ts`). A server component gates the route before the
+  studio renders; the API returns 401/403 for everyone else.
+- **Rate limit** — `/api/marketing` is rate-limited per client
+  (`lib/marketing/rateLimit.ts`) to bound abuse and Anthropic spend.
+- **Not indexed** — `app/marketing/layout.tsx` sets `robots: noindex`, and the
+  route is not linked from the main navigation.
+- **Keyless-safe** — with no Supabase auth configured (local dev) the gate is
+  open; production always has Supabase configured, so the gate is enforced.
+
+For a production deploy the foreman sets `ANTHROPIC_API_KEY` (generation) and
+the Supabase env vars (the auth gate) in Vercel; both are listed in
+`.env.example`.
+
 ## Backlog
 
 1. Add live `PublishAdapter` implementations per platform in `lib/marketing/`
    (Meta Graph API, X API, LinkedIn API, TikTok/Pinterest/YouTube).
 2. Persist the publish queue (Supabase table `marketing_jobs`) so scheduling
    survives a process restart.
-3. Render `localBusinessSchema()` / `organizationSchema()` site-wide in the
+3. Move the API rate limiter to a shared store (Vercel KV / Upstash) so the
+   limit holds across serverless instances.
+4. Render `localBusinessSchema()` / `organizationSchema()` site-wide in the
    root layout; `articleSchema()` + `faqSchema()` on each blog post.
-4. Build the `/blog` route that publishes generated articles.
-5. A scheduled trigger (cron) that calls `/api/marketing` and drains the queue.
+5. Build the `/blog` route that publishes generated articles.
+6. A scheduled trigger (cron) that calls `/api/marketing` and drains the queue.
 
 ## Foreman tasks (a coding agent cannot do these)
 
