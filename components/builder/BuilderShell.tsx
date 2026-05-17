@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { Check, X } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { cn } from "@/lib/utils";
+import { useSearchParams } from "next/navigation";
 
 export type BuilderStepKey =
   | "lot"
@@ -31,7 +32,14 @@ export function BuilderShell({
   current: BuilderStepKey;
   children: ReactNode;
 }) {
+  const searchParams = useSearchParams();
+  const projectId = searchParams.get("projectId");
   const currentIndex = STEPS.findIndex((s) => s.key === current);
+
+  const getHref = (href: string) => {
+    if (!projectId || !href) return href;
+    return `${href}?projectId=${encodeURIComponent(projectId)}`;
+  };
 
   return (
     <div className="flex min-h-dvh flex-col bg-ink">
@@ -80,7 +88,7 @@ export function BuilderShell({
                   className="flex items-center gap-1 sm:gap-1.5"
                 >
                   {done && step.href ? (
-                    <Link href={step.href} aria-label={`Back to ${step.label}`}>
+                    <Link href={getHref(step.href)} aria-label={`Back to ${step.label}`}>
                       {chip}
                     </Link>
                   ) : (
