@@ -9,7 +9,7 @@
  */
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { env, supabaseUrl, hasSupabaseAuth } from "@/lib/env";
+import { supabaseUrl, supabasePublishableKey, hasSupabaseAuth } from "@/lib/env";
 
 export const runtime = "nodejs";
 
@@ -17,17 +17,13 @@ export async function POST(request: NextRequest) {
   const { origin } = new URL(request.url);
   const response = NextResponse.redirect(`${origin}/`, { status: 303 });
 
-  if (
-    !hasSupabaseAuth ||
-    !supabaseUrl ||
-    !env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  ) {
+  if (!hasSupabaseAuth || !supabaseUrl || !supabasePublishableKey) {
     return response;
   }
 
   const supabase = createServerClient(
     supabaseUrl,
-    env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    supabasePublishableKey,
     {
       cookies: {
         getAll() {

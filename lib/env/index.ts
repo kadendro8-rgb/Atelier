@@ -26,9 +26,13 @@ const envSchema = z.object({
   SUPABASE_URL: optionalUrl,
   /** Public Supabase project URL (exposed to the browser). */
   NEXT_PUBLIC_SUPABASE_URL: optionalUrl,
-  /** Service-role key — server only, bypasses RLS. Never expose. */
+  /** New-style server secret key (`sb_secret_…`) — server only, bypasses RLS. */
+  SUPABASE_SECRET_KEY: optionalSecret,
+  /** Legacy service-role key — server only, bypasses RLS. Never expose. */
   SUPABASE_SERVICE_ROLE_KEY: optionalSecret,
-  /** Anon/publishable key — safe for the browser, used for SSR auth. */
+  /** New-style publishable key (`sb_publishable_…`) — safe for the browser. */
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: optionalSecret,
+  /** Legacy anon key — safe for the browser, used for SSR auth. */
   NEXT_PUBLIC_SUPABASE_ANON_KEY: optionalSecret,
   /** Anthropic API key — enables server-side brief parsing with Claude. */
   ANTHROPIC_API_KEY: optionalSecret,
@@ -49,7 +53,10 @@ function loadEnv(): Env {
   const parsed = envSchema.safeParse({
     SUPABASE_URL: process.env.SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
@@ -74,14 +81,30 @@ export const env: Env = loadEnv();
 export const supabaseUrl: string | undefined =
   env.SUPABASE_URL ?? env.NEXT_PUBLIC_SUPABASE_URL;
 
+/**
+ * Browser-safe Supabase key. Prefers the new publishable key
+ * (`sb_publishable_…`) and falls back to the legacy anon key, so projects on
+ * either key generation work unchanged.
+ */
+export const supabasePublishableKey: string | undefined =
+  env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+/**
+ * Server-only Supabase key — bypasses RLS, never sent to the browser. Prefers
+ * the new secret key (`sb_secret_…`) and falls back to the legacy
+ * service-role key.
+ */
+export const supabaseSecretKey: string | undefined =
+  env.SUPABASE_SECRET_KEY ?? env.SUPABASE_SERVICE_ROLE_KEY;
+
 /** True when the service-role Supabase client can be constructed. */
 export const hasSupabaseAdmin: boolean = Boolean(
-  supabaseUrl && env.SUPABASE_SERVICE_ROLE_KEY,
+  supabaseUrl && supabaseSecretKey,
 );
 
 /** True when the cookie-based SSR Supabase client can be constructed. */
 export const hasSupabaseAuth: boolean = Boolean(
-  supabaseUrl && env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  supabaseUrl && supabasePublishableKey,
 );
 
 /** True when Anthropic-backed brief parsing is configured. */

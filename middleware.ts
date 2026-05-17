@@ -10,12 +10,12 @@
  */
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { env, supabaseUrl, hasSupabaseAuth } from "@/lib/env";
+import { supabaseUrl, supabasePublishableKey, hasSupabaseAuth } from "@/lib/env";
 
 export async function middleware(request: NextRequest) {
   // DECISION: no-op when Supabase auth isn't configured — the app is designed
   // to run keyless, so the middleware must not touch the response in that case.
-  if (!hasSupabaseAuth || !supabaseUrl || !env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  if (!hasSupabaseAuth || !supabaseUrl || !supabasePublishableKey) {
     return NextResponse.next();
   }
 
@@ -24,7 +24,7 @@ export async function middleware(request: NextRequest) {
 
   const supabase = createServerClient(
     supabaseUrl,
-    env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    supabasePublishableKey,
     {
       cookies: {
         getAll() {

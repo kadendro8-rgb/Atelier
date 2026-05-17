@@ -11,7 +11,7 @@
  */
 import { createBrowserClient } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { env, supabaseUrl, hasSupabaseAuth } from "@/lib/env";
+import { supabaseUrl, supabasePublishableKey, hasSupabaseAuth } from "@/lib/env";
 
 /**
  * Construct (lazily) the browser Supabase client.
@@ -20,15 +20,12 @@ import { env, supabaseUrl, hasSupabaseAuth } from "@/lib/env";
  * build still works — callers must handle the null case.
  */
 export function getSupabaseBrowser(): SupabaseClient | null {
-  // DECISION: `hasSupabaseAuth` already proves both `supabaseUrl` and the anon
-  // key are present, but TypeScript can't narrow across the boolean — re-check
-  // the two values directly so no non-null assertions are needed.
-  if (!hasSupabaseAuth || !supabaseUrl || !env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  // DECISION: `hasSupabaseAuth` already proves both `supabaseUrl` and the
+  // publishable key are present, but TypeScript can't narrow across the
+  // boolean — re-check the two values directly so no assertions are needed.
+  if (!hasSupabaseAuth || !supabaseUrl || !supabasePublishableKey) {
     return null;
   }
 
-  return createBrowserClient(
-    supabaseUrl,
-    env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  );
+  return createBrowserClient(supabaseUrl, supabasePublishableKey);
 }

@@ -9,7 +9,7 @@
  */
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { env, supabaseUrl, hasSupabaseAuth } from "@/lib/env";
+import { supabaseUrl, supabasePublishableKey, hasSupabaseAuth } from "@/lib/env";
 
 export const runtime = "nodejs";
 
@@ -19,12 +19,7 @@ export async function GET(request: NextRequest) {
 
   // DECISION: no code, or Supabase not configured → nothing to exchange.
   // Send the visitor somewhere sensible instead of erroring.
-  if (
-    !code ||
-    !hasSupabaseAuth ||
-    !supabaseUrl ||
-    !env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  ) {
+  if (!code || !hasSupabaseAuth || !supabaseUrl || !supabasePublishableKey) {
     return NextResponse.redirect(`${origin}/login`);
   }
 
@@ -33,7 +28,7 @@ export async function GET(request: NextRequest) {
 
   const supabase = createServerClient(
     supabaseUrl,
-    env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    supabasePublishableKey,
     {
       cookies: {
         getAll() {

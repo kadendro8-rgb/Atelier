@@ -7,7 +7,7 @@
  */
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
-import { env, supabaseUrl, hasSupabaseAuth } from "@/lib/env";
+import { supabaseUrl, supabasePublishableKey, hasSupabaseAuth } from "@/lib/env";
 import type { ProfileRow } from "@/lib/db/types";
 
 /** The authenticated session: the auth user plus their profile row. */
@@ -30,13 +30,13 @@ export interface Session {
  * server components.
  */
 export async function getSession(): Promise<Session | null> {
-  if (!hasSupabaseAuth || !supabaseUrl) return null;
+  if (!hasSupabaseAuth || !supabaseUrl || !supabasePublishableKey) return null;
 
   const cookieStore = await cookies();
 
   const supabase = createServerClient(
     supabaseUrl,
-    env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
+    supabasePublishableKey,
     {
       cookies: {
         getAll() {

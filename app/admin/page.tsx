@@ -55,14 +55,14 @@ function integrations(): Integration[] {
       name: "Database",
       on: hasSupabaseAdmin,
       detail: "Persists projects, floor plans and leads in Supabase.",
-      vars: ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"],
+      vars: ["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_SECRET_KEY"],
       fallback: "Data stays in the browser only; nothing is saved server-side.",
     },
     {
       name: "Accounts",
       on: hasSupabaseAuth,
       detail: "Enables client and builder sign-in / sign-up.",
-      vars: ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY"],
+      vars: ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"],
       fallback: "The builder is open to everyone with no account.",
     },
     {
