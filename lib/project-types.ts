@@ -36,7 +36,7 @@ export const PROJECT_TYPES: readonly ProjectTypeInfo[] = [
     id: "hardscape",
     label: "Hardscape & Backyard",
     description: "Patios, decks, and outdoor living spaces in the backyard.",
-    available: false,
+    available: true,
   },
   {
     id: "room",

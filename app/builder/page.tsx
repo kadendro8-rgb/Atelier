@@ -426,7 +426,7 @@ function LotPickerStep() {
   const gathering = phase === "gathering" || phase === "done";
 
   return (
-    <BuilderShell current="lot">
+    <BuilderShell current="lot" projectType={projectType}>
       <motion.div {...reveal} className="mx-auto max-w-3xl">
         <div className="flex flex-col items-center text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-muted">
