@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   AlertTriangle,
@@ -11,7 +11,10 @@ import {
   Box,
   CheckCircle2,
   Compass,
+  Copy,
+  ExternalLink,
   Ruler,
+  Share2,
   Square,
 } from "lucide-react";
 import { BuilderShell } from "@/components/builder/BuilderShell";
@@ -74,7 +77,6 @@ function FloorPlanStep() {
   const [storedGraph, setStoredGraph] = useState<PlanGraph | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [view, setView] = useState<ViewMode>("2d");
-  const router = useRouter();
   const searchParams = useSearchParams();
   const reduce = useReducedMotion();
 
@@ -253,21 +255,130 @@ function FloorPlanStep() {
               </>
             )}
 
-            <Button
-              onClick={() => router.push("/#pricing")}
-              size="lg"
-              className="mt-5"
-            >
-              Continue to pricing <ArrowRight className="size-4" />
-            </Button>
-            <p className="mt-2 text-center text-xs text-muted-2">
-              That&apos;s the interactive demo — see plans and pricing to keep
-              building.
-            </p>
+            <PublishPanel projectId={projectId} brief={parsed} />
           </div>
         </div>
       </motion.div>
     </BuilderShell>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Publish to the client portal                                               */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Finalizes the project and produces the shareable `/p/{slug}/{token}` portal
+ * link. When the database is unavailable (keyless / local project) it shows a
+ * calm notice rather than failing — the plan itself is already saved.
+ */
+function PublishPanel({
+  projectId,
+  brief,
+}: {
+  projectId: string | null;
+  brief: ParsedRequirements | null;
+}) {
+  const [publishing, setPublishing] = useState(false);
+  const [portalPath, setPortalPath] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  async function publish() {
+    if (!brief || publishing) return;
+    setPublishing(true);
+    setNotice(null);
+    try {
+      const res = await fetch("/api/builder/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ projectId, brief }),
+      });
+      const data = (await res.json()) as {
+        published?: boolean;
+        portalPath?: string;
+      };
+      if (data.published && data.portalPath) {
+        setPortalPath(data.portalPath);
+      } else {
+        setNotice(
+          "Your plan is saved. A shareable client portal needs the database connected — once Supabase is live, publishing creates the real link.",
+        );
+      }
+    } catch {
+      setNotice("Couldn't publish just now — your plan is saved. Try again.");
+    } finally {
+      setPublishing(false);
+    }
+  }
+
+  if (portalPath) {
+    const url =
+      typeof window !== "undefined"
+        ? `${window.location.origin}${portalPath}`
+        : portalPath;
+    return (
+      <div className="mt-5 rounded-card border border-sage/40 bg-sage/10 p-4">
+        <div className="flex items-center gap-2">
+          <CheckCircle2 className="size-4 text-sage" />
+          <h3 className="text-sm font-medium text-foreground">
+            Client portal is live
+          </h3>
+        </div>
+        <p className="mt-1.5 text-xs text-muted">
+          Share this private link with your client — they review the design and
+          pay the deposit there.
+        </p>
+        <div className="mt-3 flex items-center gap-2">
+          <code className="flex-1 truncate rounded-lg border border-border bg-ink px-3 py-2 text-xs text-copper-bright">
+            {url}
+          </code>
+          <button
+            type="button"
+            onClick={() => {
+              void navigator.clipboard?.writeText(url);
+              setCopied(true);
+              window.setTimeout(() => setCopied(false), 1600);
+            }}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-border bg-surface-2 px-3 py-2 text-xs font-medium text-foreground transition-colors hover:border-border-bright"
+          >
+            <Copy className="size-3.5" />
+            {copied ? "Copied" : "Copy"}
+          </button>
+        </div>
+        <Button asChild size="lg" className="mt-3 w-full">
+          <Link href={portalPath} target="_blank">
+            Open the portal <ExternalLink className="size-4" />
+          </Link>
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-5">
+      <Button
+        onClick={publish}
+        disabled={publishing || !brief}
+        size="lg"
+        className="w-full"
+      >
+        {publishing ? (
+          "Publishing…"
+        ) : (
+          <>
+            Publish to client portal <Share2 className="size-4" />
+          </>
+        )}
+      </Button>
+      <p className="mt-2 text-center text-xs text-muted-2">
+        Creates a private portal where your client reviews the design and pays
+        the deposit.
+      </p>
+      {notice && (
+        <p className="mt-2 text-center text-xs text-copper-bright">{notice}</p>
+      )}
+    </div>
   );
 }
 
