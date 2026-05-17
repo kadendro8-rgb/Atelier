@@ -57,8 +57,9 @@ export function Footer() {
               </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">
-              The design studio for custom-home builders. From a conversation
-              to a permit-ready set — on a builder&apos;s timeline.
+              The design studio for outdoor-living contractors. From a
+              backyard walk-through to a signed deposit — on a
+              contractor&apos;s timeline.
             </p>
           </div>
 

@@ -17,17 +17,17 @@ export function FinalCTA() {
           Start today
         </p>
         <h2 className="mt-4 font-display text-3xl leading-tight tracking-tight sm:text-5xl">
-          Your next client meeting could end with a signed deposit
+          Your next backyard walk-through could end with a signed deposit
         </h2>
         <p className="mx-auto mt-5 max-w-lg text-muted">
-          Design three custom homes free. If Atelier doesn&apos;t pay for
-          itself before the trial ends, you walk away with the plans anyway.
+          Design three backyards free. If Atelier doesn&apos;t pay for
+          itself before the trial ends, you keep the renders anyway.
         </p>
 
         <div className="mt-9 flex justify-center">
           <Button asChild size="lg">
             <Link href="/builder">
-              Design your first home <ArrowRight className="size-4" />
+              Design your first backyard <ArrowRight className="size-4" />
             </Link>
           </Button>
         </div>
