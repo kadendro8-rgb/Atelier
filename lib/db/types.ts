@@ -124,3 +124,28 @@ export interface LeadInsert {
   brief?: string;
   source?: string | null;
 }
+
+/** GMV event categories (see `gmv_events.type` check constraint). */
+export type GmvEventType =
+  | "deposit"
+  | "design_fee"
+  | "stamp_fee"
+  | "builder_referral";
+
+/** `public.gmv_events` row. */
+export interface GmvEventRow {
+  id: string;
+  project_id: string;
+  amount_cents: number;
+  type: GmvEventType;
+  stripe_payment_intent_id: string | null;
+  occurred_at: string;
+}
+
+/** Columns accepted when inserting a GMV event. DB defaults fill the rest. */
+export interface GmvEventInsert {
+  project_id: string;
+  amount_cents: number;
+  type: GmvEventType;
+  stripe_payment_intent_id?: string | null;
+}

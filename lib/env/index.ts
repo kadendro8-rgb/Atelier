@@ -32,6 +32,10 @@ const envSchema = z.object({
   NEXT_PUBLIC_SUPABASE_ANON_KEY: optionalSecret,
   /** Anthropic API key — enables server-side brief parsing with Claude. */
   ANTHROPIC_API_KEY: optionalSecret,
+  /** Stripe secret key — server only, enables Checkout + the Stripe client. */
+  STRIPE_SECRET_KEY: optionalSecret,
+  /** Stripe webhook signing secret — verifies inbound webhook events. */
+  STRIPE_WEBHOOK_SECRET: optionalSecret,
   /** Node environment, defaulted by Next.js / Node. */
   NODE_ENV: z
     .enum(["development", "test", "production"])
@@ -48,6 +52,8 @@ function loadEnv(): Env {
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
     NODE_ENV: process.env.NODE_ENV,
   });
 
@@ -80,3 +86,9 @@ export const hasSupabaseAuth: boolean = Boolean(
 
 /** True when Anthropic-backed brief parsing is configured. */
 export const hasAnthropic: boolean = Boolean(env.ANTHROPIC_API_KEY);
+
+/** True when the server-side Stripe client can be constructed. */
+export const hasStripeSecret: boolean = Boolean(env.STRIPE_SECRET_KEY);
+
+/** True when inbound Stripe webhook signatures can be verified. */
+export const hasStripeWebhook: boolean = Boolean(env.STRIPE_WEBHOOK_SECRET);
