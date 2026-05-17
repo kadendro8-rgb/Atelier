@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   AlertTriangle,
@@ -21,6 +21,7 @@ import type { ParsedRequirements } from "@/lib/builder";
 import { toParsedBrief } from "@/lib/kernel/adapt";
 import { validatePlan, type CodeViolation } from "@/lib/kernel/codeCheck";
 import { generatePlan } from "@/lib/kernel/plan";
+import type { PlanGraph } from "@/lib/kernel/types";
 
 // Three.js is client-only — load the 3D viewport without SSR.
 const Viewport3D = dynamic(
@@ -45,34 +46,137 @@ const PLAN_SEED = 1;
 
 type ViewMode = "2d" | "3d";
 
+/** localStorage key for the keyless plan-graph cache. */
+const planCacheKey = (projectId: string | null) =>
+  `atelier:plan:${projectId ?? "local"}`;
+
+/** Best-effort kernel-PlanGraph shape guard for restored/stored JSON. */
+function isPlanGraph(value: unknown): value is PlanGraph {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    !Array.isArray(value) &&
+    Array.isArray((value as { rooms?: unknown }).rooms)
+  );
+}
+
 export default function FloorPlanPage() {
+  return (
+    <Suspense fallback={<BuilderShell current="floor-plan">{null}</BuilderShell>}>
+      <FloorPlanStep />
+    </Suspense>
+  );
+}
+
+function FloorPlanStep() {
   const [parsed, setParsed] = useState<ParsedRequirements | null>(null);
+  // A stored/cached plan-graph, when one is restored from persistence.
+  const [storedGraph, setStoredGraph] = useState<PlanGraph | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [view, setView] = useState<ViewMode>("2d");
   const router = useRouter();
+  const searchParams = useSearchParams();
   const reduce = useReducedMotion();
 
+  const projectId = searchParams.get("projectId");
+
   useEffect(() => {
+    let cancelled = false;
+
+    // Prefer the locally cached graph — keyless reload-safety.
+    let cachedGraph: PlanGraph | null = null;
+    try {
+      const rawCache = localStorage.getItem(planCacheKey(projectId));
+      if (rawCache) {
+        const candidate: unknown = JSON.parse(rawCache);
+        if (isPlanGraph(candidate)) cachedGraph = candidate;
+      }
+    } catch {
+      // ignore corrupt cache
+    }
+
     try {
       const raw = localStorage.getItem("atelier:parsed");
       if (raw) setParsed(JSON.parse(raw) as ParsedRequirements);
     } catch {
       // ignore corrupt storage
     }
-    setLoaded(true);
-  }, []);
+
+    if (cachedGraph) {
+      setStoredGraph(cachedGraph);
+      setLoaded(true);
+    }
+
+    // With a projectId, try the server's stored plan. Any failure degrades
+    // silently to the cached / client-generated path below.
+    if (projectId) {
+      fetch(`/api/builder/plan?projectId=${encodeURIComponent(projectId)}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data: { planGraph?: unknown } | null) => {
+          if (cancelled) return;
+          if (data && isPlanGraph(data.planGraph)) {
+            setStoredGraph(data.planGraph);
+            try {
+              localStorage.setItem(
+                planCacheKey(projectId),
+                JSON.stringify(data.planGraph),
+              );
+            } catch {
+              // ignore quota / serialization failures
+            }
+          }
+        })
+        .catch(() => {
+          // network failure — keep the client-side fallback
+        })
+        .finally(() => {
+          if (!cancelled) setLoaded(true);
+        });
+    } else if (!cachedGraph) {
+      setLoaded(true);
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [projectId]);
 
   // Adapt the brief → kernel ParsedBrief → PlanGraph, then run the code check.
-  // Memoized on the parsed brief so the plan only regenerates when it changes.
+  // A restored/cached graph takes precedence over regenerating from the brief.
+  // Memoized so the plan only recomputes when its inputs change.
   const plan = useMemo(() => {
-    if (!parsed) return null;
-    const brief = toParsedBrief(parsed);
-    const graph = generatePlan(brief, PLAN_SEED);
-    const violations = validatePlan(graph);
-    return { graph, violations };
-  }, [parsed]);
+    const graph = storedGraph
+      ? storedGraph
+      : parsed
+        ? generatePlan(toParsedBrief(parsed), PLAN_SEED)
+        : null;
+    if (!graph) return null;
+    return { graph, violations: validatePlan(graph) };
+  }, [parsed, storedGraph]);
 
-  if (loaded && !parsed) {
+  // Persist a freshly generated plan — fire-and-forget. This never blocks or
+  // fails the UI; every DB/network error degrades to the localStorage cache.
+  useEffect(() => {
+    if (storedGraph || !plan) return;
+    try {
+      localStorage.setItem(
+        planCacheKey(projectId),
+        JSON.stringify(plan.graph),
+      );
+    } catch {
+      // ignore quota / serialization failures
+    }
+    if (!projectId) return;
+    void fetch("/api/builder/plan", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ projectId, planGraph: plan.graph }),
+    }).catch(() => {
+      // persistence is best-effort — the cache already covers reloads
+    });
+  }, [plan, storedGraph, projectId]);
+
+  if (loaded && !parsed && !storedGraph) {
     return (
       <BuilderShell current="floor-plan">
         <div className="mx-auto max-w-md text-center">

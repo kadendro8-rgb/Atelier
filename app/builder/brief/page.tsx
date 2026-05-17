@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Check, Info, Sparkles, Wand2, X } from "lucide-react";
 import { BuilderShell } from "@/components/builder/BuilderShell";
@@ -31,6 +31,14 @@ const STAGES = [
 ] as const;
 
 export default function BriefPage() {
+  return (
+    <Suspense fallback={<BuilderShell current="brief">{null}</BuilderShell>}>
+      <BriefStep />
+    </Suspense>
+  );
+}
+
+function BriefStep() {
   const [brief, setBrief] = useState("");
   const [activeChip, setActiveChip] = useState<string | null>(null);
   const [stage, setStage] = useState(-1);
@@ -38,6 +46,7 @@ export default function BriefPage() {
   const [error, setError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const reduce = useReducedMotion();
 
   useEffect(() => {
@@ -94,7 +103,12 @@ export default function BriefPage() {
     localStorage.setItem("atelier:parsed", JSON.stringify(parsed));
 
     setStage(3);
-    window.setTimeout(() => router.push("/builder/floor-plan"), 550);
+    // Carry the projectId forward so the floor-plan step can persist its plan.
+    const projectId = searchParams.get("projectId");
+    const next = projectId
+      ? `/builder/floor-plan?projectId=${encodeURIComponent(projectId)}`
+      : "/builder/floor-plan";
+    window.setTimeout(() => router.push(next), 550);
   }
 
   const reveal = reduce
