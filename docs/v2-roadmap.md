@@ -16,14 +16,14 @@ is implemented yet; the stubs compile and the existing v1.1 site is untouched.
 
 | Section | Area | Status | Scaffolded surfaces |
 |---|---|---|---|
-| 1 | Floor-plan engine | Scaffolded | `lib/kernel/types.ts`, `lib/kernel/plan.ts`, `lib/kernel/codeCheck.ts`, `components/builder/PlanCanvas.tsx` |
-| 2 | 3D viewport | Scaffolded | `lib/kernel/scene.ts`, `components/builder/Viewport3D.tsx` |
-| 3 | Sheet set / export | Scaffolded | `lib/sheets/engine.ts`, `lib/io/dwg.ts`, `lib/io/ifc4.ts`, `lib/io/gltf.ts` |
-| 4 | Client portal | Scaffolded | `app/p/[slug]/[token]/page.tsx`, `app/api/stripe-webhook/route.ts` |
-| 5 | Perf / a11y / SEO | Scaffolded | `app/showcase/[style]/page.tsx` |
-| 6 | User-ability moves | Scaffolded | `components/CommandPalette.tsx` |
-| 7 | Moat amplification | Scaffolded | `app/partner/dashboard`, `app/match`, `app/gc-network`, `app/gallery` |
-| 8 | Hardening | Partly done | `components/StudioErrorBoundary.tsx`; §8.2 Anthropic resilience **shipped** in v1.1 PR #4 |
+| 1 | Floor-plan engine | §1.1–§1.3 done | `generatePlan` solver, `validatePlan` IRC engine, `PlanCanvas` SVG renderer, wired into the builder; §1.4 KV persistence + drag-edit pending |
+| 2 | 3D viewport | Core done + wired | R3F viewport + `buildScene` massing, live in the floor-plan step; CSG/HDRI/pathtracer pending |
+| 3 | Sheet set / export | Core done | `generateSheetSet` + real DWG + minimal IFC4; PDF render + GLTF pending |
+| 4 | Client portal | Core done | branded portal page + deposit UI; real Stripe Connect + multiplayer pending |
+| 5 | Perf / a11y / SEO | §5.3 SEO done | sitemap, robots, 10 showcase landing pages; perf/a11y pending |
+| 6 | User-ability moves | Core done | `cmdk` command palette + `sonner` toasts; undo/tour/cost-ticker pending |
+| 7 | Moat amplification | Done | partner dashboard, match, GC network, gallery — all real pages |
+| 8 | Hardening | Core done | `StudioErrorBoundary` wraps the builder; 35 Vitest kernel tests; §8.2 API resilience shipped earlier |
 | 9 | Launch sequence | Not started | — |
 
 ## What "scaffolded" means here
