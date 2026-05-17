@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
-    "gen:placeholders": "node scripts/gen-placeholders.mjs"
+    "gen:placeholders": "node scripts/gen-placeholders.mjs",
+    "marketing": "node scripts/marketing-agent.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.96.0",
