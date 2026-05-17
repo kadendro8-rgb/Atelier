@@ -8,21 +8,13 @@ import { replayGuidedTour } from "@/components/builder/GuidedTour";
 import type { ProjectType } from "@/lib/db/types";
 import { cn } from "@/lib/utils";
 
-export type BuilderStepKey =
-  | "lot"
-  | "brief"
-  | "floor-plan"
-  | "site"
-  | "renders"
-  | "portal";
+export type BuilderStepKey = "lot" | "brief" | "floor-plan" | "package";
 
 const STEPS: { key: BuilderStepKey; label: string; href?: string }[] = [
   { key: "lot", label: "Lot", href: "/builder" },
   { key: "brief", label: "Brief", href: "/builder/brief" },
   { key: "floor-plan", label: "Floor plan", href: "/builder/floor-plan" },
-  { key: "site", label: "Site" },
-  { key: "renders", label: "Renders" },
-  { key: "portal", label: "Portal" },
+  { key: "package", label: "Deliver" },
 ];
 
 /**

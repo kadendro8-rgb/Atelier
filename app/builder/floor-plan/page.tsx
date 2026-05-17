@@ -158,8 +158,8 @@ function HardscapeLayoutStep() {
 
   const cost = useMemo(() => (plan ? estimateCost(plan) : null), [plan]);
 
-  function continueToPricing() {
-    // Carry the cost estimate forward so the pricing/portal can anchor the
+  function continueToPackage() {
+    // Carry the cost estimate forward so the packaging stage can anchor the
     // deposit figure to the real layout estimate.
     if (cost) {
       try {
@@ -168,10 +168,12 @@ function HardscapeLayoutStep() {
           JSON.stringify(cost),
         );
       } catch {
-        // best-effort — pricing degrades to its default copy
+        // best-effort — packaging degrades to its default copy
       }
     }
-    router.push("/#pricing");
+    const params = new URLSearchParams({ type: "hardscape" });
+    if (projectId) params.set("projectId", projectId);
+    router.push(`/builder/package?${params.toString()}`);
   }
 
   const reveal = reduce
@@ -253,15 +255,15 @@ function HardscapeLayoutStep() {
 
             <div className="rounded-card border border-border bg-surface p-5">
               <Button
-                onClick={continueToPricing}
+                onClick={continueToPackage}
                 size="lg"
                 className="w-full"
               >
-                Continue to pricing <ArrowRight className="size-4" />
+                Package the project <ArrowRight className="size-4" />
               </Button>
               <p className="mt-2 text-center text-xs text-muted-2">
-                That&apos;s the interactive demo — see plans and pricing to keep
-                building.
+                Bundle the layout, the estimate, and the client close into one
+                deliverable.
               </p>
             </div>
           </div>
@@ -552,15 +554,20 @@ function FloorPlanStep() {
             )}
 
             <Button
-              onClick={() => router.push("/#pricing")}
+              onClick={() => {
+                const params = new URLSearchParams();
+                if (projectId) params.set("projectId", projectId);
+                const qs = params.toString();
+                router.push(`/builder/package${qs ? `?${qs}` : ""}`);
+              }}
               size="lg"
               className="mt-5"
             >
-              Continue to pricing <ArrowRight className="size-4" />
+              Package the project <ArrowRight className="size-4" />
             </Button>
             <p className="mt-2 text-center text-xs text-muted-2">
-              That&apos;s the interactive demo — see plans and pricing to keep
-              building.
+              Bundle the plan, the numbers, and the client close into one
+              deliverable.
             </p>
           </div>
         </div>
