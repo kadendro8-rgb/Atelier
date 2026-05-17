@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { Check, Compass, X } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { replayGuidedTour } from "@/components/builder/GuidedTour";
+import type { ProjectType } from "@/lib/db/types";
 import { cn } from "@/lib/utils";
 
 export type BuilderStepKey =
@@ -24,15 +25,30 @@ const STEPS: { key: BuilderStepKey; label: string; href?: string }[] = [
   { key: "portal", label: "Portal" },
 ];
 
+/**
+ * Per-step labels keyed by project type. Only the steps that read differently
+ * are overridden — a hardscape job has no "Floor plan", it has a "Layout".
+ */
+const STEP_LABEL_OVERRIDES: Partial<
+  Record<ProjectType, Partial<Record<BuilderStepKey, string>>>
+> = {
+  hardscape: { "floor-plan": "Layout" },
+};
+
 /** Shared chrome for every builder step — top bar plus a 6-step progress rail. */
 export function BuilderShell({
   current,
+  projectType = "home",
   children,
 }: {
   current: BuilderStepKey;
+  /** Active project type — re-labels steps that read differently per type. */
+  projectType?: ProjectType;
   children: ReactNode;
 }) {
   const currentIndex = STEPS.findIndex((s) => s.key === current);
+  const labelFor = (step: (typeof STEPS)[number]) =>
+    STEP_LABEL_OVERRIDES[projectType]?.[step.key] ?? step.label;
 
   return (
     <div className="flex min-h-dvh flex-col bg-ink">
@@ -72,7 +88,7 @@ export function BuilderShell({
                   >
                     {done ? <Check className="size-2.5 sm:size-3" /> : i + 1}
                   </span>
-                  <span className="hidden md:inline">{step.label}</span>
+                  <span className="hidden md:inline">{labelFor(step)}</span>
                 </span>
               );
               return (
@@ -81,7 +97,10 @@ export function BuilderShell({
                   className="flex items-center gap-1 sm:gap-1.5"
                 >
                   {done && step.href ? (
-                    <Link href={step.href} aria-label={`Back to ${step.label}`}>
+                    <Link
+                      href={step.href}
+                      aria-label={`Back to ${labelFor(step)}`}
+                    >
                       {chip}
                     </Link>
                   ) : (
