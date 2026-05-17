@@ -346,10 +346,16 @@ function HomeBriefStep() {
           </div>
 
           {error && (
-            <p className="mt-3 text-xs text-red-400" role="alert">
+            <p className="mt-3 text-xs text-copper-bright" role="alert">
               {error}
             </p>
           )}
+
+          {/* Screen-reader-only async status — announces each generation
+              stage politely without a visible layout change. */}
+          <p className="sr-only" role="status" aria-live="polite">
+            {generating && stage >= 0 ? `${STAGES[stage]}…` : ""}
+          </p>
         </div>
       </motion.div>
 
@@ -393,14 +399,53 @@ function SaveDialog({
   const [state, setState] = useState<"form" | "saving" | "done">("form");
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
 
   useEffect(() => {
+    // Remember the trigger so focus can be returned when the dialog closes.
+    const previouslyFocused =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
     inputRef.current?.focus();
+
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      // Focus trap — keep Tab cycling within the dialog.
+      if (e.key === "Tab") {
+        const dialog = dialogRef.current;
+        if (!dialog) return;
+        const focusables = dialog.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        );
+        if (focusables.length === 0) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        const activeEl = document.activeElement;
+        if (e.shiftKey && activeEl === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && activeEl === last) {
+          e.preventDefault();
+          first.focus();
+        } else if (activeEl && !dialog.contains(activeEl)) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     }
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      // Restore focus to whatever opened the dialog.
+      if (previouslyFocused && document.contains(previouslyFocused)) {
+        previouslyFocused.focus();
+      }
+    };
   }, [onClose]);
 
   async function submit(e: React.FormEvent) {
@@ -437,9 +482,10 @@ function SaveDialog({
       onClick={onClose}
     >
       <motion.div
-        initial={{ opacity: 0, scale: 0.96, y: 8 }}
+        ref={dialogRef}
+        initial={reduce ? false : { opacity: 0, scale: 0.96, y: 8 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.2 }}
+        transition={reduce ? { duration: 0 } : { duration: 0.2 }}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -486,7 +532,7 @@ function SaveDialog({
               className="mt-4 w-full rounded-lg border border-border bg-ink p-3 text-sm text-foreground placeholder:text-muted-2 focus-visible:border-copper focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper/30"
             />
             {error && (
-              <p className="mt-2 text-xs text-red-400" role="alert">
+              <p className="mt-2 text-xs text-copper-bright" role="alert">
                 {error}
               </p>
             )}

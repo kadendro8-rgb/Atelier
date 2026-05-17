@@ -12,6 +12,7 @@
  * The parent owns the brief state and persistence; this is a controlled
  * component. `prefers-reduced-motion` is respected throughout.
  */
+import { useId, useRef } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Layers, Plus, Sparkles, Trash2 } from "lucide-react";
 import {
@@ -191,6 +192,9 @@ function ElementRow({
 }) {
   const info = kindInfo(request.kind);
   const size = request.targetSqft ?? info.defaultSqft;
+  // A stable, collision-free id for the size slider — two surfaces of the
+  // same kind each get their own, and it does not churn as the value changes.
+  const sizeId = useId();
 
   return (
     <div className="rounded-lg border border-border bg-ink-2 p-4">
@@ -224,7 +228,7 @@ function ElementRow({
       <div className="mt-3">
         <div className="flex items-center justify-between">
           <label
-            htmlFor={`size-${info.kind}-${size}`}
+            htmlFor={sizeId}
             className="text-[11px] uppercase tracking-wide text-muted-2"
           >
             Target size
@@ -234,7 +238,7 @@ function ElementRow({
           </span>
         </div>
         <input
-          id={`size-${info.kind}-${size}`}
+          id={sizeId}
           type="range"
           min={info.minSqft}
           max={info.maxSqft}
@@ -264,8 +268,45 @@ function MaterialPicker({
   value: HardscapeMaterial;
   onChange: (m: HardscapeMaterial) => void;
 }) {
+  const groupRef = useRef<HTMLDivElement>(null);
+
+  /**
+   * Roving-tabindex keyboard handler — arrow / Home / End move the selection
+   * between materials and focus the new one, per the WAI-ARIA radio pattern.
+   */
+  function onKeyDown(e: React.KeyboardEvent<HTMLButtonElement>) {
+    const keys = ["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp", "Home", "End"];
+    if (!keys.includes(e.key)) return;
+    e.preventDefault();
+    const currentIndex = Math.max(
+      0,
+      MATERIALS.findIndex((m) => m.material === value),
+    );
+    let nextIndex = currentIndex;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+      nextIndex = (currentIndex + 1) % MATERIALS.length;
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+      nextIndex = (currentIndex - 1 + MATERIALS.length) % MATERIALS.length;
+    } else if (e.key === "Home") {
+      nextIndex = 0;
+    } else if (e.key === "End") {
+      nextIndex = MATERIALS.length - 1;
+    }
+    const next = MATERIALS[nextIndex];
+    if (!next) return;
+    onChange(next.material);
+    groupRef.current
+      ?.querySelector<HTMLButtonElement>(`[data-material="${next.material}"]`)
+      ?.focus();
+  }
+
   return (
-    <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label="Surface material">
+    <div
+      ref={groupRef}
+      className="flex flex-wrap gap-1.5"
+      role="radiogroup"
+      aria-label="Surface material"
+    >
       {MATERIALS.map((m) => {
         const active = m.material === value;
         return (
@@ -273,7 +314,10 @@ function MaterialPicker({
             key={m.material}
             type="button"
             role="radio"
+            data-material={m.material}
             aria-checked={active}
+            tabIndex={active ? 0 : -1}
+            onKeyDown={onKeyDown}
             onClick={() => onChange(m.material)}
             className={cn(
               "flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper/40",

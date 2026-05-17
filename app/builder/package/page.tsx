@@ -23,6 +23,7 @@ import { useSearchParams } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { PackageCheck } from "lucide-react";
 import { BuilderShell } from "@/components/builder/BuilderShell";
+import { GuidedTour } from "@/components/builder/GuidedTour";
 import { ProjectPackage } from "@/components/builder/ProjectPackage";
 import { PackageClose } from "@/components/builder/package/PackageClose";
 import type { ParsedRequirements } from "@/lib/builder";
@@ -195,7 +196,7 @@ function PackageRouter() {
           </p>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-8" data-tour="package-audience">
           <ProjectPackage
             projectType={projectType}
             projectId={projectId}
@@ -209,8 +210,11 @@ function PackageRouter() {
 
         {/* The close — the demo's deliberate, satisfying finish. The package
             above is fully keyless; this is the one honest, opt-in ask. */}
-        <PackageClose projectType={projectType} />
+        <div data-tour="package-close">
+          <PackageClose projectType={projectType} />
+        </div>
       </motion.div>
+      <GuidedTour route="package" />
     </BuilderShell>
   );
 }
