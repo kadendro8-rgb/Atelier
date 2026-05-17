@@ -4,18 +4,18 @@ import { Reveal, RevealGroup, RevealItem } from "@/components/Reveal";
 const steps = [
   {
     n: "01",
-    title: "Describe the home",
-    body: "Talk to Atelier the way you'd brief a draftsperson. Square footage, bed count, the lot, the must-haves — plain language is the only input.",
+    title: "Describe the space",
+    body: "Tell Atelier what the client wants — a paver patio, a pool deck, an outdoor kitchen, the whole yard. Plain language, measured in feet, is the only input.",
   },
   {
     n: "02",
-    title: "Refine the plan",
-    body: "Atelier returns a real floor plan. Drag a wall, swap a room, resize the garage — every edit re-checks egress, spans, and code.",
+    title: "Refine the layout",
+    body: "Atelier returns a real scaled layout. Move the patio edge, swap pavers for stamped concrete, add a fire feature — the estimate updates with every change.",
   },
   {
     n: "03",
-    title: "Site it on the parcel",
-    body: "Drop the plan onto the client's actual lot. Setbacks, easements, and the buildable envelope are drawn from county GIS.",
+    title: "Site it on the lot",
+    body: "Drop the design onto the client's actual property. Grade, drainage, setbacks for pools and structures, and the usable yard are drawn from county GIS.",
   },
   {
     n: "04",
@@ -33,11 +33,12 @@ export function HowItWorks() {
             How it works
           </p>
           <h2 className="mt-3 font-display text-3xl tracking-tight sm:text-4xl">
-            Four steps from a phone call to a funded project
+            Four steps from a backyard walk-through to a signed job
           </h2>
           <p className="mt-4 text-muted">
-            No CAD license, no outsourced drafting, no six-week wait. The whole
-            loop happens while your client is still excited.
+            No CAD license, no landscape-architect design fee, no two-week
+            wait for a drawing. The whole loop happens in the client&apos;s
+            backyard.
           </p>
         </Reveal>
 
@@ -83,14 +84,14 @@ function ChatMockup() {
   return (
     <div className="flex h-full flex-col justify-end gap-2.5">
       <div className="max-w-[80%] rounded-lg rounded-tl-sm bg-surface-2 px-3 py-2 text-[11px] leading-relaxed text-muted">
-        Three-bed ranch, 1,850 sq ft, on the Cedar Lane lot. Open kitchen.
+        Flagstone patio off the kitchen, ~480 sq ft, with a fire-pit lounge.
       </div>
       <div className="ml-auto max-w-[80%] rounded-lg rounded-tr-sm bg-copper/15 px-3 py-2 text-[11px] leading-relaxed text-copper-bright">
-        Got it — generating the plan and checking the lot now.
+        Got it — laying out the patio and checking the lot now.
       </div>
       <div className="flex items-center gap-2 rounded-full border border-border-bright bg-ink px-3 py-2">
         <span className="flex-1 text-[11px] text-muted-2">
-          Add a screened porch off the kitchen
+          Add a paver walkway to the driveway
         </span>
         <span className="grid size-6 place-items-center rounded-full bg-copper text-ink">
           <ArrowUp className="size-3.5" />
@@ -214,7 +215,7 @@ function PortalMockup() {
     <div className="flex h-full flex-col gap-2.5">
       <div className="flex items-center justify-between">
         <span className="text-[11px] font-medium text-foreground">
-          Hillside Residence
+          Cedar Lane Backyard
         </span>
         <span className="flex items-center gap-1 text-[10px] text-sage">
           <ShieldCheck className="size-3" /> Approved

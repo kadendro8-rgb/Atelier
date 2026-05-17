@@ -1,8 +1,8 @@
 /**
- * Mock data for the v2.0 moat pages (Section 7): stamp-partner dashboard,
- * builder-match, GC network, and the public design gallery. These routes are
- * presentational — there is no backend yet, so the data lives here as typed
- * fixtures. Real sources are tracked in docs/v2-spec.md section 7.
+ * Mock data for the v2.0 moat pages (Section 7): the review-partner dashboard,
+ * contractor match, installer network, and the public design gallery. These
+ * routes are presentational — there is no backend yet, so the data lives here
+ * as typed fixtures. Real sources are tracked in docs/v2-spec.md section 7.
  */
 
 const USD = new Intl.NumberFormat("en-US", {
@@ -17,125 +17,125 @@ export function formatUsd(amount: number): string {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Stamp-partner dashboard                                                    */
+/* Review-partner dashboard                                                   */
 /* -------------------------------------------------------------------------- */
 
-export type StampStatus = "new" | "in-review" | "ready";
+export type ReviewStatus = "new" | "in-review" | "ready";
 
-export type StampProject = {
+export type ReviewProject = {
   id: string;
-  builder: string;
+  contractor: string;
   project: string;
   location: string;
   sqft: number;
-  /** Architect's share of the stamp fee (80% of total; Atelier keeps 20%). */
-  stampFee: number;
+  /** Partner's share of the review fee (80% of total; Atelier keeps 20%). */
+  reviewFee: number;
   deadline: string;
-  status: StampStatus;
+  status: ReviewStatus;
 };
 
-export const STAMP_QUEUE: StampProject[] = [
+export const REVIEW_QUEUE: ReviewProject[] = [
   {
     id: "ATL-2041",
-    builder: "Hearthstone Builders",
-    project: "Maple Ridge Farmhouse",
+    contractor: "Stoneline Hardscapes",
+    project: "Maple Ridge Paver Patio",
     location: "Zionsville, IN",
-    sqft: 2940,
-    stampFee: 1480,
+    sqft: 940,
+    reviewFee: 1480,
     deadline: "May 21, 2026",
     status: "new",
   },
   {
     id: "ATL-2038",
-    builder: "Lakeside Custom Homes",
-    project: "Cormorant Point Lake House",
+    contractor: "Bluewater Pools & Patios",
+    project: "Cormorant Point Pool Deck",
     location: "Culver, IN",
-    sqft: 3610,
-    stampFee: 1820,
+    sqft: 1610,
+    reviewFee: 1820,
     deadline: "May 19, 2026",
     status: "in-review",
   },
   {
     id: "ATL-2035",
-    builder: "Timber & Stone Co.",
-    project: "Hollowbrook Craftsman",
+    contractor: "Fieldstone Paver Co.",
+    project: "Hollowbrook Outdoor Kitchen",
     location: "Carmel, IN",
-    sqft: 1980,
-    stampFee: 1010,
+    sqft: 680,
+    reviewFee: 1010,
     deadline: "May 18, 2026",
     status: "ready",
   },
   {
     id: "ATL-2033",
-    builder: "Northgate Residential",
-    project: "Birchfield Modern Ranch",
+    contractor: "North Ridge Hardscape",
+    project: "Birchfield Backyard Retreat",
     location: "Westfield, IN",
-    sqft: 2460,
-    stampFee: 1240,
+    sqft: 1460,
+    reviewFee: 1240,
     deadline: "May 24, 2026",
     status: "new",
   },
   {
     id: "ATL-2029",
-    builder: "Hearthstone Builders",
-    project: "Sycamore Court Transitional",
+    contractor: "Stoneline Hardscapes",
+    project: "Sycamore Court Fire Terrace",
     location: "Fishers, IN",
-    sqft: 3180,
-    stampFee: 1600,
+    sqft: 1180,
+    reviewFee: 1600,
     deadline: "May 27, 2026",
     status: "in-review",
   },
 ];
 
 /* -------------------------------------------------------------------------- */
-/* Builder-match                                                              */
+/* Contractor match                                                           */
 /* -------------------------------------------------------------------------- */
 
-export type MatchedGc = {
+export type MatchedContractor = {
   id: string;
   name: string;
   tagline: string;
   region: string;
   rating: number;
   reviews: number;
-  homesBuilt: number;
+  projectsBuilt: number;
   priceBand: string;
   specialties: string[];
 };
 
-export const MATCHED_GCS: MatchedGc[] = [
+export const MATCHED_CONTRACTORS: MatchedContractor[] = [
   {
-    id: "gc-hearthstone",
-    name: "Hearthstone Builders",
-    tagline: "Fourth-generation custom homes with an in-house design studio.",
+    id: "c-stoneline",
+    name: "Stoneline Hardscapes",
+    tagline: "Third-generation paver and patio crews with an in-house design studio.",
     region: "Greater Indianapolis",
     rating: 4.9,
     reviews: 132,
-    homesBuilt: 410,
+    projectsBuilt: 410,
     priceBand: "$$$",
-    specialties: ["Modern farmhouse", "Transitional", "Energy-efficient"],
+    specialties: ["Paver patios", "Outdoor kitchens", "Fire features"],
   },
   {
-    id: "gc-lakeside",
-    name: "Lakeside Custom Homes",
-    tagline: "Waterfront and walkout specialists across northern Indiana.",
+    id: "c-bluewater",
+    name: "Bluewater Pools & Patios",
+    tagline: "Pool-deck and waterscape specialists across northern Indiana.",
     region: "Northern Indiana lakes",
     rating: 4.8,
     reviews: 87,
-    homesBuilt: 220,
+    projectsBuilt: 220,
     priceBand: "$$$$",
-    specialties: ["Lake homes", "Walkout basements", "Outdoor living"],
+    specialties: ["Pool decks", "Retaining walls", "Outdoor living"],
   },
   {
-    id: "gc-northgate",
-    name: "Northgate Residential",
-    tagline: "Fixed-price custom builds with transparent allowances.",
+    id: "c-northridge",
+    name: "North Ridge Hardscape",
+    tagline: "Fixed-price backyard builds with transparent material allowances.",
     region: "Hamilton County",
     rating: 4.7,
     reviews: 154,
-    homesBuilt: 530,
+    projectsBuilt: 530,
     priceBand: "$$",
-    specialties: ["Ranch", "First-time custom", "Fixed-price"],
+    specialties: ["Paver patios", "First-time backyards", "Fixed-price"],
   },
 ];
 
@@ -150,10 +150,13 @@ export type GalleryProject = {
   region: string;
   /** Budget bracket label, also used as the budget filter key. */
   budget: string;
+  /** Built outdoor area in square feet. */
   sqft: number;
-  beds: number;
-  baths: number;
-  builder: string;
+  /** Distinct outdoor zones in the design (patio, kitchen, fire pit, etc.). */
+  zones: number;
+  /** Headline material — pavers, natural stone, stamped concrete, etc. */
+  material: string;
+  contractor: string;
   /** Two-stop gradient used as a stand-in for the project hero render. */
   swatch: [string, string];
 };
@@ -161,110 +164,110 @@ export type GalleryProject = {
 export const GALLERY_PROJECTS: GalleryProject[] = [
   {
     id: "g-maple-ridge",
-    title: "Maple Ridge Farmhouse",
-    style: "Modern farmhouse",
+    title: "Maple Ridge Paver Patio",
+    style: "Paver patio",
     region: "Midwest",
-    budget: "$600k–$850k",
-    sqft: 2940,
-    beds: 4,
-    baths: 3,
-    builder: "Hearthstone Builders",
+    budget: "$15k–$40k",
+    sqft: 940,
+    zones: 2,
+    material: "Clay pavers",
+    contractor: "Stoneline Hardscapes",
     swatch: ["#3a2f22", "#d28a55"],
   },
   {
     id: "g-cormorant",
-    title: "Cormorant Point Lake House",
-    style: "Lake home",
+    title: "Cormorant Point Pool Deck",
+    style: "Pool deck",
     region: "Midwest",
-    budget: "$850k+",
-    sqft: 3610,
-    beds: 3,
-    baths: 4,
-    builder: "Lakeside Custom Homes",
+    budget: "$80k+",
+    sqft: 1610,
+    zones: 3,
+    material: "Travertine",
+    contractor: "Bluewater Pools & Patios",
     swatch: ["#1f2a2c", "#8fa183"],
   },
   {
     id: "g-hollowbrook",
-    title: "Hollowbrook Craftsman",
-    style: "Craftsman",
+    title: "Hollowbrook Outdoor Kitchen",
+    style: "Outdoor kitchen",
     region: "Midwest",
-    budget: "$350k–$600k",
-    sqft: 1980,
-    beds: 2,
-    baths: 2,
-    builder: "Timber & Stone Co.",
+    budget: "$40k–$80k",
+    sqft: 680,
+    zones: 2,
+    material: "Natural stone",
+    contractor: "Fieldstone Paver Co.",
     swatch: ["#2c2118", "#b07c4a"],
   },
   {
     id: "g-birchfield",
-    title: "Birchfield Modern Ranch",
-    style: "Modern ranch",
+    title: "Birchfield Backyard Retreat",
+    style: "Full backyard",
     region: "Midwest",
-    budget: "$350k–$600k",
-    sqft: 2460,
-    beds: 3,
-    baths: 2,
-    builder: "Northgate Residential",
+    budget: "$40k–$80k",
+    sqft: 1460,
+    zones: 4,
+    material: "Concrete pavers",
+    contractor: "North Ridge Hardscape",
     swatch: ["#26221b", "#a89e8c"],
   },
   {
     id: "g-sablewood",
-    title: "Sablewood Desert Contemporary",
-    style: "Contemporary",
+    title: "Sablewood Desert Courtyard",
+    style: "Full backyard",
     region: "Southwest",
-    budget: "$850k+",
-    sqft: 3320,
-    beds: 4,
-    baths: 4,
-    builder: "Sun Mesa Builders",
+    budget: "$80k+",
+    sqft: 1320,
+    zones: 4,
+    material: "Flagstone",
+    contractor: "Sun Mesa Outdoor Living",
     swatch: ["#2e2218", "#ecab78"],
   },
   {
     id: "g-fernhollow",
-    title: "Fernhollow Coastal Cottage",
-    style: "Coastal",
+    title: "Fernhollow Coastal Terrace",
+    style: "Paver patio",
     region: "Northeast",
-    budget: "$600k–$850k",
-    sqft: 2210,
-    beds: 3,
-    baths: 3,
-    builder: "Tidewater Homes",
+    budget: "$15k–$40k",
+    sqft: 720,
+    zones: 2,
+    material: "Bluestone",
+    contractor: "Tidewater Outdoor Co.",
     swatch: ["#1c2630", "#7fa6c4"],
   },
   {
     id: "g-cedar-bluff",
-    title: "Cedar Bluff Mountain Lodge",
-    style: "Mountain lodge",
+    title: "Cedar Bluff Fire Terrace",
+    style: "Fire feature",
     region: "Mountain West",
-    budget: "$850k+",
-    sqft: 3980,
-    beds: 5,
-    baths: 4,
-    builder: "Alpine Crafted",
+    budget: "$40k–$80k",
+    sqft: 980,
+    zones: 3,
+    material: "Natural stone",
+    contractor: "Alpine Hardscape Crafted",
     swatch: ["#241d16", "#8a5a38"],
   },
   {
     id: "g-marigold",
-    title: "Marigold Court Bungalow",
-    style: "Craftsman",
+    title: "Marigold Court Garden Patio",
+    style: "Paver patio",
     region: "Southeast",
-    budget: "$350k–$600k",
-    sqft: 1740,
-    beds: 3,
-    baths: 2,
-    builder: "Lowcountry Build Co.",
+    budget: "$15k–$40k",
+    sqft: 540,
+    zones: 1,
+    material: "Clay pavers",
+    contractor: "Lowcountry Hardscape Co.",
     swatch: ["#2a221a", "#d6a86c"],
   },
   {
     id: "g-northwind",
-    title: "Northwind Prairie Modern",
-    style: "Modern farmhouse",
+    title: "Northwind Prairie Pool Deck",
+    style: "Pool deck",
     region: "Midwest",
-    budget: "$600k–$850k",
-    sqft: 3050,
-    beds: 4,
-    baths: 3,
-    builder: "Hearthstone Builders",
+    budget: "$80k+",
+    sqft: 1750,
+    zones: 3,
+    material: "Stamped concrete",
+    contractor: "Stoneline Hardscapes",
     swatch: ["#2b2519", "#cf9a5e"],
   },
 ];
@@ -278,7 +281,7 @@ export const GALLERY_REGIONS: string[] = [
 ].sort();
 
 export const GALLERY_BUDGETS: string[] = [
-  "$350k–$600k",
-  "$600k–$850k",
-  "$850k+",
+  "$15k–$40k",
+  "$40k–$80k",
+  "$80k+",
 ];

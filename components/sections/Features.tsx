@@ -22,31 +22,31 @@ const features: Feature[] = [
   {
     icon: MessagesSquare,
     title: "Conversational design",
-    body: "No CAD, no menus. Brief Atelier in sentences and it builds the plan around the constraints you name.",
+    body: "No CAD, no menus. Brief Atelier in sentences and it builds the layout around the dimensions and materials you name.",
     stat: "30 sec",
-    statLabel: "to a first-pass floor plan",
+    statLabel: "to a first-pass layout",
     steps: ["Brief", "Generate", "Iterate"],
   },
   {
     icon: PencilRuler,
-    title: "Code-aware floor plans",
-    body: "Every wall you move re-runs egress, ceiling spans, and stair geometry against the local code edition.",
+    title: "Site-true layouts",
+    body: "Every layout is scaled to the real yard — setbacks for pools and structures, slope, and drainage fall built in.",
     stat: "100%",
-    statLabel: "of edits checked against code",
+    statLabel: "of layouts scaled to the lot",
     steps: ["Draw", "Validate", "Lock"],
   },
   {
     icon: MapPinned,
-    title: "Parcel & zoning fit",
-    body: "Pull the client's real lot from county GIS. Atelier draws setbacks, easements, and the buildable envelope.",
+    title: "Parcel & site fit",
+    body: "Pull the client's real lot from county GIS. Atelier draws the property line, structures, and the usable yard.",
     stat: "3,100+",
     statLabel: "jurisdictions mapped",
-    steps: ["Locate", "Apply rules", "Fit plan"],
+    steps: ["Locate", "Apply rules", "Fit design"],
   },
   {
     icon: ImageIcon,
     title: "Photoreal renders",
-    body: "Materials, daylight, and landscaping resolved into renders your client will actually fall for.",
+    body: "Pavers, plantings, daylight, and water resolved into renders your client will actually fall for.",
     stat: "6 renders",
     statLabel: "per design, every angle",
     steps: ["Materials", "Light", "Render"],
@@ -61,11 +61,11 @@ const features: Feature[] = [
   },
   {
     icon: FileCheck,
-    title: "Permit-ready exports",
-    body: "Generate a coordinated sheet set the moment the design is signed — formats your draftsperson expects.",
-    stat: "DWG · PDF · IFC",
-    statLabel: "exports on demand",
-    steps: ["Sheet set", "Review", "Export"],
+    title: "Estimate & material takeoff",
+    body: "The moment the design is signed, Atelier generates a line-item estimate and a material takeoff — pavers, base, concrete, by the square foot.",
+    stat: "By the sq ft",
+    statLabel: "estimates on demand",
+    steps: ["Take off", "Price", "Send"],
   },
 ];
 
@@ -78,11 +78,12 @@ export function Features() {
             Features
           </p>
           <h2 className="mt-3 font-display text-3xl tracking-tight sm:text-4xl">
-            Everything between &ldquo;I want a house&rdquo; and a building permit
+            Everything between &ldquo;I want a new backyard&rdquo; and a paid deposit
           </h2>
           <p className="mt-4 text-muted">
-            Atelier collapses the design phase into one tool — drafting,
-            zoning, visualization, and the paperwork that gets you paid.
+            Atelier collapses the design phase into one tool — layout,
+            materials, photoreal visuals, the estimate, and the paperwork
+            that gets you paid.
           </p>
         </Reveal>
 

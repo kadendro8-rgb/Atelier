@@ -36,6 +36,18 @@ export type ProjectStatus =
   | "built"
   | "archived";
 
+/**
+ * The kind of building a project produces (see `projects.project_type` check
+ * constraint). `home` is the original custom-home product; the rest are the
+ * broader building-market types whose design modules ship later.
+ */
+export type ProjectType =
+  | "home"
+  | "hardscape"
+  | "room"
+  | "garage"
+  | "gym";
+
 /** `public.profiles` row. */
 export interface ProfileRow {
   id: string;
@@ -80,6 +92,7 @@ export interface ProjectRow {
   plan_graph: PlanGraph | null;
   meta: ProjectMeta | null;
   status: ProjectStatus;
+  project_type: ProjectType;
   share_token: string | null;
   design_fee_cents: number | null;
   deposit_cents: number | null;
@@ -100,6 +113,7 @@ export interface ProjectInsert {
   plan_graph?: PlanGraph | null;
   meta?: ProjectMeta | null;
   status?: ProjectStatus;
+  project_type?: ProjectType;
   design_fee_cents?: number | null;
   deposit_cents?: number | null;
   construction_estimate_cents?: number | null;
@@ -123,4 +137,29 @@ export interface LeadInsert {
   email: string;
   brief?: string;
   source?: string | null;
+}
+
+/** GMV event categories (see `gmv_events.type` check constraint). */
+export type GmvEventType =
+  | "deposit"
+  | "design_fee"
+  | "stamp_fee"
+  | "builder_referral";
+
+/** `public.gmv_events` row. */
+export interface GmvEventRow {
+  id: string;
+  project_id: string;
+  amount_cents: number;
+  type: GmvEventType;
+  stripe_payment_intent_id: string | null;
+  occurred_at: string;
+}
+
+/** Columns accepted when inserting a GMV event. DB defaults fill the rest. */
+export interface GmvEventInsert {
+  project_id: string;
+  amount_cents: number;
+  type: GmvEventType;
+  stripe_payment_intent_id?: string | null;
 }

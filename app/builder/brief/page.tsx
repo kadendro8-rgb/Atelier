@@ -3,9 +3,19 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, Check, Info, Sparkles, Wand2, X } from "lucide-react";
+import { ArrowRight, Check, Info, Sparkles, Trees, Wand2, X } from "lucide-react";
 import { BuilderShell } from "@/components/builder/BuilderShell";
+import { GuidedTour } from "@/components/builder/GuidedTour";
+import { HardscapeBriefBuilder } from "@/components/builder/HardscapeBriefBuilder";
 import { Button } from "@/components/ui/button";
+import type { ProjectType } from "@/lib/db/types";
+import {
+  defaultHardscapeBrief,
+  loadHardscapeBrief,
+  resolveProjectType,
+  saveHardscapeBrief,
+} from "@/lib/hardscape/builder";
+import type { HardscapeBrief } from "@/lib/hardscape/types";
 import { cn } from "@/lib/utils";
 
 const EXAMPLES = [
@@ -33,12 +43,129 @@ const STAGES = [
 export default function BriefPage() {
   return (
     <Suspense fallback={<BuilderShell current="brief">{null}</BuilderShell>}>
-      <BriefStep />
+      <BriefRouter />
     </Suspense>
   );
 }
 
-function BriefStep() {
+/**
+ * Resolves the active project type and dispatches to the matching brief step.
+ * Hardscape gets a structured element/material builder; everything else gets
+ * the original free-text home brief.
+ */
+function BriefRouter() {
+  const searchParams = useSearchParams();
+  const [projectType, setProjectType] = useState<ProjectType | null>(null);
+
+  useEffect(() => {
+    setProjectType(resolveProjectType(searchParams.get("type")));
+  }, [searchParams]);
+
+  // Until the client resolves the type, render the shared chrome only — this
+  // matches the Suspense fallback and avoids a flash of the wrong step.
+  if (projectType === null) {
+    return <BuilderShell current="brief">{null}</BuilderShell>;
+  }
+
+  if (projectType === "hardscape") {
+    return <HardscapeBriefStep />;
+  }
+  return <HomeBriefStep />;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Hardscape brief step                                                       */
+/* -------------------------------------------------------------------------- */
+
+function HardscapeBriefStep() {
+  const [brief, setBrief] = useState<HardscapeBrief>(defaultHardscapeBrief);
+  const [restored, setRestored] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const reduce = useReducedMotion();
+
+  // Reload-safe restore of the cached brief.
+  useEffect(() => {
+    const cached = loadHardscapeBrief();
+    if (cached) setBrief(cached);
+    setRestored(true);
+  }, []);
+
+  // Persist on every edit once the initial restore has run.
+  useEffect(() => {
+    if (!restored) return;
+    saveHardscapeBrief(brief);
+  }, [brief, restored]);
+
+  const ready = brief.elements.length > 0;
+
+  function generate() {
+    if (!ready) return;
+    saveHardscapeBrief(brief);
+    const projectId = searchParams.get("projectId");
+    const params = new URLSearchParams({ type: "hardscape" });
+    if (projectId) params.set("projectId", projectId);
+    router.push(`/builder/floor-plan?${params.toString()}`);
+  }
+
+  const reveal = reduce
+    ? {}
+    : ({
+        initial: { opacity: 0, y: 16 },
+        animate: { opacity: 1, y: 0 },
+        transition: { duration: 0.5, ease: "easeOut" },
+      } as const);
+
+  return (
+    <BuilderShell current="brief" projectType="hardscape">
+      <motion.div {...reveal} className="mx-auto max-w-2xl">
+        <div className="flex flex-col items-center text-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-muted">
+            <Trees className="size-3.5 text-copper" />
+            Step 1 · The brief
+          </span>
+          <h1 className="mt-4 font-display text-3xl tracking-tight sm:text-4xl">
+            Spec the backyard
+          </h1>
+          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
+            Add each hardscape surface, pick its material and size, and layer in
+            the decorative detail. Atelier draws the site layout from it.
+          </p>
+        </div>
+
+        <div className="mt-8">
+          <HardscapeBriefBuilder brief={brief} onChange={setBrief} />
+        </div>
+
+        <div
+          className="mt-6 flex flex-col items-center gap-2"
+          data-tour="generate"
+        >
+          <Button
+            onClick={generate}
+            disabled={!ready}
+            size="lg"
+            className="min-w-[15rem]"
+          >
+            Generate the layout <ArrowRight className="size-4" />
+          </Button>
+          {!ready && (
+            <p className="text-xs text-muted-2">
+              Add at least one surface to continue.
+            </p>
+          )}
+        </div>
+      </motion.div>
+      <GuidedTour route="brief" />
+    </BuilderShell>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Home brief step (original free-text flow — unchanged behaviour)            */
+/* -------------------------------------------------------------------------- */
+
+function HomeBriefStep() {
   const [brief, setBrief] = useState("");
   const [activeChip, setActiveChip] = useState<string | null>(null);
   const [stage, setStage] = useState(-1);
@@ -136,7 +263,10 @@ function BriefStep() {
           </p>
         </div>
 
-        <div className="mt-8 rounded-card border border-border bg-surface p-5">
+        <div
+          className="mt-8 rounded-card border border-border bg-surface p-5"
+          data-tour="brief"
+        >
           <p className="text-xs text-muted-2">Start from an example</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {EXAMPLES.map((ex) => {
@@ -193,7 +323,7 @@ function BriefStep() {
               Save brief and come back later →
             </button>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2" data-tour="generate">
               <InfoTip />
               <Button
                 onClick={generate}
@@ -226,6 +356,7 @@ function BriefStep() {
       {saveOpen && (
         <SaveDialog brief={brief} onClose={() => setSaveOpen(false)} />
       )}
+      <GuidedTour route="brief" />
     </BuilderShell>
   );
 }
