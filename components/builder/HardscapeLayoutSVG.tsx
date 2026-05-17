@@ -11,6 +11,8 @@
  * enclosed building.
  */
 import { useMemo } from "react";
+import { DraftingOverlay } from "@/components/builder/DraftingOverlay";
+import { formatFeetInches } from "@/lib/drafting";
 import { materialInfo } from "@/lib/hardscape/builder";
 import type { HardscapeElement, HardscapePlan, Vec2 } from "@/lib/hardscape/types";
 
@@ -54,10 +56,16 @@ export function HardscapeLayoutSVG({ plan }: { plan: HardscapePlan }) {
     return [...base, ...decor];
   }, [plan.elements]);
 
-  // Padding so labels and strokes are not clipped at the site edges.
+  // Asymmetric padding: a generous bottom/left margin for the dimension lines
+  // + scale bar, a lighter top/right one for the north arrow.
   const span = Math.max(width, height, MM_PER_FT);
-  const pad = span * 0.07;
-  const viewBox = `${-pad} ${-pad} ${width + pad * 2} ${height + pad * 2}`;
+  const padTop = span * 0.1;
+  const padRight = span * 0.1;
+  const padLeft = span * 0.12;
+  const padBottom = span * 0.2;
+  const vbW = width + padLeft + padRight;
+  const vbH = height + padTop + padBottom;
+  const viewBox = `${-padLeft} ${-padTop} ${vbW} ${vbH}`;
 
   // Line/text weights derived from the site span so they read the same at any
   // plan size.
@@ -91,17 +99,17 @@ export function HardscapeLayoutSVG({ plan }: { plan: HardscapePlan }) {
         </defs>
 
         <rect
-          x={-pad}
-          y={-pad}
-          width={width + pad * 2}
-          height={height + pad * 2}
+          x={-padLeft}
+          y={-padTop}
+          width={vbW}
+          height={vbH}
           fill="#100e0b"
         />
         <rect
-          x={-pad}
-          y={-pad}
-          width={width + pad * 2}
-          height={height + pad * 2}
+          x={-padLeft}
+          y={-padTop}
+          width={vbW}
+          height={vbH}
           fill="url(#hardscape-grid)"
         />
 
@@ -122,17 +130,20 @@ export function HardscapeLayoutSVG({ plan }: { plan: HardscapePlan }) {
           );
         })}
 
-        {/* Element labels + areas — skip rings too small to hold text. */}
+        {/* Element labels — name, footprint dimensions and area. */}
         {ordered.map((el) => {
           if (el.kind === "border") return null;
           const c = centroid(el.polygon);
           const b = bbox(el.polygon);
           if (b.w < labelSize * 4 || b.h < labelSize * 2.4) return null;
+          // Element extents, read straight off the polygon's bounding box.
+          const dims = `${formatFeetInches(b.w)} × ${formatFeetInches(b.h)}`;
+          const showDims = b.h > labelSize * 3.4;
           return (
             <g key={`label-${el.id}`}>
               <text
                 x={c.x}
-                y={c.y - areaSize * 0.6}
+                y={showDims ? c.y - areaSize * 1.15 : c.y - areaSize * 0.6}
                 textAnchor="middle"
                 dominantBaseline="middle"
                 fontSize={labelSize}
@@ -141,27 +152,46 @@ export function HardscapeLayoutSVG({ plan }: { plan: HardscapePlan }) {
               >
                 {el.label}
               </text>
+              {showDims && (
+                <text
+                  x={c.x}
+                  y={c.y + areaSize * 0.05}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fontSize={areaSize}
+                  fill="#0b0a09"
+                  fillOpacity={0.78}
+                  style={{ fontVariantNumeric: "tabular-nums" }}
+                >
+                  {dims}
+                </text>
+              )}
               <text
                 x={c.x}
-                y={c.y + areaSize}
+                y={showDims ? c.y + areaSize * 1.3 : c.y + areaSize}
                 textAnchor="middle"
                 dominantBaseline="middle"
                 fontSize={areaSize}
                 fill="#0b0a09"
                 fillOpacity={0.7}
+                style={{ fontVariantNumeric: "tabular-nums" }}
               >
                 {Math.round(el.areaSqft)} ft²
               </text>
             </g>
           );
         })}
+
+        {/* CAD-grade annotation layer: site dimensions, scale bar, north
+            arrow — every number read straight off the geometry. */}
+        <DraftingOverlay width={width} height={height} unit={unit} />
       </svg>
 
       <div className="pointer-events-none absolute left-3 top-3 rounded-full border border-border bg-ink/80 px-2.5 py-1 text-[10px] text-muted backdrop-blur">
         Site layout
       </div>
-      <div className="pointer-events-none absolute bottom-3 right-3 rounded-full border border-border bg-ink/80 px-2.5 py-1 text-[10px] text-muted-2 backdrop-blur">
-        {Math.round(width / MM_PER_FT)}′ × {Math.round(height / MM_PER_FT)}′ site
+      <div className="pointer-events-none absolute bottom-3 right-3 rounded-full border border-border bg-ink/80 px-2.5 py-1 text-[10px] tabular-nums text-muted-2 backdrop-blur">
+        {formatFeetInches(width)} × {formatFeetInches(height)} site
       </div>
     </div>
   );
