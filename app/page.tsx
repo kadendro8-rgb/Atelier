@@ -3,6 +3,7 @@ import { Hero } from "@/components/sections/Hero";
 import { HowItWorks } from "@/components/sections/HowItWorks";
 import { Showcase } from "@/components/sections/Showcase";
 import { Features } from "@/components/sections/Features";
+import { Testimonials } from "@/components/sections/Testimonials";
 import { TheMath } from "@/components/sections/TheMath";
 import { Pricing } from "@/components/sections/Pricing";
 import { FAQ } from "@/components/sections/FAQ";
@@ -16,8 +17,9 @@ export default function HomePage() {
       <main id="main">
         <Hero />
         <HowItWorks />
-        <Showcase />
         <Features />
+        <Showcase />
+        <Testimonials />
         <TheMath />
         <Pricing />
         <FAQ />
