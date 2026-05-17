@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, type ReactNode } from "react";
 import { Check, Compass, X } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { replayGuidedTour } from "@/components/builder/GuidedTour";
@@ -27,20 +28,44 @@ const STEP_LABEL_OVERRIDES: Partial<
   hardscape: { "floor-plan": "Layout" },
 };
 
-/** Shared chrome for every builder step — top bar plus a 6-step progress rail. */
-export function BuilderShell({
-  current,
-  projectType = "home",
-  children,
-}: {
+type BuilderShellProps = {
   current: BuilderStepKey;
   /** Active project type — re-labels steps that read differently per type. */
   projectType?: ProjectType;
   children: ReactNode;
-}) {
+};
+
+/** Shared chrome for every builder step — top bar plus a step progress rail. */
+export function BuilderShell(props: BuilderShellProps) {
+  // useSearchParams must sit under a Suspense boundary so the builder pages
+  // can still be prerendered. Links degrade to project-less hrefs in the
+  // fallback, then hydrate with the projectId on the client.
+  return (
+    <Suspense fallback={<BuilderChrome {...props} projectId={null} />}>
+      <BuilderShellWithParams {...props} />
+    </Suspense>
+  );
+}
+
+function BuilderShellWithParams(props: BuilderShellProps) {
+  const projectId = useSearchParams().get("projectId");
+  return <BuilderChrome {...props} projectId={projectId} />;
+}
+
+function BuilderChrome({
+  current,
+  projectType = "home",
+  projectId,
+  children,
+}: BuilderShellProps & { projectId: string | null }) {
   const currentIndex = STEPS.findIndex((s) => s.key === current);
   const labelFor = (step: (typeof STEPS)[number]) =>
     STEP_LABEL_OVERRIDES[projectType]?.[step.key] ?? step.label;
+
+  const getHref = (href: string) => {
+    if (!projectId || !href) return href;
+    return `${href}?projectId=${encodeURIComponent(projectId)}`;
+  };
 
   return (
     <div className="flex min-h-dvh flex-col bg-ink">
@@ -90,7 +115,7 @@ export function BuilderShell({
                 >
                   {done && step.href ? (
                     <Link
-                      href={step.href}
+                      href={getHref(step.href)}
                       aria-label={`Back to ${labelFor(step)}`}
                     >
                       {chip}
