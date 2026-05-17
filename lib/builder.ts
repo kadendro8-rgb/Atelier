@@ -39,6 +39,7 @@ const FEATURE_PATTERNS: [RegExp, string][] = [
   [/open[\s-](?:concept|plan|kitchen)/, "open-concept living"],
   [/screened|sunroom/, "screened porch"],
   [/glass|window wall/, "expansive glazing"],
+  [/garage|carport/, "attached garage"],
 ];
 
 /** Keyword brief parser used when the AI route is unavailable. */

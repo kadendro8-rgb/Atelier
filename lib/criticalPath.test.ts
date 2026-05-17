@@ -39,18 +39,11 @@ describe("critical path — brief to deliverables", () => {
     for (const u of ["great-room", "kitchen", "primary-suite", "bedroom"]) {
       expect(uses.has(u as never)).toBe(true);
     }
-    // Feature-driven rooms the keyword parser captures must survive the
-    // brief → kernel adaptation.
+    // Feature-driven rooms must survive the brief → kernel adaptation: the
+    // sample brief asks for an office, a porch and a 3-car garage.
     expect(uses.has("office")).toBe(true);
     expect(uses.has("porch")).toBe(true);
-  });
-
-  it("does not yet surface a garage from the keyword fallback parser", () => {
-    // KNOWN GAP: `parseBriefFallback`'s FEATURE_PATTERNS has no garage/car
-    // rule, so an explicit "3-car garage" brief never reaches the kernel as a
-    // garage room. Pinned here so a future parser fix flips this test.
-    const brief = toParsedBrief(parseBriefFallback(BRIEF));
-    expect(brief.rooms.some((r) => r.use === "garage")).toBe(false);
+    expect(uses.has("garage")).toBe(true);
   });
 
   it("generates a structurally valid plan graph from the brief", () => {
