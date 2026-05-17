@@ -14,27 +14,27 @@ type LineItem = {
 const lineItems: LineItem[] = [
   {
     label: "Paid design consultations",
-    detail: "18 booked at $850 each",
-    amount: 15300,
+    detail: "22 measure visits \u00d7 $300 \u2014 the measure visit now bills",
+    amount: 6600,
   },
   {
-    label: "Design deposits collected",
-    detail: "11 signed designs at $8,500",
-    amount: 93500,
+    label: "Job deposits collected",
+    detail: "14 signed-off designs \u00d7 $6,500 in-portal",
+    amount: 91000,
   },
   {
-    label: "Render & revision upsells",
-    detail: "Extra angles and what-if options",
-    amount: 6200,
+    label: "Upgrade upsells",
+    detail: "Fire features, lighting, and material upgrades added on the render",
+    amount: 8400,
   },
   {
-    label: "Outsourced drafting eliminated",
-    detail: "No more external draftsperson",
-    amount: 4800,
+    label: "Outsourced rendering, eliminated",
+    detail: "No more $250/design to a freelance 3D artist",
+    amount: 3500,
   },
   {
     label: "Atelier Studio subscription",
-    detail: "Your monthly plan",
+    detail: "Your all-in monthly plan",
     amount: 349,
     negative: true,
   },
@@ -46,9 +46,9 @@ const total = lineItems.reduce(
 );
 
 const benefits = [
-  "Design phase used to be a cost center — weeks of unpaid drafting before revenue",
-  "Atelier flips it: consultation bills, design lands same-day, deposit clears fast",
-  "One builder, no new hires. Numbers below are a single salesperson&apos;s month",
+  "The design phase used to be a cost center \u2014 evenings spent hand-drawing a sketch before a single dollar came in.",
+  "Atelier flips it. The measure visit bills, the render lands on-site, and the deposit clears before the client cools off.",
+  "One contractor, no new hires. The numbers on the right are a single estimator\u2019s month.",
 ];
 
 export function TheMath() {
@@ -64,7 +64,8 @@ export function TheMath() {
             </div>
             <h2 className="mt-6 font-display text-3xl tracking-tight sm:text-4xl lg:text-5xl">
               The design phase should{" "}
-              <span className="text-gradient-copper">make money</span>, not cost it
+              <span className="text-gradient-copper">make money</span>,{" "}
+              not cost it
             </h2>
             <div className="mt-8 space-y-5">
               {benefits.map((p) => (
@@ -77,7 +78,7 @@ export function TheMath() {
             <div className="mt-10 inline-flex items-center gap-3 rounded-xl border border-border bg-surface px-5 py-3.5">
               <DollarSign className="size-5 text-copper" />
               <span className="text-sm text-muted">
-                Modeled on median Atelier Studio account, month four
+                Modeled on the median Atelier Studio account, month four
               </span>
             </div>
           </Reveal>
@@ -88,7 +89,7 @@ export function TheMath() {
               <div className="border-b border-border bg-surface-2 px-6 py-4">
                 <div className="flex items-center justify-between">
                   <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-2">
-                    Monthly revenue, one builder
+                    Monthly revenue, one contractor
                   </p>
                   <ArrowUpRight className="size-4 text-sage" />
                 </div>
@@ -130,7 +131,7 @@ export function TheMath() {
                     Net new monthly revenue
                   </p>
                   <p className="mt-1 text-xs text-muted-2">
-                    Added to your top line, every month
+                    Added to the top line, every month
                   </p>
                 </div>
                 <div className="font-display text-3xl tracking-tight text-copper sm:text-4xl">

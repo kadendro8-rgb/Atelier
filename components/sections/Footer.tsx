@@ -1,53 +1,36 @@
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
-import { Twitter, Linkedin, Github } from "lucide-react";
 
 const columns = [
   {
     heading: "Product",
     links: [
       { label: "How it works", href: "/#how" },
-      { label: "Workflow", href: "/#workflow" },
-      { label: "Features", href: "/#features" },
-      { label: "The math", href: "/#math" },
-      { label: "Pricing", href: "/#pricing" },
-    ],
-  },
-  {
-    heading: "Gallery",
-    links: [
       { label: "Showcase", href: "/#showcase" },
-      { label: "Browse gallery", href: "/gallery" },
-      { label: "Custom homes", href: "/gallery?category=custom-homes" },
-      { label: "Hardscapes", href: "/gallery?category=hardscapes" },
-    ],
-  },
-  {
-    heading: "For Pros",
-    links: [
-      { label: "Find a contractor", href: "/find-contractor" },
-      { label: "For contractors", href: "/for-contractors" },
-      { label: "Builder guides", href: "/#" },
-      { label: "API", href: "/#" },
-    ],
-  },
-  {
-    heading: "Company",
-    links: [
-      { label: "About", href: "/#" },
+      { label: "Features", href: "/#features" },
+      { label: "Pricing", href: "/#pricing" },
       { label: "FAQ", href: "/#faq" },
-      { label: "Blog", href: "/#" },
-      { label: "Contact", href: "mailto:support@atelier.design" },
+      { label: "Open the builder", href: "/builder" },
+    ],
+  },
+  {
+    heading: "For Contractors",
+    links: [
+      { label: "Project gallery", href: "/gallery" },
+      { label: "GC referral network", href: "/for-contractors" },
+      { label: "Get matched with clients", href: "/find-contractor" },
+      { label: "Partner dashboard", href: "/for-contractors" },
+    ],
+  },
+  {
+    heading: "Legal",
+    links: [
       { label: "Privacy", href: "/#" },
       { label: "Terms", href: "/#" },
+      { label: "Security", href: "/#" },
+      { label: "Contact", href: "mailto:support@atelier.design" },
     ],
   },
-];
-
-const socials = [
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Github, href: "#", label: "GitHub" },
 ];
 
 export function Footer() {
@@ -68,26 +51,13 @@ export function Footer() {
               </span>
             </Link>
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-muted">
-              The design studio for custom-home builders. From a conversation
-              to a permit-ready set — on a builder&apos;s timeline.
+              The design studio for outdoor-living contractors. From a backyard
+              walk-through to a signed deposit — on a contractor&apos;s timeline.
             </p>
-            {/* Social links */}
-            <div className="mt-6 flex items-center gap-4">
-              {socials.map(({ icon: Icon, href, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  aria-label={label}
-                  className="flex size-10 items-center justify-center rounded-lg border border-border bg-surface text-muted transition-colors hover:border-border-bright hover:text-foreground"
-                >
-                  <Icon className="size-4" />
-                </a>
-              ))}
-            </div>
           </div>
 
           {/* Link columns */}
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
             {columns.map((col) => (
               <div key={col.heading}>
                 <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-2">
@@ -112,8 +82,8 @@ export function Footer() {
 
         {/* Bottom bar */}
         <div className="mt-16 flex flex-col items-start justify-between gap-4 border-t border-border pt-8 text-xs text-muted-2 sm:flex-row sm:items-center">
-          <p>© {new Date().getFullYear()} Atelier Design, Inc. All rights reserved.</p>
-          <p>Crafted with precision, built for builders.</p>
+          <p>&copy; {new Date().getFullYear()} Atelier Design, Inc. All rights reserved.</p>
+          <p>Built for the outdoor-living trade.</p>
         </div>
       </div>
     </footer>

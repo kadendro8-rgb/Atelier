@@ -41,17 +41,16 @@ const tiers: Tier[] = [
     price: "$349",
     cadence: "/ month",
     blurb: "For the working builder running real projects.",
-    cta: "Start free trial",
+    cta: "Start free",
     href: "/builder",
     featured: true,
     features: [
       "Unlimited home designs",
       "6 photoreal renders per design",
       "Branded client portal + deposits",
-      "DWG, PDF, IFC exports",
+      "DWG \u00b7 PDF \u00b7 IFC exports",
       "Code validation, all jurisdictions",
       "5 seats included",
-      "Priority support",
     ],
   },
   {
@@ -69,7 +68,6 @@ const tiers: Tier[] = [
       "Custom code rule packs",
       "Dedicated success manager",
       "Onboarding & SLA",
-      "Custom invoicing",
     ],
   },
 ];
@@ -88,7 +86,8 @@ export function Pricing() {
             <span className="text-gradient-copper">pays for the year</span>
           </h2>
           <p className="mt-5 text-lg text-muted">
-            Every plan includes 3 free designs. No card required to start.
+            Every plan is free for your first three designs. No card up front,
+            no per-render metering.
           </p>
         </Reveal>
 

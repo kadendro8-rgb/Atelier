@@ -109,7 +109,7 @@ export function Hero() {
           <div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-3">
             <div className="relative bg-surface px-6 py-8 text-center transition-colors duration-300 hover:bg-surface-2">
               <div className="font-display text-4xl tracking-tight text-foreground stat-value lg:text-5xl">
-                <CountUp to={0} suffix=" min" />
+                <CountUp to={7} suffix=" min" />
               </div>
               <p className="mt-2 text-sm text-muted">
                 From a backyard walk-through to a render the client can see
@@ -118,7 +118,7 @@ export function Hero() {
             <div className="relative bg-surface px-6 py-8 text-center transition-colors duration-300 hover:bg-surface-2">
               <div className="absolute left-0 top-1/2 hidden h-12 w-px -translate-y-1/2 bg-border sm:block" />
               <div className="font-display text-4xl tracking-tight text-foreground stat-value lg:text-5xl">
-                $<CountUp to={8} suffix="0" />
+                $<CountUp to={2952} separator />
               </div>
               <p className="mt-2 text-sm text-muted">
                 Typical deposit collected in-portal, same visit
@@ -127,7 +127,7 @@ export function Hero() {
             <div className="relative bg-surface px-6 py-8 text-center transition-colors duration-300 hover:bg-surface-2">
               <div className="absolute left-0 top-1/2 hidden h-12 w-px -translate-y-1/2 bg-border sm:block" />
               <div className="font-display text-4xl tracking-tight text-foreground stat-value lg:text-5xl">
-                <CountUp to={0} suffix="0+" />
+                0.8<span className="text-copper">&times;</span>
               </div>
               <p className="mt-2 text-sm text-muted">
                 More jobs won against a hand-drawn sketch

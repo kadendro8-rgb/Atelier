@@ -28,23 +28,23 @@ const features: Feature[] = [
   {
     icon: MessagesSquare,
     title: "Conversational design",
-    body: "No CAD, no menus. Brief Atelier in plain language and watch it build the plan around your constraints in real-time.",
+    body: "No CAD, no menus. Brief Atelier in sentences and it builds the layout around the dimensions and materials you name.",
     stat: "30 sec",
-    statLabel: "to first-pass floor plan",
+    statLabel: "to a first-pass layout",
     size: "large",
   },
   {
     icon: PencilRuler,
-    title: "Code-aware floor plans",
-    body: "Every wall you move re-runs egress, ceiling spans, and stair geometry against the local code edition automatically.",
+    title: "Site-true layouts",
+    body: "Every layout is scaled to the real yard \u2014 setbacks for pools and structures, slope, and drainage fall built in.",
     stat: "100%",
-    statLabel: "edits code-checked",
+    statLabel: "of layouts scaled to the lot",
     size: "medium",
   },
   {
     icon: MapPinned,
-    title: "Parcel & zoning fit",
-    body: "Pull the client&apos;s real lot from county GIS. Atelier draws setbacks, easements, and the buildable envelope.",
+    title: "Parcel & site fit",
+    body: "Pull the client\u2019s real lot from county GIS. Atelier draws the property line, structures, and the usable yard.",
     stat: "3,100+",
     statLabel: "jurisdictions mapped",
     size: "medium",
@@ -52,7 +52,7 @@ const features: Feature[] = [
   {
     icon: ImageIcon,
     title: "Photoreal renders",
-    body: "Materials, daylight, and landscaping resolved into renders your client will actually fall in love with.",
+    body: "Pavers, plantings, daylight, and water resolved into renders your client will actually fall for.",
     stat: "6 renders",
     statLabel: "per design, every angle",
     size: "small",
@@ -60,17 +60,17 @@ const features: Feature[] = [
   {
     icon: CreditCard,
     title: "Client portal & deposits",
-    body: "A branded portal where clients review, approve, and pay the deposit in a single click.",
+    body: "A branded portal where clients review the design, sign off, and pay the deposit in a single click.",
     stat: "1 click",
-    statLabel: "approval to deposit",
+    statLabel: "from approval to deposit",
     size: "small",
   },
   {
     icon: FileCheck,
-    title: "Permit-ready exports",
-    body: "Generate a coordinated sheet set the moment the design is signed — DWG, PDF, IFC formats your team expects.",
-    stat: "DWG · PDF · IFC",
-    statLabel: "exports on demand",
+    title: "Estimate & material takeoff",
+    body: "The moment the design is signed, Atelier generates a line-item estimate and a material takeoff \u2014 pavers, base, concrete, by the square foot.",
+    stat: "By the sq ft",
+    statLabel: "estimates on demand",
     size: "small",
   },
 ];
@@ -86,12 +86,12 @@ export function Features() {
             <span className="text-muted">Powerful features, simple interface</span>
           </div>
           <h2 className="mt-6 font-display text-3xl tracking-tight sm:text-4xl lg:text-5xl">
-            Everything between &ldquo;I want a house&rdquo; and a{" "}
-            <span className="text-gradient-copper">building permit</span>
+            Everything between &ldquo;I want a new backyard&rdquo; and a{" "}
+            <span className="text-gradient-copper">paid deposit</span>
           </h2>
           <p className="mt-5 text-lg text-muted">
-            Atelier collapses the entire design phase into one tool — drafting,
-            zoning, visualization, and the paperwork that gets you paid.
+            Atelier collapses the design phase into one tool — layout, materials,
+            photoreal visuals, the estimate, and the paperwork that gets you paid.
           </p>
         </Reveal>
 
