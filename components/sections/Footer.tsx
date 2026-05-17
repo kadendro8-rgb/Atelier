@@ -9,33 +9,26 @@ const columns = [
       { label: "Showcase", href: "/#showcase" },
       { label: "Features", href: "/#features" },
       { label: "Pricing", href: "/#pricing" },
+      { label: "FAQ", href: "/#faq" },
       { label: "Open the builder", href: "/builder" },
     ],
   },
   {
-    heading: "Company",
+    heading: "For contractors",
     links: [
-      { label: "About", href: "/#math" },
-      { label: "Careers", href: "/#" },
-      { label: "Blog", href: "/#" },
-      { label: "Contact", href: "/#" },
-    ],
-  },
-  {
-    heading: "Resources",
-    links: [
-      { label: "FAQ", href: "/#faq" },
-      { label: "Code coverage", href: "/#" },
-      { label: "Builder guides", href: "/#" },
-      { label: "Status", href: "/#" },
+      { label: "Project gallery", href: "/gallery" },
+      { label: "GC referral network", href: "/gc-network" },
+      { label: "Get matched with clients", href: "/match" },
+      { label: "Partner dashboard", href: "/partner/dashboard" },
     ],
   },
   {
     heading: "Legal",
     links: [
-      { label: "Privacy", href: "/#" },
-      { label: "Terms", href: "/#" },
-      { label: "Security", href: "/#" },
+      { label: "Privacy", href: "/legal/privacy" },
+      { label: "Terms", href: "/legal/terms" },
+      { label: "Security", href: "/legal/security" },
+      { label: "Contact", href: "/contact" },
     ],
   },
 ];
@@ -63,7 +56,7 @@ export function Footer() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
             {columns.map((col) => (
               <div key={col.heading}>
                 <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-2">
@@ -88,7 +81,7 @@ export function Footer() {
 
         <div className="mt-14 flex flex-col items-start justify-between gap-3 border-t border-border pt-6 text-xs text-muted-2 sm:flex-row sm:items-center">
           <p>© {new Date().getFullYear()} Atelier Design, Inc. All rights reserved.</p>
-          <p>Drafted by builders, for builders.</p>
+          <p>Built for the outdoor-living trade.</p>
         </div>
       </div>
     </footer>
