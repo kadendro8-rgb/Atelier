@@ -50,6 +50,17 @@ import type { ProjectType } from "@/lib/db/types";
 import { PROJECT_TYPES } from "@/lib/project-types";
 import { ProjectTypePicker } from "@/components/builder/ProjectTypePicker";
 import { GuidedTour } from "@/components/builder/GuidedTour";
+import {
+  SitePhotoCapture,
+  type CapturedPhoto,
+} from "@/components/builder/SitePhotoCapture";
+import { SitePhotoPreview } from "@/components/builder/SitePhotoPreview";
+import {
+  deleteSitePhoto,
+  loadSitePhoto,
+  rekeySitePhoto,
+  saveSitePhoto,
+} from "@/lib/site-photo";
 import { MapPicker, type MapPickerHandle } from "./MapPicker";
 
 /** Default map centre — the continental US, before a search. */
@@ -79,6 +90,32 @@ const INITIAL_STEPS: GisStep[] = [
 
 /** localStorage key for the persisted project-type choice. */
 const PROJECT_TYPE_KEY = "atelier:projectType";
+
+/**
+ * localStorage key for a provisional project id. The site photo is captured
+ * before a real project exists, so it is keyed in IndexedDB by this stable
+ * provisional id; once the real id is known it is re-keyed across. Stored in
+ * localStorage (not state) so it survives a mid-flow reload.
+ */
+const DRAFT_PHOTO_KEY = "atelier:draftPhotoId";
+
+/** Read or lazily mint the stable provisional photo key. */
+function draftPhotoId(): string {
+  if (typeof window === "undefined") return "draft";
+  try {
+    const existing = window.localStorage.getItem(DRAFT_PHOTO_KEY);
+    if (existing) return existing;
+    const fresh = `draft-${
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : Math.random().toString(36).slice(2)
+    }`;
+    window.localStorage.setItem(DRAFT_PHOTO_KEY, fresh);
+    return fresh;
+  } catch {
+    return "draft";
+  }
+}
 
 /** Narrow an arbitrary string to a known, registered `ProjectType`. */
 function isProjectType(value: string): value is ProjectType {
@@ -115,6 +152,47 @@ function LotPickerStep() {
     useState<[number, number]>(DEFAULT_CENTER);
   const [initialZoom, setInitialZoom] = useState(DEFAULT_ZOOM);
   const [restored, setRestored] = useState(false);
+
+  // --- Site photo (captured, held for the session, best-effort persisted) --
+  const [photo, setPhoto] = useState<CapturedPhoto | null>(null);
+
+  // Restore a previously captured photo from IndexedDB on mount.
+  useEffect(() => {
+    let cancelled = false;
+    void loadSitePhoto(draftPhotoId()).then((stored) => {
+      if (cancelled || !stored) return;
+      setPhoto({
+        dataUrl: stored.dataUrl,
+        mimeType: stored.mimeType,
+        width: stored.width,
+        height: stored.height,
+        source: stored.source,
+      });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  /** Hold a captured photo and persist it best-effort (IndexedDB). */
+  const handlePhotoCapture = useCallback((next: CapturedPhoto) => {
+    setPhoto(next);
+    void saveSitePhoto({
+      projectId: draftPhotoId(),
+      dataUrl: next.dataUrl,
+      mimeType: next.mimeType,
+      width: next.width,
+      height: next.height,
+      source: next.source,
+      capturedAt: new Date().toISOString(),
+    });
+  }, []);
+
+  /** Drop the held photo and its best-effort persisted copy. */
+  const handlePhotoRemove = useCallback(() => {
+    setPhoto(null);
+    void deleteSitePhoto(draftPhotoId());
+  }, []);
 
   // --- Reload-safe restore -------------------------------------------------
   useEffect(() => {
@@ -409,6 +487,17 @@ function LotPickerStep() {
       });
     }
 
+    // Move the best-effort photo from its provisional key onto the real
+    // project id so downstream steps can find it. Non-blocking, never throws.
+    if (photo) {
+      await rekeySitePhoto(draftPhotoId(), projectId);
+    }
+    try {
+      window.localStorage.removeItem(DRAFT_PHOTO_KEY);
+    } catch {
+      /* non-fatal */
+    }
+
     saveLotSnapshot({ projectId, local: projectId.startsWith("local-") });
     setPhase("done");
     clearLotSnapshot();
@@ -508,8 +597,44 @@ function LotPickerStep() {
           )}
         </div>
 
+        {/* Site photo capture — a first-class input alongside the address. */}
+        <div className="mt-6" data-tour="site-photo">
+          <div className="flex items-center gap-3">
+            <span className="h-px flex-1 bg-border" />
+            <span className="text-xs uppercase tracking-[0.18em] text-muted-2">
+              and / or
+            </span>
+            <span className="h-px flex-1 bg-border" />
+          </div>
+          <div className="mt-4">
+            <SitePhotoCapture
+              value={photo}
+              onCapture={handlePhotoCapture}
+              onRemove={handlePhotoRemove}
+              disabled={gathering}
+            />
+          </div>
+          {/* The render seam — exercised the moment a photo is held. */}
+          {photo && (
+            <div className="mt-3">
+              <SitePhotoPreview
+                photo={{
+                  dataUrl: photo.dataUrl,
+                  mimeType: photo.mimeType,
+                  width: photo.width,
+                  height: photo.height,
+                }}
+                intent={{
+                  projectType,
+                  brief: address ?? undefined,
+                }}
+              />
+            </div>
+          )}
+        </div>
+
         {/* Map */}
-        <div className="relative mt-4 h-[clamp(20rem,52vh,32rem)] overflow-hidden rounded-card border border-border bg-surface">
+        <div className="relative mt-6 h-[clamp(20rem,52vh,32rem)] overflow-hidden rounded-card border border-border bg-surface">
           <MapPicker
             ref={mapRef}
             initialCenter={initialCenter}
