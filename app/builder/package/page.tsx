@@ -24,6 +24,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { PackageCheck } from "lucide-react";
 import { BuilderShell } from "@/components/builder/BuilderShell";
 import { ProjectPackage } from "@/components/builder/ProjectPackage";
+import { PackageClose } from "@/components/builder/package/PackageClose";
 import type { ParsedRequirements } from "@/lib/builder";
 import type { ProjectType } from "@/lib/db/types";
 import {
@@ -205,6 +206,10 @@ function PackageRouter() {
             photo={photo}
           />
         </div>
+
+        {/* The close — the demo's deliberate, satisfying finish. The package
+            above is fully keyless; this is the one honest, opt-in ask. */}
+        <PackageClose projectType={projectType} />
       </motion.div>
     </BuilderShell>
   );

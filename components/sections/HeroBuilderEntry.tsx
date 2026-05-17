@@ -164,7 +164,7 @@ export function HeroBuilderEntry() {
             {!launching && <ArrowRight className="size-4" />}
           </button>
           <p className="mt-2.5 text-center text-[11px] text-muted-2">
-            No card required · Picks up exactly where you left off
+            3 designs free · No card · Picks up where you left off
           </p>
         </div>
 

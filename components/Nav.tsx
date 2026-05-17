@@ -2,10 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Menu, X } from "lucide-react";
+import { Menu, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
+import { TRIAL_CTA } from "@/lib/cta";
 import { cn } from "@/lib/utils";
+
+// Re-exported for callers that historically imported the CTA from the nav.
+export { TRIAL_CTA };
 
 // Section anchors on the marketing page.
 const links = [
@@ -79,8 +83,9 @@ export function Nav() {
 
         <div className="hidden md:block">
           <Button asChild size="sm">
-            <Link href="/builder">
-              Open the builder <ArrowRight className="size-4" />
+            <Link href={TRIAL_CTA.href}>
+              <Sparkles className="size-4" />
+              {TRIAL_CTA.label}
             </Link>
           </Button>
         </div>
@@ -124,8 +129,9 @@ export function Nav() {
             ))}
             <li className="mt-2">
               <Button asChild size="sm" className="w-full">
-                <Link href="/builder" onClick={() => setOpen(false)}>
-                  Open the builder
+                <Link href={TRIAL_CTA.href} onClick={() => setOpen(false)}>
+                  <Sparkles className="size-4" />
+                  {TRIAL_CTA.label}
                 </Link>
               </Button>
             </li>

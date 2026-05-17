@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { TRIAL_CTA } from "@/lib/cta";
 import { CountUp } from "@/components/CountUp";
 import { Marquee } from "@/components/Marquee";
 import { HeroBuilderEntry } from "@/components/sections/HeroBuilderEntry";
@@ -77,12 +78,27 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}
             className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row"
           >
+            <Button asChild size="lg" className="w-full sm:w-auto">
+              <Link href={TRIAL_CTA.href}>
+                <Sparkles className="size-4" />
+                {TRIAL_CTA.label}
+              </Link>
+            </Button>
             <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
               <Link href="/#how">
                 See how it works <ArrowRight className="size-4" />
               </Link>
             </Button>
           </motion.div>
+          <motion.p
+            initial={reduceMotion ? false : { opacity: 0 }}
+            animate={reduceMotion ? {} : { opacity: 1 }}
+            transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-3 text-xs text-muted-2"
+          >
+            Open the builder now — no signup, no card. Your first three designs
+            are free.
+          </motion.p>
         </div>
 
         {/* Stat count-up trio */}

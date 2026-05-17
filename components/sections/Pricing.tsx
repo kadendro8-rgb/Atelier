@@ -36,7 +36,7 @@ const tiers: Tier[] = [
     price: "$349",
     cadence: "/ month",
     blurb: "For the working builder running real projects.",
-    cta: "Start free trial",
+    cta: "Start free",
     href: "/builder",
     featured: true,
     features: [
