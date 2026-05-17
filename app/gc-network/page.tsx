@@ -237,7 +237,7 @@ export default function GcNetworkPage() {
               >
                 <Send className="size-4" /> Submit application
               </Button>
-              <p className="mt-3 text-center text-xs text-muted-2">
+              <p className="mt-3 text-center text-xs text-muted">
                 We verify every license before a builder receives client
                 introductions.
               </p>
@@ -262,7 +262,7 @@ function Field({
     <div className="mb-5">
       <label
         htmlFor={htmlFor}
-        className="mb-2 block text-xs font-medium uppercase tracking-wide text-muted-2"
+        className="mb-2 block text-xs font-medium uppercase tracking-wide text-muted"
       >
         {label}
       </label>
