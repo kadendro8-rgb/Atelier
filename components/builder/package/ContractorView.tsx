@@ -10,8 +10,9 @@
  *  - home      → the floor plan, the parsed program summary, and a
  *                room-by-zone area breakdown.
  */
-import { useMemo } from "react";
-import { CheckCircle2, HardHat, Ruler } from "lucide-react";
+import { useMemo, useState } from "react";
+import { CheckCircle2, Download, HardHat, Ruler } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { HardscapeLayoutSVG } from "@/components/builder/HardscapeLayoutSVG";
 import { PlanCanvas } from "@/components/builder/PlanCanvas";
 import type { ParsedRequirements } from "@/lib/builder";
@@ -19,6 +20,11 @@ import type { ProjectType } from "@/lib/db/types";
 import { materialInfo } from "@/lib/hardscape/builder";
 import type { HardscapeCostEstimate } from "@/lib/hardscape/cost";
 import type { HardscapeMaterial, HardscapePlan } from "@/lib/hardscape/types";
+import { downloadBlob } from "@/lib/io/download";
+import {
+  exportHardscapeTakeoffCsv,
+  exportHomeTakeoffCsv,
+} from "@/lib/io/takeoffCsv";
 import type { PlanGraph, RoomZone } from "@/lib/kernel/types";
 import { formatUsdCents, type DepositFigure } from "@/lib/package";
 
@@ -190,6 +196,12 @@ function HardscapeContractorView({
               );
             })}
           </ul>
+          <div className="mt-4 border-t border-border-bright pt-4">
+            <TakeoffCsvButton
+              onExport={() => exportHardscapeTakeoffCsv(plan)}
+              filename="atelier-hardscape-takeoff.csv"
+            />
+          </div>
         </div>
 
         <DepositSummary deposit={deposit} kind="hardscape" />
@@ -314,6 +326,12 @@ function HomeContractorView({
               {Math.round(totalArea).toLocaleString()} ft²
             </span>
           </div>
+          <div className="mt-4 border-t border-border-bright pt-4">
+            <TakeoffCsvButton
+              onExport={() => exportHomeTakeoffCsv(plan)}
+              filename="atelier-room-takeoff.csv"
+            />
+          </div>
         </div>
 
         <DepositSummary deposit={deposit} kind="home" />
@@ -372,6 +390,51 @@ function DepositSummary({
               deposit.projectValueCents,
             )} job value — collected at client approval.`
           : "Consultation plus design deposit — billed when the client approves."}
+      </p>
+    </div>
+  );
+}
+
+/**
+ * A "download takeoff as CSV" button. Generates the line-item CSV from the
+ * plan and triggers a real `.csv` download — the spreadsheet a contractor
+ * drops into their own takeoff tool or hands to a supplier. Keyless and fully
+ * client-side; best-effort, so a locked-down browser simply shows no
+ * confirmation.
+ */
+function TakeoffCsvButton({
+  onExport,
+  filename,
+}: {
+  onExport: () => string;
+  filename: string;
+}) {
+  const [done, setDone] = useState(false);
+
+  function download() {
+    try {
+      downloadBlob(onExport(), filename, "text/csv;charset=utf-8");
+      setDone(true);
+      window.setTimeout(() => setDone(false), 2500);
+    } catch {
+      // Best-effort — no confirmation in a locked-down browser.
+    }
+  }
+
+  return (
+    <div>
+      <Button
+        variant="outline"
+        size="sm"
+        className="w-full"
+        onClick={download}
+      >
+        <Download className="size-3.5" />
+        {done ? "Takeoff downloaded" : "Export takeoff (CSV)"}
+      </Button>
+      <p className="mt-2 text-center text-[11px] leading-relaxed text-muted-2">
+        A line-item spreadsheet for your supplier or takeoff tool — generated
+        in your browser.
       </p>
     </div>
   );
