@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   CreditCard,
   FileCheck,
@@ -130,12 +131,12 @@ export function Features() {
             <span className="text-sm text-muted">
               Enterprise-grade security. SOC 2 Type II compliant.
             </span>
-            <a
+            <Link
               href="/#pricing"
               className="flex items-center gap-1 text-sm font-medium text-copper hover:text-copper-bright transition-colors"
             >
               Learn more <ArrowRight className="size-4" />
-            </a>
+            </Link>
           </div>
         </Reveal>
       </div>
