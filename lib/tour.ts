@@ -2,10 +2,11 @@
  * Guided-tour model for the builder.
  *
  * The tour is a sequence of coachmarks that spotlight real builder controls.
- * It spans three routes (lot → brief → floor-plan), so each step declares the
- * route it belongs to and the `data-tour` anchor it points at. The active
- * `GuidedTour` instance only renders the steps whose route matches the current
- * page; advancing past a route's last step is what carries the visitor onward.
+ * It spans four routes (lot → brief → floor-plan → package), so each step
+ * declares the route it belongs to and the `data-tour` anchor it points at.
+ * The active `GuidedTour` instance only renders the steps whose route matches
+ * the current page; advancing past a route's last step is what carries the
+ * visitor onward.
  *
  * Everything here is keyless and offline-safe — "seen" state lives in
  * localStorage and every read/write is wrapped so storage being unavailable
@@ -13,7 +14,7 @@
  */
 
 /** The builder routes a tour step can be anchored to. */
-export type TourRoute = "lot" | "brief" | "floor-plan";
+export type TourRoute = "lot" | "brief" | "floor-plan" | "package";
 
 /** Where the coachmark sits relative to its anchored element. */
 export type TourPlacement = "top" | "bottom" | "left" | "right";
@@ -33,8 +34,9 @@ export interface TourStep {
 }
 
 /**
- * The full tour, in order. 3–6 steps covering the key builder moments.
- * Keep `id` values in sync with the `data-tour="…"` attributes in the pages.
+ * The full tour, in order, covering the key builder moments from the lot
+ * through the finished deliverable. Keep `id` values in sync with the
+ * `data-tour="…"` attributes in the pages.
  */
 export const TOUR_STEPS: readonly TourStep[] = [
   {
@@ -70,6 +72,20 @@ export const TOUR_STEPS: readonly TourStep[] = [
     route: "floor-plan",
     title: "Review the plan and the code check",
     body: "Switch between 2D and 3D, and read the IRC code check Atelier ran automatically. From here it's renders, pricing, and a client portal.",
+    placement: "top",
+  },
+  {
+    id: "package-audience",
+    route: "package",
+    title: "One project, three lenses",
+    body: "The finished project reads three ways — the client's pitch, the contractor's numbers, the architect's set. Switch tabs to see each.",
+    placement: "bottom",
+  },
+  {
+    id: "package-close",
+    route: "package",
+    title: "Deliver it — and keep it",
+    body: "Approve the deposit, hand off the package, or save the project to your account. That's the full journey, start to finish.",
     placement: "top",
   },
 ] as const;

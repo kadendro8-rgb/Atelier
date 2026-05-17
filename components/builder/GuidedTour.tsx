@@ -7,7 +7,7 @@
  * visitor moves through the builder. It anchors to `data-tour="…"` elements,
  * advances on Next, is skippable, and persists "seen" state so it shows once.
  *
- * The tour spans three routes (lot → brief → floor-plan). Each mounted
+ * The tour spans four routes (lot → brief → floor-plan → package). Each mounted
  * `GuidedTour` is told its `route` and renders only the steps for that route;
  * progress is carried across navigations in `sessionStorage`, so finishing the
  * lot-route steps and moving to the brief picks the tour back up there.
@@ -102,6 +102,8 @@ export function GuidedTour({ route }: { route: TourRoute }) {
   const [rect, setRect] = useState<Rect | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const skipRef = useRef<HTMLButtonElement>(null);
+  // The element focused before the tour opened — focus is restored here on close.
+  const restoreFocusRef = useRef<HTMLElement | null>(null);
 
   // --- Decide whether to run, and where to resume ---------------------------
   const begin = useCallback(
@@ -234,18 +236,56 @@ export function GuidedTour({ route }: { route: TourRoute }) {
     }
   }, [cursor, route, dismiss]);
 
-  // ESC dismisses; focus the skip control when a step opens.
+  // ESC dismisses; focus the skip control when a step opens; trap Tab within
+  // the coachmark while it is open; restore focus to the prior element on close.
   useEffect(() => {
     if (!active) return;
+    // Remember where focus was so it can be returned when the tour closes.
+    const previouslyFocused =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    restoreFocusRef.current = previouslyFocused;
     skipRef.current?.focus();
+
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
         dismiss("skip");
+        return;
+      }
+      // Focus trap — keep Tab cycling inside the coachmark card.
+      if (e.key === "Tab") {
+        const card = cardRef.current;
+        if (!card) return;
+        const focusables = card.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        );
+        if (focusables.length === 0) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        const activeEl = document.activeElement;
+        if (e.shiftKey && activeEl === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && activeEl === last) {
+          e.preventDefault();
+          first.focus();
+        } else if (activeEl && !card.contains(activeEl)) {
+          // Focus escaped the card (e.g. after a route change) — pull it back.
+          e.preventDefault();
+          first.focus();
+        }
       }
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      // Restore focus to the control that had it before the tour opened.
+      const target = restoreFocusRef.current;
+      if (target && document.contains(target)) target.focus();
+      restoreFocusRef.current = null;
+    };
   }, [active, dismiss]);
 
   if (!mounted || !active || !step) return null;
