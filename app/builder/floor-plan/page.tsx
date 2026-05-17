@@ -15,6 +15,7 @@ import {
   Square,
 } from "lucide-react";
 import { BuilderShell } from "@/components/builder/BuilderShell";
+import { GuidedTour } from "@/components/builder/GuidedTour";
 import { PlanCanvas } from "@/components/builder/PlanCanvas";
 import { Button } from "@/components/ui/button";
 import type { ParsedRequirements } from "@/lib/builder";
@@ -224,7 +225,10 @@ function FloorPlanStep() {
         <div className="mt-8 grid gap-5 lg:grid-cols-[1fr_1.5fr]">
           {parsed && <ProgramCard parsed={parsed} />}
 
-          <div className="flex flex-col rounded-card border border-border bg-surface p-5">
+          <div
+            className="flex flex-col rounded-card border border-border bg-surface p-5"
+            data-tour="plan"
+          >
             {plan && (
               <>
                 <div className="mb-3 flex items-center justify-between gap-3">
@@ -267,6 +271,7 @@ function FloorPlanStep() {
           </div>
         </div>
       </motion.div>
+      <GuidedTour route="floor-plan" />
     </BuilderShell>
   );
 }

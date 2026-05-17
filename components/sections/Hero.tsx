@@ -6,7 +6,7 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CountUp } from "@/components/CountUp";
 import { Marquee } from "@/components/Marquee";
-import { HeroMockup } from "@/components/HeroMockup";
+import { HeroBuilderEntry } from "@/components/sections/HeroBuilderEntry";
 
 const stats = [
   { to: 9, suffix: " hrs", label: "Median time from first call to a permit-ready set" },
@@ -76,18 +76,12 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}
             className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row"
           >
-            <Button asChild size="lg" className="w-full sm:w-auto">
-              <Link href="/builder">
-                Start designing free <ArrowRight className="size-4" />
+            <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
+              <Link href="/#how">
+                See how it works <ArrowRight className="size-4" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
-              <Link href="/#how">See how it works</Link>
-            </Button>
           </motion.div>
-          <p className="mt-3 text-xs text-muted-2">
-            No card required · 3 designs on the house · Cancel anytime
-          </p>
         </div>
 
         {/* Stat count-up trio */}
@@ -118,14 +112,14 @@ export function Hero() {
         <Marquee items={marquee} />
       </div>
 
-      {/* Hero product visual */}
-      <div className="mx-auto mt-10 max-w-6xl px-5 sm:px-8">
+      {/* Live builder entry — take the first real step right here */}
+      <div className="mx-auto mt-10 max-w-4xl px-5 sm:px-8">
         <motion.div
           initial={reduceMotion ? false : { opacity: 0, y: 40 }}
           animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
         >
-          <HeroMockup />
+          <HeroBuilderEntry />
         </motion.div>
       </div>
     </section>
