@@ -1,39 +1,49 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ink: #0b0a09;
-  --color-ink-2: #100e0b;
-  --color-surface: #15130f;
-  --color-surface-2: #1d1a14;
-  --color-surface-3: #262119;
-  --color-border: #2c281f;
-  --color-border-bright: #423a2c;
-  --color-foreground: #f5f1e8;
-  --color-muted: #a89e8c;
+  /* Enterprise dark theme - refined neutrals with warm accents */
+  --color-ink: #09090b;
+  --color-ink-2: #0c0c0f;
+  --color-surface: #111114;
+  --color-surface-2: #18181b;
+  --color-surface-3: #1f1f23;
+  --color-border: #27272a;
+  --color-border-bright: #3f3f46;
+  --color-foreground: #fafafa;
+  --color-muted: #a1a1aa;
   /* muted-2 is the dimmer secondary text tier. Tuned to clear WCAG AA
      (≥4.5:1) on every app background — ink, surface, surface-2, surface-3 —
      while staying visibly dimmer than --color-muted. */
-  --color-muted-2: #938977;
-  --color-copper: #d28a55;
-  --color-copper-bright: #ecab78;
-  --color-copper-dim: #8a5a38;
-  --color-sage: #8fa183;
+  --color-muted-2: #8b8b94;
 
+  /* Primary accent - warm copper/gold for architectural luxury */
+  --color-copper: #d4a574;
+  --color-copper-bright: #e8c9a8;
+  --color-copper-dim: #b08b5c;
+
+  /* Secondary accent - sage green for success/compliance states */
+  --color-sage: #22c55e;
+
+  /* Font families */
   --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
-  --radius-card: 1rem;
+  --radius-card: 1.25rem;
+  --radius-lg: 1rem;
 
-  --animate-marquee: marquee 38s linear infinite;
-  --animate-marquee-rev: marquee-rev 44s linear infinite;
+  /* Smooth animations - GPU accelerated */
+  --animate-marquee: marquee 45s linear infinite;
+  --animate-marquee-rev: marquee-rev 50s linear infinite;
+  --animate-float: float 8s ease-in-out infinite;
+  --animate-pulse-soft: pulse-soft 4s ease-in-out infinite;
 
   @keyframes marquee {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-50%, 0, 0); }
   }
   @keyframes marquee-rev {
-    from { transform: translateX(-50%); }
-    to { transform: translateX(0); }
+    from { transform: translate3d(-50%, 0, 0); }
+    to { transform: translate3d(0, 0, 0); }
   }
   @keyframes acc-down {
     from { height: 0; opacity: 0; }
@@ -42,6 +52,14 @@
   @keyframes acc-up {
     from { height: var(--radix-accordion-content-height); opacity: 1; }
     to { height: 0; opacity: 0; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(0, -12px, 0); }
+  }
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.9; }
   }
 }
 
@@ -58,33 +76,131 @@ body {
   color: var(--color-foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
+/* Selection */
 ::selection {
   background-color: var(--color-copper);
   color: var(--color-ink);
 }
 
-/* Thin scrollbar that matches the dark palette */
+/* Thin scrollbar */
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--color-border-bright) transparent;
+}
+
+/* Force GPU acceleration for animations */
+.will-change-transform {
+  will-change: transform;
 }
 
 .font-display {
   font-family: var(--font-display);
 }
 
-/* Subtle film grain / warmth overlay helper */
-.bg-grain {
-  background-image: radial-gradient(
-     rgba(210, 138, 85, 0.06) 1px,
-    transparent 1px
-  );
-  background-size: 4px 4px;
+/* Gradient text utility */
+.text-gradient {
+  background: linear-gradient(135deg, var(--color-foreground) 0%, var(--color-muted) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
+.text-gradient-copper {
+  background: linear-gradient(135deg, var(--color-copper-bright) 0%, var(--color-copper) 50%, var(--color-copper-dim) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glow effects - subtle and performant */
+.glow-copper {
+  box-shadow:
+    0 0 20px rgba(212, 165, 116, 0.12),
+    0 0 40px rgba(212, 165, 116, 0.08),
+    0 0 60px rgba(212, 165, 116, 0.04);
+}
+
+.glow-copper-intense {
+  box-shadow:
+    0 0 30px rgba(212, 165, 116, 0.25),
+    0 0 60px rgba(212, 165, 116, 0.15),
+    0 0 90px rgba(212, 165, 116, 0.08);
+}
+
+/* Glass morphism - with will-change for smooth performance */
+.glass {
+  background: rgba(17, 17, 20, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--color-border);
+}
+
+.glass-bright {
+  background: rgba(24, 24, 27, 0.8);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--color-border-bright);
+}
+
+/* Border gradient */
+.border-gradient {
+  position: relative;
+  background: var(--color-surface);
+  border-radius: var(--radius-card);
+}
+
+.border-gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--color-border-bright), transparent, var(--color-copper-dim));
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Smooth card hover - GPU accelerated */
+.card-lift {
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), 
+              box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  will-change: transform;
+}
+
+.card-lift:hover {
+  transform: translate3d(0, -6px, 0);
+  box-shadow: 0 25px 50px -20px rgba(0, 0, 0, 0.5);
+}
+
+/* Stat counter styles */
+.stat-value {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Smooth link transitions */
+a {
+  transition: color 0.2s ease-out;
+}
+
+/* Button transitions - smoother */
+button {
+  transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Image loading transition */
+img {
+  transition: opacity 0.3s ease-out;
+}
+
+/* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -96,4 +212,20 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+/* Custom focus ring */
+*:focus-visible {
+  outline: 2px solid var(--color-copper);
+  outline-offset: 2px;
+}
+
+/* Hide scrollbar on horizontal scrolling elements */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

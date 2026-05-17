@@ -1,48 +1,63 @@
 import Image from "next/image";
-import { ArrowUp, Check, Layers, MapPin, Ruler } from "lucide-react";
+import { ArrowUp, Check, Layers, MapPin, Ruler, Sparkles } from "lucide-react";
 
 /** A framed mock of the Atelier workspace used as the hero visual. */
 export function HeroMockup() {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border-bright bg-surface shadow-[0_40px_120px_-40px_rgba(0,0,0,0.9)]">
-      {/* window chrome */}
+    <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl shadow-black/50">
+      {/* Window chrome */}
       <div className="flex items-center gap-2 border-b border-border bg-surface-2 px-4 py-3">
-        <span className="size-3 rounded-full bg-[#3a3329]" />
-        <span className="size-3 rounded-full bg-[#3a3329]" />
-        <span className="size-3 rounded-full bg-[#3a3329]" />
-        <div className="ml-3 flex h-6 flex-1 items-center rounded-md bg-ink px-3 text-[11px] text-muted-2">
-          atelier.design/builder/hillside-residence
+        <span className="size-3 rounded-full bg-surface-3" />
+        <span className="size-3 rounded-full bg-surface-3" />
+        <span className="size-3 rounded-full bg-surface-3" />
+        <div className="ml-3 flex h-7 flex-1 items-center rounded-lg bg-ink px-4 text-xs text-muted-2">
+          <span className="flex items-center gap-2">
+            <Sparkles className="size-3 text-copper" />
+            atelier.design/builder/hillside-residence
+          </span>
         </div>
       </div>
 
-      <div className="grid gap-px bg-border lg:grid-cols-[300px_1fr]">
-        {/* chat sidebar */}
-        <div className="flex flex-col gap-3 bg-surface p-4">
-          <p className="text-[11px] uppercase tracking-[0.15em] text-muted-2">
-            Design brief
-          </p>
-          <div className="rounded-lg rounded-tl-sm bg-surface-2 p-3 text-xs leading-relaxed text-muted">
-            4-bed modern farmhouse, 2,900 sq ft. Single story, vaulted great
-            room, primary wing separated from the kids&apos; rooms.
-          </div>
-          <div className="ml-auto max-w-[85%] rounded-lg rounded-tr-sm bg-copper/15 p-3 text-xs leading-relaxed text-copper-bright">
-            Plan, parcel fit, and 6 renders ready. Want a covered porch on the
-            south elevation?
-          </div>
-          <div className="rounded-lg rounded-tl-sm bg-surface-2 p-3 text-xs leading-relaxed text-muted">
-            Yes — wrap it around to the east too.
-          </div>
-          <div className="mt-auto flex items-center gap-2 rounded-full border border-border bg-ink px-3 py-2">
-            <span className="flex-1 text-xs text-muted-2">Describe a change…</span>
-            <span className="grid size-6 place-items-center rounded-full bg-copper text-ink">
-              <ArrowUp className="size-3.5" />
+      <div className="grid gap-px bg-border lg:grid-cols-[320px_1fr]">
+        {/* Chat sidebar */}
+        <div className="flex flex-col gap-4 bg-surface p-5">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-medium uppercase tracking-[0.15em] text-muted-2">
+              Design Brief
+            </p>
+            <span className="flex items-center gap-1.5 rounded-full bg-sage/10 px-2 py-0.5 text-[10px] text-sage">
+              <span className="size-1.5 rounded-full bg-sage" />
+              AI Active
             </span>
+          </div>
+
+          <div className="space-y-3">
+            <div className="rounded-xl rounded-tl-sm bg-surface-2 p-4 text-sm leading-relaxed text-muted">
+              4-bed modern farmhouse, 2,900 sq ft. Single story, vaulted great
+              room, primary wing separated from kids&apos; rooms.
+            </div>
+            <div className="ml-auto max-w-[90%] rounded-xl rounded-tr-sm bg-copper/10 p-4 text-sm leading-relaxed text-copper-bright">
+              Plan, parcel fit, and 6 renders ready. Want a covered porch on the
+              south elevation?
+            </div>
+            <div className="rounded-xl rounded-tl-sm bg-surface-2 p-4 text-sm leading-relaxed text-muted">
+              Yes — wrap it around to the east side too.
+            </div>
+          </div>
+
+          <div className="mt-auto">
+            <div className="flex items-center gap-2 rounded-xl border border-border bg-ink px-4 py-3">
+              <span className="flex-1 text-sm text-muted-2">Describe a change...</span>
+              <span className="grid size-8 place-items-center rounded-lg bg-copper text-ink transition-colors hover:bg-copper-bright">
+                <ArrowUp className="size-4" />
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* canvas */}
-        <div className="relative bg-surface p-4">
-          <div className="relative aspect-[16/10] overflow-hidden rounded-lg border border-border">
+        {/* Canvas area */}
+        <div className="relative bg-surface p-5">
+          <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-border">
             <Image
               src="/showcase/showcase-modern-farmhouse.jpg"
               alt="Photoreal render of a modern farmhouse generated in Atelier"
@@ -51,40 +66,41 @@ export function HeroMockup() {
               sizes="(max-width: 1024px) 100vw, 760px"
               className="object-cover"
             />
-            {/* floating spec chips */}
-            <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
+            {/* Floating spec chips */}
+            <div className="absolute left-4 top-4 flex flex-wrap gap-2">
               {[
                 { icon: Ruler, label: "2,940 sq ft" },
                 { icon: Layers, label: "Single story" },
-                { icon: MapPin, label: "Parcel: 0.61 ac" },
+                { icon: MapPin, label: "0.61 ac lot" },
               ].map(({ icon: Icon, label }) => (
                 <span
                   key={label}
-                  className="flex items-center gap-1.5 rounded-full border border-border-bright bg-ink/85 px-2.5 py-1 text-[11px] text-foreground backdrop-blur"
+                  className="flex items-center gap-2 rounded-lg border border-border-bright bg-ink/90 px-3 py-1.5 text-xs text-foreground backdrop-blur-sm"
                 >
-                  <Icon className="size-3 text-copper" />
+                  <Icon className="size-3.5 text-copper" />
                   {label}
                 </span>
               ))}
             </div>
-            <div className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full border border-sage/40 bg-ink/85 px-2.5 py-1 text-[11px] text-sage backdrop-blur">
-              <Check className="size-3" />
-              Zoning: compliant
+            {/* Compliance badge */}
+            <div className="absolute bottom-4 right-4 flex items-center gap-2 rounded-lg border border-sage/30 bg-ink/90 px-3 py-1.5 text-xs text-sage backdrop-blur-sm">
+              <Check className="size-3.5" />
+              Zoning compliant
             </div>
           </div>
 
-          {/* render thumbnails */}
-          <div className="mt-3 grid grid-cols-4 gap-2">
+          {/* Render thumbnails */}
+          <div className="mt-4 grid grid-cols-4 gap-3">
             {[
-              "showcase-lake-home.jpg",
-              "showcase-courtyard-modern.jpg",
-              "showcase-mountain-cabin.jpg",
-              "showcase-coastal-cottage.jpg",
-            ].map((file, i) => (
+              { file: "showcase-lake-home.jpg", active: true },
+              { file: "showcase-courtyard-modern.jpg", active: false },
+              { file: "showcase-mountain-cabin.jpg", active: false },
+              { file: "showcase-coastal-cottage.jpg", active: false },
+            ].map(({ file, active }) => (
               <div
                 key={file}
-                className={`relative aspect-[4/3] overflow-hidden rounded-md border ${
-                  i === 0 ? "border-copper" : "border-border"
+                className={`relative aspect-[4/3] cursor-pointer overflow-hidden rounded-lg border transition-all hover:border-copper/50 ${
+                  active ? "border-copper ring-2 ring-copper/20" : "border-border"
                 }`}
               >
                 <Image

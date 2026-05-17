@@ -1,3 +1,6 @@
+"use client";
+
+import { ChevronDown } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -35,26 +38,53 @@ const faqs = [
 
 export function FAQ() {
   return (
-    <section id="faq" className="scroll-mt-20 border-t border-border py-24">
-      <div className="mx-auto max-w-3xl px-5 sm:px-8">
+    <section id="faq" className="scroll-mt-20 border-t border-border py-24 lg:py-32">
+      <div className="mx-auto max-w-4xl px-5 sm:px-8">
+        {/* Section header */}
         <Reveal className="text-center">
-          <p className="text-xs uppercase tracking-[0.2em] text-copper">
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-copper">
             FAQ
           </p>
-          <h2 className="mt-3 font-display text-3xl tracking-tight sm:text-4xl">
-            The questions builders ask first
+          <h2 className="mt-4 font-display text-3xl tracking-tight sm:text-4xl lg:text-5xl">
+            Questions builders ask first
           </h2>
+          <p className="mt-4 text-lg text-muted">
+            Everything you need to know about getting started with Atelier.
+          </p>
         </Reveal>
 
-        <Reveal delay={0.1} className="mt-10">
-          <Accordion type="single" collapsible className="flex flex-col gap-3">
+        {/* FAQ accordion */}
+        <Reveal delay={0.1} className="mt-12">
+          <Accordion type="single" collapsible className="flex flex-col gap-4">
             {faqs.map((faq, i) => (
-              <AccordionItem key={faq.q} value={`item-${i}`}>
-                <AccordionTrigger>{faq.q}</AccordionTrigger>
-                <AccordionContent>{faq.a}</AccordionContent>
+              <AccordionItem
+                key={faq.q}
+                value={`item-${i}`}
+                className="rounded-xl border border-border bg-surface px-6 transition-colors data-[state=open]:border-border-bright data-[state=open]:bg-surface-2"
+              >
+                <AccordionTrigger className="py-5 text-left text-base font-medium hover:no-underline [&[data-state=open]>svg]:rotate-180">
+                  {faq.q}
+                  <ChevronDown className="size-5 shrink-0 text-muted transition-transform duration-200" />
+                </AccordionTrigger>
+                <AccordionContent className="pb-5 text-muted leading-relaxed">
+                  {faq.a}
+                </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
+        </Reveal>
+
+        {/* Contact CTA */}
+        <Reveal delay={0.2} className="mt-12 text-center">
+          <p className="text-muted">
+            Still have questions?{" "}
+            <a
+              href="mailto:support@atelier.design"
+              className="text-copper hover:text-copper-bright transition-colors"
+            >
+              Contact our team
+            </a>
+          </p>
         </Reveal>
       </div>
     </section>

@@ -1,4 +1,6 @@
-import { Check, TrendingUp } from "lucide-react";
+"use client";
+
+import { Check, TrendingUp, ArrowUpRight, DollarSign } from "lucide-react";
 import { CountUp } from "@/components/CountUp";
 import { Reveal } from "@/components/Reveal";
 
@@ -12,27 +14,27 @@ type LineItem = {
 const lineItems: LineItem[] = [
   {
     label: "Paid design consultations",
-    detail: "18 booked × $850 — the meeting now bills",
+    detail: "18 booked at $850 each",
     amount: 15300,
   },
   {
     label: "Design deposits collected",
-    detail: "11 signed-off designs × $8,500 in-portal",
+    detail: "11 signed designs at $8,500",
     amount: 93500,
   },
   {
-    label: "Renders & revision upsells",
-    detail: "Extra angles and what-if options clients add",
+    label: "Render & revision upsells",
+    detail: "Extra angles and what-if options",
     amount: 6200,
   },
   {
-    label: "Outsourced drafting, eliminated",
-    detail: "No more $4,800/mo to an external draftsperson",
+    label: "Outsourced drafting eliminated",
+    detail: "No more external draftsperson",
     amount: 4800,
   },
   {
     label: "Atelier Studio subscription",
-    detail: "Your all-in monthly plan",
+    detail: "Your monthly plan",
     amount: 349,
     negative: true,
   },
@@ -43,70 +45,78 @@ const total = lineItems.reduce(
   0,
 );
 
-const copyPoints = [
-  "The design phase used to be a cost center — weeks of unpaid drafting before a single dollar came in.",
-  "Atelier flips it. The consultation bills, the design lands same-day, and the deposit clears before the client cools off.",
-  "One builder, no new hires. The numbers on the right are a single salesperson's month.",
+const benefits = [
+  "Design phase used to be a cost center — weeks of unpaid drafting before revenue",
+  "Atelier flips it: consultation bills, design lands same-day, deposit clears fast",
+  "One builder, no new hires. Numbers below are a single salesperson&apos;s month",
 ];
 
 export function TheMath() {
   return (
-    <section id="math" className="scroll-mt-20 border-t border-border py-24">
+    <section id="math" className="scroll-mt-20 border-t border-border py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
-          {/* left — copy */}
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+          {/* Left - copy */}
           <Reveal>
-            <p className="text-xs uppercase tracking-[0.2em] text-copper">
-              The math
-            </p>
-            <h2 className="mt-3 font-display text-3xl tracking-tight sm:text-4xl">
-              The design phase should make money, not cost it
+            <div className="inline-flex items-center gap-2 rounded-full border border-border-bright bg-surface/80 px-4 py-2 text-sm">
+              <TrendingUp className="size-4 text-sage" />
+              <span className="text-muted">ROI calculator</span>
+            </div>
+            <h2 className="mt-6 font-display text-3xl tracking-tight sm:text-4xl lg:text-5xl">
+              The design phase should{" "}
+              <span className="text-gradient-copper">make money</span>, not cost it
             </h2>
-            <div className="mt-6 space-y-4">
-              {copyPoints.map((p) => (
-                <p key={p} className="flex gap-3 text-muted leading-relaxed">
-                  <Check className="mt-1 size-4 shrink-0 text-copper" />
+            <div className="mt-8 space-y-5">
+              {benefits.map((p) => (
+                <p key={p} className="flex gap-4 text-base text-muted leading-relaxed">
+                  <Check className="mt-1 size-5 shrink-0 text-copper" />
                   <span>{p}</span>
                 </p>
               ))}
             </div>
-            <div className="mt-8 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm text-muted">
-              <TrendingUp className="size-4 text-sage" />
-              Modeled on the median Atelier Studio account, month four
+            <div className="mt-10 inline-flex items-center gap-3 rounded-xl border border-border bg-surface px-5 py-3.5">
+              <DollarSign className="size-5 text-copper" />
+              <span className="text-sm text-muted">
+                Modeled on median Atelier Studio account, month four
+              </span>
             </div>
           </Reveal>
 
-          {/* right — revenue widget */}
-          <Reveal delay={0.12}>
-            <div className="rounded-card border border-border-bright bg-surface">
-              <div className="border-b border-border px-6 py-4">
-                <p className="text-xs uppercase tracking-[0.16em] text-muted-2">
-                  Monthly revenue, one builder
-                </p>
+          {/* Right - revenue widget */}
+          <Reveal delay={0.15}>
+            <div className="overflow-hidden rounded-2xl border border-border bg-surface">
+              <div className="border-b border-border bg-surface-2 px-6 py-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-2">
+                    Monthly revenue, one builder
+                  </p>
+                  <ArrowUpRight className="size-4 text-sage" />
+                </div>
               </div>
 
               <ul className="divide-y divide-border">
                 {lineItems.map((item) => (
                   <li
                     key={item.label}
-                    className="flex items-start justify-between gap-4 px-6 py-4"
+                    className="flex items-start justify-between gap-4 px-6 py-5 transition-colors hover:bg-surface-2"
                   >
                     <div>
                       <p className="text-sm font-medium text-foreground">
                         {item.label}
                       </p>
-                      <p className="mt-0.5 text-xs text-muted-2">
+                      <p className="mt-1 text-xs text-muted-2">
                         {item.detail}
                       </p>
                     </div>
                     <div
-                      className={`shrink-0 font-display text-lg tracking-tight ${
-                        item.negative ? "text-muted" : "text-foreground"
-                      }`}
+                      className={cn(
+                        "shrink-0 font-display text-xl tracking-tight",
+                        item.negative ? "text-muted-2" : "text-foreground"
+                      )}
                     >
                       <CountUp
                         to={item.amount}
-                        prefix={item.negative ? "−$" : "+$"}
+                        prefix={item.negative ? "-$" : "+$"}
                         separator
                       />
                     </div>
@@ -114,13 +124,13 @@ export function TheMath() {
                 ))}
               </ul>
 
-              <div className="flex items-center justify-between gap-4 border-t border-border-bright bg-surface-2 px-6 py-5">
+              <div className="flex items-center justify-between gap-4 border-t border-copper/30 bg-copper/5 px-6 py-6">
                 <div>
                   <p className="text-sm font-medium text-foreground">
                     Net new monthly revenue
                   </p>
-                  <p className="mt-0.5 text-xs text-muted-2">
-                    Added to the top line, every month
+                  <p className="mt-1 text-xs text-muted-2">
+                    Added to your top line, every month
                   </p>
                 </div>
                 <div className="font-display text-3xl tracking-tight text-copper sm:text-4xl">
@@ -133,4 +143,8 @@ export function TheMath() {
       </div>
     </section>
   );
+}
+
+function cn(...classes: (string | boolean | undefined)[]) {
+  return classes.filter(Boolean).join(" ");
 }
