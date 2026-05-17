@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { TRIAL_CTA } from "@/lib/cta";
 import { Reveal } from "@/components/Reveal";
 
 export function FinalCTA() {
@@ -26,13 +27,15 @@ export function FinalCTA() {
 
         <div className="mt-9 flex justify-center">
           <Button asChild size="lg">
-            <Link href="/builder">
-              Design your first backyard <ArrowRight className="size-4" />
+            <Link href={TRIAL_CTA.href}>
+              <Sparkles className="size-4" />
+              {TRIAL_CTA.label}
+              <ArrowRight className="size-4" />
             </Link>
           </Button>
         </div>
         <p className="mt-3 text-xs text-muted-2">
-          No credit card · Set up in under two minutes · Cancel anytime
+          Keyless to explore · No card · Three designs free
         </p>
       </Reveal>
     </section>
