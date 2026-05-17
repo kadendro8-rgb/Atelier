@@ -10,12 +10,12 @@
  *  2. rasterize it to a high-DPI PNG via an offscreen `<canvas>`;
  *  3. embed that PNG into a jsPDF landscape sheet, under a small title block.
  *
- * `jspdf` is already a project dependency (used nowhere else yet), so no new
- * package is needed. Rasterize-then-embed is chosen over vector SVG-in-PDF
- * because it needs no `svg2pdf.js` plugin and renders identically to what the
- * user sees on screen — fonts, fills and all.
+ * `jspdf` is already a project dependency. It is ~140 kB, so it is loaded on
+ * demand via a dynamic `import()` inside `exportPlanPdf` — it never enters the
+ * route bundle until the user actually triggers a PDF export. Rasterize-then-
+ * embed is chosen over vector SVG-in-PDF because it needs no `svg2pdf.js`
+ * plugin and renders identically to what the user sees on screen.
  */
-import { jsPDF } from "jspdf";
 
 /** Sheet metadata drawn into the PDF's title block. */
 export interface PlanPdfMeta {
@@ -105,6 +105,8 @@ export async function exportPlanPdf(
   const raster = await svgToPngDataUrl(svg);
   if (!raster) return null;
 
+  // Loaded on demand so jsPDF stays out of the route's initial bundle.
+  const { jsPDF } = await import("jspdf");
   const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "letter" });
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
