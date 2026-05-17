@@ -2,130 +2,194 @@
 
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CountUp } from "@/components/CountUp";
-import { Marquee } from "@/components/Marquee";
 import { HeroMockup } from "@/components/HeroMockup";
 
 const stats = [
-  { to: 9, suffix: " hrs", label: "Median time from first call to a permit-ready set" },
-  { to: 24000, separator: true, suffix: "+", label: "Custom homes designed on Atelier" },
-  { to: 3.1, decimals: 1, suffix: "×", label: "More proposals won against drafting-by-hand" },
+  { to: 9, suffix: " hrs", label: "Median time to permit-ready" },
+  { to: 24000, separator: true, suffix: "+", label: "Custom homes designed" },
+  { to: 3.1, decimals: 1, suffix: "x", label: "More proposals won" },
 ];
 
-const marquee = [
+const logos = [
   "Hearthstone Builders",
-  "Cedar & Co. Homes",
+  "Cedar & Co.",
   "Marlowe Residential",
-  "North Ridge Construction",
-  "Atelier Verified Architects",
-  "Bluewater Custom Homes",
-  "Fieldstone Design-Build",
-  "Province Homebuilders",
+  "North Ridge",
+  "Bluewater Homes",
+  "Fieldstone Design",
 ];
 
 export function Hero() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <section className="relative overflow-hidden pt-28 pb-10 sm:pt-36">
-      {/* ambient glow */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[640px] bg-[radial-gradient(60%_60%_at_50%_0%,rgba(210,138,85,0.16),transparent_70%)]"
-      />
-      <div aria-hidden="true" className="bg-grain pointer-events-none absolute inset-0 -z-10 opacity-60" />
+    <section className="relative min-h-screen overflow-hidden pt-24 pb-16 sm:pt-32">
+      {/* Background effects */}
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        {/* Main gradient orb */}
+        <div
+          aria-hidden="true"
+          className="absolute left-1/2 top-0 h-[800px] w-[1000px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-copper/10 blur-[120px]"
+        />
+        {/* Secondary accent */}
+        <div
+          aria-hidden="true"
+          className="absolute right-0 top-1/3 h-[400px] w-[400px] rounded-full bg-copper/5 blur-[80px]"
+        />
+        {/* Grid pattern */}
+        <div className="bg-grid absolute inset-0 opacity-30" />
+        {/* Fade out grid at bottom */}
+        <div className="absolute inset-x-0 bottom-0 h-96 bg-gradient-to-t from-ink to-transparent" />
+      </div>
 
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="mx-auto max-w-4xl text-center">
+          {/* Eyebrow badge */}
           <motion.div
-            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+            initial={reduceMotion ? false : { opacity: 0, y: 20 }}
             animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3.5 py-1.5 text-xs font-medium text-muted"
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="inline-flex items-center gap-2 rounded-full border border-border-bright bg-surface/80 px-4 py-2 text-sm backdrop-blur-sm"
           >
-            <Sparkles className="size-3.5 text-copper" />
-            The design studio for custom-home builders
+            <span className="relative flex size-2">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-copper opacity-75" />
+              <span className="relative inline-flex size-2 rounded-full bg-copper" />
+            </span>
+            <span className="text-muted">
+              Trusted by <span className="text-foreground font-medium">2,400+</span> builders nationwide
+            </span>
           </motion.div>
 
+          {/* Main headline */}
           <motion.h1
-            initial={reduceMotion ? false : { opacity: 0, y: 22 }}
+            initial={reduceMotion ? false : { opacity: 0, y: 30 }}
             animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.06, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-6 font-display text-4xl leading-[1.05] tracking-tight sm:text-6xl"
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-8 font-display text-4xl leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl"
           >
-            Design custom homes in an{" "}
-            <span className="text-copper">afternoon</span>, not a quarter.
+            <span className="text-balance">Design custom homes in an</span>{" "}
+            <span className="text-gradient-copper">afternoon</span>
+            <span className="text-balance">, not a quarter</span>
           </motion.h1>
 
+          {/* Subheadline */}
           <motion.p
-            initial={reduceMotion ? false : { opacity: 0, y: 22 }}
+            initial={reduceMotion ? false : { opacity: 0, y: 30 }}
             animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.14, ease: [0.16, 1, 0.3, 1] }}
-            className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted sm:text-lg"
+            transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl"
           >
-            Describe the home your client wants. Atelier returns floor plans,
-            a sited parcel, photoreal renders, and a client portal that
-            collects the deposit — before the consultation is over.
+            Turn client conversations into permit-ready designs. Floor plans, 
+            site fits, photoreal renders, and collected deposits — all before 
+            the consultation ends.
           </motion.p>
 
+          {/* CTAs */}
           <motion.div
-            initial={reduceMotion ? false : { opacity: 0, y: 22 }}
+            initial={reduceMotion ? false : { opacity: 0, y: 30 }}
             animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row"
+            transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
           >
             <Button asChild size="lg" className="w-full sm:w-auto">
               <Link href="/builder">
-                Start designing free <ArrowRight className="size-4" />
+                Start designing free
+                <ArrowRight className="size-4" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
-              <Link href="/#how">See how it works</Link>
+            <Button asChild size="lg" variant="outline" className="w-full sm:w-auto group">
+              <Link href="/#how">
+                <span className="flex items-center justify-center size-6 rounded-full bg-surface-3 group-hover:bg-copper/20 transition-colors mr-1">
+                  <Play className="size-3 fill-current" />
+                </span>
+                Watch demo
+              </Link>
             </Button>
           </motion.div>
-          <p className="mt-3 text-xs text-muted-2">
-            No card required · 3 designs on the house · Cancel anytime
-          </p>
+
+          {/* Trust line */}
+          <motion.p
+            initial={reduceMotion ? false : { opacity: 0 }}
+            animate={reduceMotion ? {} : { opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mt-4 text-sm text-muted-2"
+          >
+            No card required &middot; 3 free designs &middot; Cancel anytime
+          </motion.p>
         </div>
 
-        {/* Stat count-up trio */}
-        <div className="mx-auto mt-14 grid max-w-4xl grid-cols-1 gap-px overflow-hidden rounded-card border border-border bg-border sm:grid-cols-3">
-          {stats.map((s) => (
-            <div key={s.label} className="bg-surface px-6 py-7 text-center">
-              <div className="font-display text-4xl tracking-tight text-foreground">
-                <CountUp
-                  to={s.to}
-                  decimals={s.decimals ?? 0}
-                  suffix={s.suffix}
-                  separator={s.separator}
-                />
-              </div>
-              <p className="mx-auto mt-2 max-w-[15rem] text-xs leading-relaxed text-muted">
-                {s.label}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Marquee */}
-      <div className="mt-12">
-        <p className="mb-1 text-center text-xs uppercase tracking-[0.2em] text-muted-2">
-          Trusted on the job site by
-        </p>
-        <Marquee items={marquee} />
-      </div>
-
-      {/* Hero product visual */}
-      <div className="mx-auto mt-10 max-w-6xl px-5 sm:px-8">
+        {/* Stats row */}
         <motion.div
           initial={reduceMotion ? false : { opacity: 0, y: 40 }}
           animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.7, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="mx-auto mt-16 max-w-4xl"
         >
-          <HeroMockup />
+          <div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-3">
+            {stats.map((s, i) => (
+              <div
+                key={s.label}
+                className="relative bg-surface px-6 py-8 text-center transition-colors hover:bg-surface-2"
+              >
+                {i > 0 && (
+                  <div className="absolute left-0 top-1/2 hidden h-12 w-px -translate-y-1/2 bg-border sm:block" />
+                )}
+                <div className="font-display text-4xl tracking-tight text-foreground stat-value lg:text-5xl">
+                  <CountUp
+                    to={s.to}
+                    decimals={s.decimals ?? 0}
+                    suffix={s.suffix}
+                    separator={s.separator}
+                  />
+                </div>
+                <p className="mt-2 text-sm text-muted">
+                  {s.label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Logo marquee */}
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0 }}
+          animate={reduceMotion ? {} : { opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+          className="mt-16"
+        >
+          <p className="mb-6 text-center text-xs uppercase tracking-[0.2em] text-muted-2">
+            Trusted by leading builders
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
+            {logos.map((name) => (
+              <span
+                key={name}
+                className="text-sm font-medium text-muted-2 transition-colors hover:text-muted"
+              >
+                {name}
+              </span>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Hero product mockup */}
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 60 }}
+          animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-16"
+        >
+          <div className="relative">
+            {/* Glow behind mockup */}
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 -z-10 translate-y-8 rounded-3xl bg-copper/20 blur-3xl"
+            />
+            <HeroMockup />
+          </div>
         </motion.div>
       </div>
     </section>
