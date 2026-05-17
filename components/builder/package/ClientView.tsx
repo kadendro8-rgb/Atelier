@@ -3,10 +3,11 @@
 /**
  * ClientView — the emotional sell + the close.
  *
- * Leads with the AI render surface (the captured site photo run through the
- * `lib/imagegen` seam, or a tasteful placeholder when no photo / no provider),
- * states the design vision and the headline numbers, and closes with the
- * "Approve & pay deposit" action.
+ * Leads with the geometry-accurate build render (`BuildRenderPanel` — a still
+ * drawn straight from the designed 3D model, keyless and truthful), then keeps
+ * the AI photoreal-finish seam present below it (`SitePhotoPreview` over
+ * `lib/imagegen`, the slot for the future photoreal pass), states the design
+ * vision and the headline numbers, and closes with "Approve & pay deposit".
  *
  * The close calls `/api/stripe/checkout`. That endpoint degrades gracefully
  * when Stripe is unconfigured (keyless) — this view surfaces every outcome
@@ -28,6 +29,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SitePhotoPreview } from "@/components/builder/SitePhotoPreview";
+import { BuildRenderPanel } from "@/components/builder/package/BuildRenderPanel";
 import type { ParsedRequirements } from "@/lib/builder";
 import type { ProjectType } from "@/lib/db/types";
 import type { HardscapePlan } from "@/lib/hardscape/types";
@@ -79,8 +81,19 @@ export function ClientView({
 
   return (
     <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
-      {/* Render surface — the emotional lead. */}
+      {/* Render surface — the emotional lead. The geometry-accurate build
+          render comes first (truthful, drawn from the model); the AI
+          photoreal-finish seam stays present below it. */}
       <div className="flex flex-col gap-5">
+        <BuildRenderPanel
+          homePlan={homePlan}
+          hardscapePlan={hardscapePlan}
+          isHardscape={isHardscape}
+        />
+
+        {/* AI photoreal finish — the seam for the future img2video pass.
+            Present with a captured site photo; an honest placeholder
+            otherwise. The build render above is the deliverable today. */}
         {photo ? (
           <SitePhotoPreview
             photo={{
@@ -308,7 +321,7 @@ function DepositCard({
 }
 
 /* -------------------------------------------------------------------------- */
-/* Render placeholder — honest when no site photo exists                      */
+/* AI photoreal-finish placeholder — honest when no site photo exists          */
 /* -------------------------------------------------------------------------- */
 
 function RenderPlaceholder() {
@@ -320,11 +333,12 @@ function RenderPlaceholder() {
         </span>
         <div className="min-w-0">
           <p className="font-display text-base tracking-tight text-foreground">
-            Design preview
+            AI photoreal finish
           </p>
           <p className="mt-0.5 text-xs leading-relaxed text-muted-2">
-            Add a site photo at the lot step and Atelier renders the design
-            vision onto the real site here.
+            A later pass. Add a site photo at the lot step and Atelier renders
+            the design vision onto the real site here — over the build render
+            above.
           </p>
         </div>
       </div>
@@ -332,8 +346,8 @@ function RenderPlaceholder() {
         <div className="flex flex-col items-center gap-2 text-center">
           <ImageOff className="size-6 text-muted-2" />
           <p className="max-w-[16rem] text-xs text-muted-2">
-            No site photo captured — the render surface lights up once a photo
-            is added.
+            No site photo captured — the photoreal-finish surface lights up
+            once a photo is added.
           </p>
         </div>
       </div>
