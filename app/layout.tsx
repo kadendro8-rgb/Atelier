@@ -23,31 +23,31 @@ const siteUrl = "https://atelier.design";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Atelier — Design custom homes in an afternoon, not a quarter",
+    default: "Atelier — Design the backyard before you leave the driveway",
     template: "%s · Atelier",
   },
   description:
-    "Atelier turns a conversation into permit-ready custom-home designs — floor plans, site plans, photoreal renders, and a client portal that collects the deposit. Built for builders and residential architects.",
+    "Atelier turns a conversation into a sited outdoor-living design — scaled layouts, photoreal renders, a line-item estimate, and a client portal that collects the deposit. Built for hardscape and outdoor-living contractors.",
   keywords: [
-    "custom home design",
-    "AI floor plans",
-    "residential architecture software",
-    "site plan generator",
-    "home builder tools",
+    "outdoor living design",
+    "hardscape design software",
+    "patio design tool",
+    "landscape estimate software",
+    "contractor sales tools",
   ],
   openGraph: {
-    title: "Atelier — Custom-home design, on a builder's timeline",
+    title: "Atelier — Outdoor-living design, on a contractor's timeline",
     description:
-      "From a client conversation to permit-ready plans and a paid deposit in a single afternoon.",
+      "From a backyard walk-through to a photoreal render and a paid deposit before you leave the driveway.",
     url: siteUrl,
     siteName: "Atelier",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Atelier — Custom-home design, on a builder's timeline",
+    title: "Atelier — Outdoor-living design, on a contractor's timeline",
     description:
-      "From a client conversation to permit-ready plans and a paid deposit in a single afternoon.",
+      "From a backyard walk-through to a photoreal render and a paid deposit before you leave the driveway.",
   },
 };
 

@@ -9,20 +9,20 @@ import { Marquee } from "@/components/Marquee";
 import { HeroBuilderEntry } from "@/components/sections/HeroBuilderEntry";
 
 const stats = [
-  { to: 9, suffix: " hrs", label: "Median time from first call to a permit-ready set" },
-  { to: 24000, separator: true, suffix: "+", label: "Custom homes designed on Atelier" },
-  { to: 3.1, decimals: 1, suffix: "×", label: "More proposals won against drafting-by-hand" },
+  { to: 20, suffix: " min", label: "From a backyard walk-through to a render the client can see" },
+  { to: 8500, prefix: "$", separator: true, label: "Typical deposit collected in-portal, same visit" },
+  { to: 2.4, decimals: 1, suffix: "×", label: "More jobs won against a hand-drawn sketch" },
 ];
 
 const marquee = [
-  "Hearthstone Builders",
-  "Cedar & Co. Homes",
-  "Marlowe Residential",
-  "North Ridge Construction",
-  "Atelier Verified Architects",
-  "Bluewater Custom Homes",
-  "Fieldstone Design-Build",
-  "Province Homebuilders",
+  "Stoneline Hardscapes",
+  "Cedar & Co. Outdoor Living",
+  "Marlowe Landscape",
+  "North Ridge Hardscape",
+  "Atelier Verified Installers",
+  "Bluewater Pools & Patios",
+  "Fieldstone Paver Co.",
+  "Province Outdoor Living",
 ];
 
 export function Hero() {
@@ -46,7 +46,7 @@ export function Hero() {
             className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3.5 py-1.5 text-xs font-medium text-muted"
           >
             <Sparkles className="size-3.5 text-copper" />
-            The design studio for custom-home builders
+            The design studio for outdoor-living contractors
           </motion.div>
 
           <motion.h1
@@ -55,8 +55,8 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.06, ease: [0.16, 1, 0.3, 1] }}
             className="mt-6 font-display text-4xl leading-[1.05] tracking-tight sm:text-6xl"
           >
-            Design custom homes in an{" "}
-            <span className="text-copper">afternoon</span>, not a quarter.
+            Design the backyard{" "}
+            <span className="text-copper">before you leave the driveway</span>.
           </motion.h1>
 
           <motion.p
@@ -65,9 +65,10 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.14, ease: [0.16, 1, 0.3, 1] }}
             className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted sm:text-lg"
           >
-            Describe the home your client wants. Atelier returns floor plans,
-            a sited parcel, photoreal renders, and a client portal that
-            collects the deposit — before the consultation is over.
+            Describe the patio, pool deck, or full backyard your client
+            wants. Atelier returns a sited layout, photoreal renders, a
+            line-item estimate, and a client portal that collects the
+            deposit — before you pack up the truck.
           </motion.p>
 
           <motion.div
@@ -92,6 +93,7 @@ export function Hero() {
                 <CountUp
                   to={s.to}
                   decimals={s.decimals ?? 0}
+                  prefix={s.prefix}
                   suffix={s.suffix}
                   separator={s.separator}
                 />
