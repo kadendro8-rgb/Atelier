@@ -42,9 +42,24 @@ import { validatePlan, type CodeViolation } from "@/lib/kernel/codeCheck";
 import { generatePlan } from "@/lib/kernel/plan";
 import type { PlanGraph } from "@/lib/kernel/types";
 
-// Three.js is client-only — load the 3D viewport without SSR.
+// Three.js is client-only — load the 3D viewports without SSR.
 const Viewport3D = dynamic(
   () => import("@/components/builder/Viewport3D").then((m) => m.Viewport3D),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex aspect-video w-full items-center justify-center rounded-xl border border-border bg-surface text-sm text-muted-2">
+        Loading 3D viewport…
+      </div>
+    ),
+  },
+);
+
+const HardscapeViewport3D = dynamic(
+  () =>
+    import("@/components/builder/HardscapeViewport3D").then(
+      (m) => m.HardscapeViewport3D,
+    ),
   {
     ssr: false,
     loading: () => (
@@ -119,6 +134,7 @@ function FloorPlanRouter() {
 function HardscapeLayoutStep() {
   const [plan, setPlan] = useState<HardscapePlan | null>(null);
   const [hasBrief, setHasBrief] = useState<boolean | null>(null);
+  const [view, setView] = useState<ViewMode>("2d");
   const router = useRouter();
   const searchParams = useSearchParams();
   const reduce = useReducedMotion();
@@ -227,12 +243,14 @@ function HardscapeLayoutStep() {
               <h2 className="text-sm font-medium text-foreground">
                 Generated site layout
               </h2>
-              <span className="text-[10px] uppercase tracking-wide text-muted-2">
-                2D site plan
-              </span>
+              <ViewToggle view={view} onChange={setView} />
             </div>
 
-            <HardscapeLayoutSVG plan={plan} />
+            {view === "2d" ? (
+              <HardscapeLayoutSVG plan={plan} />
+            ) : (
+              <HardscapeViewport3D plan={plan} />
+            )}
 
             <div className="mt-4 rounded-card border border-border bg-ink-2 p-4">
               <p className="text-[11px] uppercase tracking-wide text-muted-2">
