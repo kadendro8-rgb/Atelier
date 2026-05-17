@@ -12,6 +12,7 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 import type {
   LeadRow,
   PlanGraph,
+  ProfileRow,
   ProjectInsert,
   ProjectRow,
   ProjectUpdate,
@@ -58,11 +59,25 @@ export async function getProject(id: string): Promise<ProjectRow | null> {
 }
 
 /**
+ * Fetch a single profile by id. Returns null when no row matches.
+ * @throws DbQueryError on an unexpected query failure.
+ */
+export async function getProfile(id: string): Promise<ProfileRow | null> {
+  const { data, error } = await requireClient()
+    .from("profiles")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) throw new DbQueryError("getProfile", error.message);
+  return (data as ProfileRow | null) ?? null;
+}
+
+/**
  * Insert a new project and return the created row.
  * @throws DbQueryError on an unexpected query failure.
  */
-export async function createProject(
-  data: ProjectInsert,
+export async function createProject(  data: ProjectInsert,
 ): Promise<ProjectRow> {
   const { data: row, error } = await requireClient()
     .from("projects")
