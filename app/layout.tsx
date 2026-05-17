@@ -1,5 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
+import { Toaster } from "sonner";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { CommandPalette } from "@/components/CommandPalette";
 import "./globals.css";
 
 const inter = Inter({
@@ -58,7 +61,22 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <CommandPalette />
+        <Toaster
+          theme="dark"
+          position="bottom-right"
+          toastOptions={{
+            style: {
+              background: "var(--color-surface-2)",
+              border: "1px solid var(--color-border-bright)",
+              color: "var(--color-foreground)",
+            },
+          }}
+        />
+        <SpeedInsights />
+      </body>
     </html>
   );
 }
