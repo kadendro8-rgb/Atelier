@@ -13,6 +13,10 @@
  *           the commercial ODA SDK and ships with the desktop product
  *           (see docs/atelier-desktop.md §3).
  *  - PDF  — print-ready sheet, rasterized from the plan SVG via `exportPlanPdf`.
+ *  - 3DM  — native Rhino document via `exportHomeRhino3dm` /
+ *           `exportHardscapeRhino3dm`; geometry on named layers, in mm. Lets a
+ *           designer open an Atelier design straight in Rhino 3D. `rhino3dm`
+ *           is a large WASM module, so it is lazy-loaded only on download.
  *  - IFC  — IFC4 STEP model via `exportIFC4`; home only. Hardscape IFC stays
  *           honestly badged "coming soon" — the IFC writer models walls and a
  *           slab, which an exterior site layout has neither of.
@@ -39,6 +43,7 @@ import { exportDWG } from "@/lib/io/dwg";
 import { exportHardscapeDXF } from "@/lib/io/hardscapeDxf";
 import { exportIFC4 } from "@/lib/io/ifc4";
 import { exportPlanPdf } from "@/lib/io/planPdf";
+import { exportHardscapeRhino3dm, exportHomeRhino3dm } from "@/lib/io/rhino3dm";
 import { validatePlan } from "@/lib/kernel/codeCheck";
 import type { PlanGraph } from "@/lib/kernel/types";
 import { cn } from "@/lib/utils";
@@ -53,7 +58,7 @@ interface ArchitectViewProps {
 }
 
 /** Which export a deliverable row produces. */
-type FormatId = "svg" | "dxf" | "pdf" | "ifc";
+type FormatId = "svg" | "dxf" | "3dm" | "pdf" | "ifc";
 
 /** One deliverable format in the export set. */
 interface DeliverableFormat {
@@ -101,6 +106,14 @@ export function ArchitectView({
           status: "ready",
         },
         {
+          id: "3dm",
+          badge: "3dm",
+          label: "Rhino model — 3DM",
+          description:
+            "Native Rhino document — site elements as curves on named layers, in millimeters.",
+          status: "ready",
+        },
+        {
           id: "ifc",
           badge: "ifc",
           label: "BIM model — IFC",
@@ -130,6 +143,14 @@ export function ArchitectView({
           label: "CAD set — DXF",
           description:
             "Editable CAD geometry on AIA layers — opens in AutoCAD and every major CAD tool.",
+          status: "ready",
+        },
+        {
+          id: "3dm",
+          badge: "3dm",
+          label: "Rhino model — 3DM",
+          description:
+            "Native Rhino document — walls, rooms and openings as curves on named layers, in millimeters.",
           status: "ready",
         },
         {
@@ -311,6 +332,26 @@ function DeliverableList({
         if (!dxf) return;
         downloadBlob(dxf, `${base}.dxf`, "image/vnd.dxf");
         setDone("dxf");
+        return;
+      }
+
+      if (id === "3dm") {
+        // rhino3dm is a large WASM module — `exportHomeRhino3dm` /
+        // `exportHardscapeRhino3dm` lazy-load it via dynamic import, so it
+        // never enters this route's initial bundle.
+        const bytes =
+          isHardscape && hardscapePlan
+            ? await exportHardscapeRhino3dm(hardscapePlan)
+            : homePlan
+              ? await exportHomeRhino3dm(homePlan)
+              : null;
+        if (!bytes) return;
+        downloadBlob(
+          new Blob([bytes as BlobPart], { type: "model/3dm" }),
+          `${base}.3dm`,
+          "model/3dm",
+        );
+        setDone("3dm");
         return;
       }
 

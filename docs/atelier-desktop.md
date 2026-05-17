@@ -152,3 +152,41 @@ still governs: **lose revenue before losing trust.**
 
 This document is the record of the foundation and the build doctrine. It
 changes only through a superseding revision — never silently.
+
+## 6. Positioning — the Rhino partner, specialized for housing
+
+Rhino 3D is entrenched. Among designers and architects it is the default
+NURBS modeler, and a frontal "Rhino killer" pitch would be both arrogant
+and slow to land. So Atelier takes the opposite stance: **partner, not
+just competitor.**
+
+The wedge has two edges.
+
+**Interoperate, don't fight.** Atelier reads and writes Rhino's native
+`.3dm` interchange format. The web product already proves it: the
+packaging stage exports a genuine binary `.3dm` document — geometry on
+named, colour-coded layers, in true millimetre model units — for both
+project types, built on `rhino3dm`, McNeel's own MIT-licensed WASM build
+of openNURBS (the same library Rule 1 already lists). A designer can take
+an Atelier home or hardscape design straight into Rhino and keep working.
+Atelier meets the incumbent where the customer already is, rather than
+asking them to abandon it.
+
+**Out-specialize, don't out-generalize.** Rhino is a general-purpose
+modeler — superb, but unopinionated. Atelier is specialized for the
+**housing and design industry**: parametric floor-plan and site-layout
+kernels, residential code checking, takeoffs, dimensioned construction
+sheets, BIM/CAD deliverables — the whole outdoor-living and hardscape
+workflow, end to end. A general tool will not out-specialize a focused
+one in its own vertical. That is the durable advantage: Atelier is not a
+better Rhino, it is the *housing-industry instrument* Rhino was never
+trying to be.
+
+The desktop **Form studio** is where the two threads converge. Built on
+the Rule 1 geometry stack — OCCT for solids, openNURBS for NURBS and
+`.3dm` — Form is the eventual Rhino-class freeform/parametric modeler,
+inside the single Atelier document model rather than as a separate app.
+Until that desktop environment exists, the doctrine holds: `.3dm` is the
+bridge that makes Atelier a good neighbour to Rhino today, and the
+specialization is the reason a housing professional reaches for Atelier
+first.

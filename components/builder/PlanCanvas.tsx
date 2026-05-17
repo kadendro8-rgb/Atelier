@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
+import { DraftingOverlay } from "@/components/builder/DraftingOverlay";
+import { formatFeetInches } from "@/lib/drafting";
 import type { CodeViolation } from "@/lib/kernel/codeCheck";
 import type {
   Opening,
@@ -15,7 +17,6 @@ import type {
 /* -------------------------------------------------------------------------- */
 
 const MM_PER_FT = 304.8;
-const mmToFt = (mm: number) => mm / MM_PER_FT;
 
 /** Quantised edge key matching the kernel, so a room can find its walls. */
 function edgeKey(a: Vec2, b: Vec2): string {
@@ -149,13 +150,20 @@ export function PlanCanvas({
     return out;
   }, [graph.rooms, graph.walls, graph.openings, violations]);
 
-  // Padding around the footprint so wall strokes and labels are not clipped.
-  const pad = Math.max(width, height) * 0.06;
-  const viewBox = `${-pad} ${-pad} ${width + pad * 2} ${height + pad * 2}`;
+  // Asymmetric padding: a generous margin on the bottom/left for the dimension
+  // lines + scale bar, a lighter one on the top/right for the north arrow.
+  const span = Math.max(width, height);
+  const padTop = span * 0.1;
+  const padRight = span * 0.1;
+  const padLeft = span * 0.12;
+  const padBottom = span * 0.2;
+  const vbW = width + padLeft + padRight;
+  const vbH = height + padTop + padBottom;
+  const viewBox = `${-padLeft} ${-padTop} ${vbW} ${vbH}`;
 
   // Stroke widths derived from the footprint so the line weight reads the same
   // at any plan size.
-  const unit = Math.max(width, height) / 100;
+  const unit = span / 100;
   const exteriorStroke = unit * 1.6;
   const interiorStroke = unit * 0.9;
   const labelSize = unit * 3.4;
@@ -188,17 +196,17 @@ export function PlanCanvas({
           </pattern>
         </defs>
         <rect
-          x={-pad}
-          y={-pad}
-          width={width + pad * 2}
-          height={height + pad * 2}
+          x={-padLeft}
+          y={-padTop}
+          width={vbW}
+          height={vbH}
           fill="#100e0b"
         />
         <rect
-          x={-pad}
-          y={-pad}
-          width={width + pad * 2}
-          height={height + pad * 2}
+          x={-padLeft}
+          y={-padTop}
+          width={vbW}
+          height={vbH}
           fill="url(#plan-grid)"
         />
 
@@ -247,18 +255,23 @@ export function PlanCanvas({
           );
         })}
 
-        {/* Room labels + square footage. */}
+        {/* Room labels — name, room dimensions and square footage. */}
         {graph.rooms.map((room) => {
           const c = centroid(room.polygon);
           const { w, h } = bbox(room.polygon);
           // Hide labels in rooms too small to hold legible text.
           if (w < labelSize * 4 || h < labelSize * 2.4) return null;
           const flagged = violationsByRoom.has(room.id);
+          // Room clear dimensions, read straight off the polygon's extents.
+          const dims = `${formatFeetInches(w)} × ${formatFeetInches(h)}`;
+          // Only show the dimension line when the room is tall enough for the
+          // extra row to stay legible.
+          const showDims = h > labelSize * 3.4;
           return (
             <g key={`label-${room.id}`}>
               <text
                 x={c.x}
-                y={c.y - areaSize * 0.55}
+                y={showDims ? c.y - areaSize * 1.1 : c.y - areaSize * 0.55}
                 textAnchor="middle"
                 dominantBaseline="middle"
                 fontSize={labelSize}
@@ -267,13 +280,27 @@ export function PlanCanvas({
               >
                 {room.label}
               </text>
+              {showDims && (
+                <text
+                  x={c.x}
+                  y={c.y + areaSize * 0.1}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fontSize={areaSize}
+                  fill="#9a8f7b"
+                  style={{ fontVariantNumeric: "tabular-nums" }}
+                >
+                  {dims}
+                </text>
+              )}
               <text
                 x={c.x}
-                y={c.y + areaSize * 0.9}
+                y={showDims ? c.y + areaSize * 1.25 : c.y + areaSize * 0.9}
                 textAnchor="middle"
                 dominantBaseline="middle"
                 fontSize={areaSize}
                 fill="#79705f"
+                style={{ fontVariantNumeric: "tabular-nums" }}
               >
                 {Math.round(room.areaSqft)} ft²
               </text>
@@ -291,14 +318,18 @@ export function PlanCanvas({
           stroke={WALL_EXTERIOR}
           strokeWidth={exteriorStroke}
         />
+
+        {/* CAD-grade annotation layer: overall dimensions, scale bar, north
+            arrow — every number read straight off the geometry. */}
+        <DraftingOverlay width={width} height={height} unit={unit} />
       </svg>
 
       {/* Legend + level chip. */}
       <div className="pointer-events-none absolute left-3 top-3 rounded-full border border-border bg-ink/80 px-2.5 py-1 text-[10px] text-muted backdrop-blur">
         {graph.level}
       </div>
-      <div className="pointer-events-none absolute bottom-3 right-3 rounded-full border border-border bg-ink/80 px-2.5 py-1 text-[10px] text-muted-2 backdrop-blur">
-        {Math.round(mmToFt(width))}′ × {Math.round(mmToFt(height))}′ · {graph.roof} roof
+      <div className="pointer-events-none absolute bottom-3 right-3 rounded-full border border-border bg-ink/80 px-2.5 py-1 text-[10px] tabular-nums text-muted-2 backdrop-blur">
+        {formatFeetInches(width)} × {formatFeetInches(height)} · {graph.roof} roof
       </div>
       {hasViolations && (
         <div className="pointer-events-none absolute right-3 top-3 rounded-full border border-[#e0654b]/40 bg-[#e0654b]/15 px-2.5 py-1 text-[10px] font-medium text-[#f0917c] backdrop-blur">
