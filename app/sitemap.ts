@@ -50,6 +50,30 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.5,
     },
+    {
+      url: `${siteUrl}/contact`,
+      lastModified,
+      changeFrequency: "yearly",
+      priority: 0.4,
+    },
+    {
+      url: `${siteUrl}/legal/privacy`,
+      lastModified,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: `${siteUrl}/legal/terms`,
+      lastModified,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: `${siteUrl}/legal/security`,
+      lastModified,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
   ];
 
   const showcaseRoutes: MetadataRoute.Sitemap = STYLES.map((style) => ({
