@@ -27,16 +27,53 @@ import { formatUSD, type PortalProject } from "@/lib/portal-mock";
 
 type PayState = "idle" | "processing" | "funded";
 
-export function PortalClient({ project }: { project: PortalProject }) {
-  const [payState, setPayState] = useState<PayState>("idle");
+export function PortalClient({
+  project,
+  stripeEnabled,
+  initialFunded,
+}: {
+  project: PortalProject;
+  /** True when Stripe is configured — drives real Checkout vs. the demo flow. */
+  stripeEnabled: boolean;
+  /** True when Stripe's success_url returned the client here funded. */
+  initialFunded: boolean;
+}) {
+  const [payState, setPayState] = useState<PayState>(
+    initialFunded ? "funded" : "idle",
+  );
+  const [payError, setPayError] = useState<string | null>(null);
   const reduce = useReducedMotion();
 
-  function approve() {
+  async function approve() {
     if (payState !== "idle") return;
+    setPayError(null);
     setPayState("processing");
-    // TODO(v2): replace with real Stripe Connect Checkout + webhook-driven
-    // `funded` transition. CORE scope is a UI-only flow.
-    window.setTimeout(() => setPayState("funded"), 1600);
+
+    // Keyless demo: with no Stripe configured, show the funded state directly.
+    if (!stripeEnabled) {
+      window.setTimeout(() => setPayState("funded"), 1600);
+      return;
+    }
+
+    // Real payment: create a Checkout Session and hand off to Stripe. The
+    // session's success_url returns the client with `?funded=1`.
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: project.slug, token: project.token }),
+      });
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok || !data.url) {
+        throw new Error(data.error ?? "Checkout could not be started.");
+      }
+      window.location.href = data.url;
+    } catch (err) {
+      setPayError(
+        err instanceof Error ? err.message : "Checkout could not be started.",
+      );
+      setPayState("idle");
+    }
   }
 
   const reveal = reduce
@@ -62,7 +99,12 @@ export function PortalClient({ project }: { project: PortalProject }) {
         </motion.div>
       </main>
 
-      <StickyFooter project={project} payState={payState} onApprove={approve} />
+      <StickyFooter
+        project={project}
+        payState={payState}
+        error={payError}
+        onApprove={approve}
+      />
     </div>
   );
 }
@@ -372,10 +414,12 @@ function DocumentsPanel({ project }: { project: PortalProject }) {
 function StickyFooter({
   project,
   payState,
+  error,
   onApprove,
 }: {
   project: PortalProject;
   payState: PayState;
+  error: string | null;
   onApprove: () => void;
 }) {
   return (
@@ -393,24 +437,31 @@ function StickyFooter({
             value={formatUSD(project.constructionEstimate)}
           />
         </dl>
-        <Button
-          size="lg"
-          onClick={onApprove}
-          disabled={payState === "processing"}
-          className="w-full sm:w-auto sm:min-w-[15rem]"
-        >
-          {payState === "processing" ? (
-            <>
-              <Loader2 className="size-4 animate-spin" />
-              Processing…
-            </>
-          ) : (
-            <>
-              Approve &amp; pay deposit
-              <ArrowRight className="size-4" />
-            </>
+        <div className="flex flex-col items-stretch gap-1.5 sm:items-end">
+          <Button
+            size="lg"
+            onClick={onApprove}
+            disabled={payState === "processing"}
+            className="w-full sm:w-auto sm:min-w-[15rem]"
+          >
+            {payState === "processing" ? (
+              <>
+                <Loader2 className="size-4 animate-spin" />
+                Processing…
+              </>
+            ) : (
+              <>
+                Approve &amp; pay deposit
+                <ArrowRight className="size-4" />
+              </>
+            )}
+          </Button>
+          {error && (
+            <p className="text-xs text-copper-bright" role="alert">
+              {error}
+            </p>
           )}
-        </Button>
+        </div>
       </div>
     </div>
   );

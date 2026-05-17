@@ -42,6 +42,31 @@ before the change keep the old redirect. For local testing you can also turn
 off **Authentication → Providers → Email → Confirm email**, which makes
 sign-up log in immediately with no email step.
 
+## Deposit payments (Stripe)
+
+The client portal (`/p/{slug}/{token}`) collects a design deposit through
+Stripe Checkout. Payments are optional — with no Stripe env vars the portal
+runs a non-charging demo flow.
+
+To enable real payments, set `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`
+(see `.env.example`) and create a webhook in the Stripe dashboard:
+
+1. **Developers → Webhooks → Add endpoint** — point it at
+   `https://<your-domain>/api/stripe-webhook`.
+2. Subscribe to the **`checkout.session.completed`** event.
+3. Copy the endpoint's **Signing secret** (`whsec_…`) into
+   `STRIPE_WEBHOOK_SECRET`.
+
+Use **test-mode** keys (`sk_test_…`) while developing — Stripe's
+[test cards](https://stripe.com/docs/testing) run the full loop with no real
+money. For local webhook delivery, run `stripe listen --forward-to
+localhost:3000/api/stripe-webhook` ([Stripe CLI](https://stripe.com/docs/stripe-cli)).
+
+The deposit amount is read from the project's `deposit_cents` column when a
+real project matches the portal link; otherwise it falls back to the demo
+amount. A successful payment flips the project's status to `funded` via the
+webhook.
+
 ## Factory
 
 Atelier is built by a disciplined agent "factory" — six specialist workers,

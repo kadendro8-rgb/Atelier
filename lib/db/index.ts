@@ -117,6 +117,36 @@ export async function saveBrief(
 }
 
 /**
+ * Resolve a project from its public portal coordinates — the `slug` and the
+ * `share_token` that together form the `/p/{slug}/{token}` URL. Returns null
+ * when no project matches (an unknown or revoked link).
+ * @throws DbQueryError on an unexpected query failure.
+ */
+export async function getProjectByShareToken(
+  slug: string,
+  shareToken: string,
+): Promise<ProjectRow | null> {
+  const { data, error } = await requireClient()
+    .from("projects")
+    .select("*")
+    .eq("slug", slug)
+    .eq("share_token", shareToken)
+    .maybeSingle();
+
+  if (error) throw new DbQueryError("getProjectByShareToken", error.message);
+  return (data as ProjectRow | null) ?? null;
+}
+
+/**
+ * Mark a project funded — the terminal transition the Stripe webhook drives
+ * once a deposit payment succeeds. Returns the updated row.
+ * @throws DbQueryError on an unexpected query failure.
+ */
+export async function markProjectFunded(id: string): Promise<ProjectRow> {
+  return updateProject(id, { status: "funded" });
+}
+
+/**
  * Read the stored plan-graph for a project. Returns null when the project has
  * no plan-graph yet (or does not exist).
  * @throws DbQueryError on an unexpected query failure.
