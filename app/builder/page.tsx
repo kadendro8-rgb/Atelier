@@ -10,8 +10,8 @@
  * The whole flow is offline-safe and reload-safe: every network call degrades
  * gracefully, and progress is snapshotted to localStorage.
  */
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
@@ -49,6 +49,7 @@ import type {
 import type { ProjectType } from "@/lib/db/types";
 import { PROJECT_TYPES } from "@/lib/project-types";
 import { ProjectTypePicker } from "@/components/builder/ProjectTypePicker";
+import { GuidedTour } from "@/components/builder/GuidedTour";
 import { MapPicker, type MapPickerHandle } from "./MapPicker";
 
 /** Default map centre — the continental US, before a search. */
@@ -85,7 +86,16 @@ function isProjectType(value: string): value is ProjectType {
 }
 
 export default function LotPickerPage() {
+  return (
+    <Suspense fallback={<BuilderShell current="lot">{null}</BuilderShell>}>
+      <LotPickerStep />
+    </Suspense>
+  );
+}
+
+function LotPickerStep() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const reduce = useReducedMotion();
   const mapRef = useRef<MapPickerHandle>(null);
 
@@ -126,14 +136,45 @@ export default function LotPickerPage() {
     if (restored && parcel) mapRef.current?.setParcel(parcel);
   }, [restored, parcel]);
 
-  // --- Restore the persisted project-type choice ---------------------------
+  // --- Restore the project-type choice -------------------------------------
+  // A `?type=` query param (handed off from the marketing-site hero) is an
+  // explicit, fresh choice and wins over any previously persisted value.
+  // Otherwise fall back to the last localStorage selection.
   useEffect(() => {
+    const fromQuery = searchParams.get("type");
+    if (fromQuery && isProjectType(fromQuery)) {
+      const info = PROJECT_TYPES.find((t) => t.id === fromQuery);
+      if (info?.available) {
+        setProjectType(fromQuery);
+        track("project_type_selected", {
+          projectType: fromQuery,
+          source: "hero",
+        });
+        try {
+          window.localStorage.setItem(PROJECT_TYPE_KEY, fromQuery);
+        } catch {
+          // Persisting is best-effort — the in-memory choice still threads through.
+        }
+        return;
+      }
+    }
     try {
       const stored = window.localStorage.getItem(PROJECT_TYPE_KEY);
       if (stored && isProjectType(stored)) setProjectType(stored);
     } catch {
       // Storage unavailable (private mode / disabled) — keep the `home` default.
     }
+  }, [searchParams]);
+
+  // --- Prefill the address handed off from the hero ------------------------
+  // Only when there's no restored parcel snapshot to avoid clobbering progress.
+  useEffect(() => {
+    const fromQuery = searchParams.get("address");
+    if (fromQuery && !loadLotSnapshot()?.parcel) {
+      setQuery(fromQuery);
+    }
+    // Run once on mount — `searchParams` is stable for the page lifetime.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /** Update and persist the chosen project type. */
@@ -403,7 +444,7 @@ export default function LotPickerPage() {
         </div>
 
         {/* Project-type picker */}
-        <div className="mt-8">
+        <div className="mt-8" data-tour="project-type">
           <h2 className="font-display text-sm tracking-tight text-foreground">
             What are you building?
           </h2>
@@ -420,7 +461,7 @@ export default function LotPickerPage() {
         </div>
 
         {/* Address search */}
-        <div className="relative mt-6">
+        <div className="relative mt-6" data-tour="address">
           <div className="relative">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-2" />
             {searching && (
@@ -610,6 +651,7 @@ export default function LotPickerPage() {
           </div>
         )}
       </motion.div>
+      <GuidedTour route="lot" />
     </BuilderShell>
   );
 }

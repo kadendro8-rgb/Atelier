@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Check, X } from "lucide-react";
+import { Check, Compass, X } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { replayGuidedTour } from "@/components/builder/GuidedTour";
 import { cn } from "@/lib/utils";
 
 export type BuilderStepKey =
@@ -101,13 +102,24 @@ export function BuilderShell({
             })}
           </ol>
 
-          <Link
-            href="/"
-            className="flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1.5 text-xs text-muted transition-colors hover:border-border-bright hover:text-foreground"
-          >
-            <X className="size-3.5" />
-            <span className="hidden sm:inline">Exit</span>
-          </Link>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={replayGuidedTour}
+              aria-label="Replay the guided tour"
+              className="flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1.5 text-xs text-muted transition-colors hover:border-border-bright hover:text-foreground"
+            >
+              <Compass className="size-3.5 text-copper" />
+              <span className="hidden sm:inline">Tour</span>
+            </button>
+            <Link
+              href="/"
+              className="flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1.5 text-xs text-muted transition-colors hover:border-border-bright hover:text-foreground"
+            >
+              <X className="size-3.5" />
+              <span className="hidden sm:inline">Exit</span>
+            </Link>
+          </div>
         </div>
       </header>
 

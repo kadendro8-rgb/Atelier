@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Check, Info, Sparkles, Wand2, X } from "lucide-react";
 import { BuilderShell } from "@/components/builder/BuilderShell";
+import { GuidedTour } from "@/components/builder/GuidedTour";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -136,7 +137,10 @@ function BriefStep() {
           </p>
         </div>
 
-        <div className="mt-8 rounded-card border border-border bg-surface p-5">
+        <div
+          className="mt-8 rounded-card border border-border bg-surface p-5"
+          data-tour="brief"
+        >
           <p className="text-xs text-muted-2">Start from an example</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {EXAMPLES.map((ex) => {
@@ -193,7 +197,7 @@ function BriefStep() {
               Save brief and come back later →
             </button>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2" data-tour="generate">
               <InfoTip />
               <Button
                 onClick={generate}
@@ -226,6 +230,7 @@ function BriefStep() {
       {saveOpen && (
         <SaveDialog brief={brief} onClose={() => setSaveOpen(false)} />
       )}
+      <GuidedTour route="brief" />
     </BuilderShell>
   );
 }
