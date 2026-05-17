@@ -4,11 +4,20 @@
  * ArchitectView — the technical set.
  *
  * Shows the dimensioned layout/plan and the list of exportable deliverable
- * formats. The "prepare set" affordance is honest: it serializes the rendered
- * plan SVG and downloads a real `.svg` file — that genuinely exists. The
- * DWG / IFC formats are listed as part of the deliverable set so the architect
- * sees the full pipeline, but are clearly marked as not-yet-available stubs —
- * no fake DWG export is produced.
+ * formats. Every format here is honest about what it produces:
+ *
+ *  - SVG  — serializes the rendered plan SVG; a real `.svg` file.
+ *  - DXF  — AutoCAD R12 ASCII DXF via `lib/io` (`exportDWG` for home,
+ *           `exportHardscapeDXF` for hardscape). Opens in AutoCAD and every
+ *           major CAD tool. Listed as DXF, not "DWG": true binary DWG needs
+ *           the commercial ODA SDK and ships with the desktop product
+ *           (see docs/atelier-desktop.md §3).
+ *  - PDF  — print-ready sheet, rasterized from the plan SVG via `exportPlanPdf`.
+ *  - IFC  — IFC4 STEP model via `exportIFC4`; home only. Hardscape IFC stays
+ *           honestly badged "coming soon" — the IFC writer models walls and a
+ *           slab, which an exterior site layout has neither of.
+ *
+ * Every export is keyless and runs entirely client-side.
  */
 import { useRef, useState } from "react";
 import {
@@ -25,6 +34,11 @@ import { PlanCanvas } from "@/components/builder/PlanCanvas";
 import type { ParsedRequirements } from "@/lib/builder";
 import type { ProjectType } from "@/lib/db/types";
 import type { HardscapePlan } from "@/lib/hardscape/types";
+import { downloadBlob } from "@/lib/io/download";
+import { exportDWG } from "@/lib/io/dwg";
+import { exportHardscapeDXF } from "@/lib/io/hardscapeDxf";
+import { exportIFC4 } from "@/lib/io/ifc4";
+import { exportPlanPdf } from "@/lib/io/planPdf";
 import { validatePlan } from "@/lib/kernel/codeCheck";
 import type { PlanGraph } from "@/lib/kernel/types";
 import { cn } from "@/lib/utils";
@@ -38,9 +52,14 @@ interface ArchitectViewProps {
   hardscapePlan: HardscapePlan | null;
 }
 
+/** Which export a deliverable row produces. */
+type FormatId = "svg" | "dxf" | "pdf" | "ifc";
+
 /** One deliverable format in the export set. */
 interface DeliverableFormat {
-  id: string;
+  id: FormatId;
+  /** Short badge text shown in the row's square chip. */
+  badge: string;
   label: string;
   description: string;
   /** `ready` formats download genuinely; `planned` are honest stubs. */
@@ -61,49 +80,64 @@ export function ArchitectView({
     ? [
         {
           id: "svg",
+          badge: "svg",
           label: "Site plan — SVG",
           description: "Vector site layout, dimensioned. Downloads now.",
           status: "ready",
         },
         {
           id: "pdf",
+          badge: "pdf",
           label: "Site plan — PDF",
-          description:
-            "Print-ready sheet. Use the browser print dialog on the SVG.",
-          status: "planned",
+          description: "Print-ready sheet with title block. Downloads now.",
+          status: "ready",
         },
         {
-          id: "dwg",
-          label: "CAD set — DWG",
-          description: "Editable CAD geometry for the drafting set.",
+          id: "dxf",
+          badge: "dxf",
+          label: "CAD set — DXF",
+          description:
+            "Editable CAD geometry — opens in AutoCAD and every major CAD tool.",
+          status: "ready",
+        },
+        {
+          id: "ifc",
+          badge: "ifc",
+          label: "BIM model — IFC",
+          description:
+            "Open-BIM export targets enclosed buildings; not applicable to a site layout.",
           status: "planned",
         },
       ]
     : [
         {
           id: "svg",
+          badge: "svg",
           label: "Floor plan — SVG",
           description: "Vector floor plan, to scale. Downloads now.",
           status: "ready",
         },
         {
           id: "pdf",
+          badge: "pdf",
           label: "Plan set — PDF",
-          description:
-            "Print-ready sheet. Use the browser print dialog on the SVG.",
-          status: "planned",
+          description: "Print-ready sheet with title block. Downloads now.",
+          status: "ready",
         },
         {
-          id: "dwg",
-          label: "CAD set — DWG",
-          description: "Editable CAD geometry for the drafting set.",
-          status: "planned",
+          id: "dxf",
+          badge: "dxf",
+          label: "CAD set — DXF",
+          description:
+            "Editable CAD geometry on AIA layers — opens in AutoCAD and every major CAD tool.",
+          status: "ready",
         },
         {
           id: "ifc",
+          badge: "ifc",
           label: "BIM model — IFC",
-          description: "Open-BIM model for coordination and clash checks.",
-          status: "planned",
+          description: "IFC4 open-BIM model for coordination and clash checks.",
+          status: "ready",
         },
       ];
 
@@ -139,9 +173,7 @@ export function ArchitectView({
           </div>
         )}
 
-        {!isHardscape && homePlan && (
-          <CodeNote plan={homePlan} />
-        )}
+        {!isHardscape && homePlan && <CodeNote plan={homePlan} />}
         {isHardscape && hardscapePlan && (
           <p className="mt-3 text-xs text-muted-2">
             Site extents{" "}
@@ -156,6 +188,7 @@ export function ArchitectView({
         <DeliverableList
           formats={formats}
           isHardscape={isHardscape}
+          hasPlan={hasPlan}
           homePlan={homePlan}
           hardscapePlan={hardscapePlan}
           parsed={parsed}
@@ -171,7 +204,7 @@ export function ArchitectView({
 
 /**
  * Renders the plan inside a ref'd wrapper. The wrapper's `<svg>` is read back
- * by the export handler so the "prepare set" download is the *actual* drawn
+ * by the export handlers so the SVG / PDF downloads are the *actual* drawn
  * sheet — not a separately re-generated one.
  */
 function ExportableSheet({
@@ -198,12 +231,7 @@ function CodeNote({ plan }: { plan: PlanGraph }) {
   const violations = validatePlan(plan);
   const clean = violations.length === 0;
   return (
-    <p
-      className={cn(
-        "mt-3 text-xs",
-        clean ? "text-sage" : "text-copper-bright",
-      )}
-    >
+    <p className={cn("mt-3 text-xs", clean ? "text-sage" : "text-copper-bright")}>
       {clean
         ? "Code check clean — meets the checked IRC residential rules."
         : `${violations.length} code ${
@@ -220,63 +248,100 @@ function CodeNote({ plan }: { plan: PlanGraph }) {
 function DeliverableList({
   formats,
   isHardscape,
+  hasPlan,
   homePlan,
   hardscapePlan,
   parsed,
 }: {
   formats: DeliverableFormat[];
   isHardscape: boolean;
+  hasPlan: boolean;
   homePlan: PlanGraph | null;
   hardscapePlan: HardscapePlan | null;
   parsed: ParsedRequirements | null;
 }) {
-  const [done, setDone] = useState<string | null>(null);
-  const [preparing, setPreparing] = useState(false);
+  const [done, setDone] = useState<FormatId | null>(null);
+  const [busy, setBusy] = useState<FormatId | null>(null);
   // A guard so a double-click doesn't fire two downloads.
   const busyRef = useRef(false);
 
+  /** Read the plan SVG genuinely on the page, for SVG / PDF exports. */
+  function planSvg(): SVGSVGElement | null {
+    const host = document.getElementById("package-plan-sheet");
+    return host?.querySelector("svg") ?? null;
+  }
+
   /**
-   * Prepare and download the technical set. Honest: this serializes the plan
-   * SVG that is genuinely on the page and downloads it as a real `.svg` file.
+   * Run one export. Each branch produces a genuine file: the SVG is the drawn
+   * sheet serialized; DXF/IFC are real CAD/BIM text from `lib/io`; PDF is a
+   * rasterized print sheet. Best-effort — a locked-down browser simply shows
+   * no confirmation.
    */
-  function prepareSet() {
-    if (busyRef.current) return;
+  async function runExport(id: FormatId) {
+    if (busyRef.current || !hasPlan) return;
     busyRef.current = true;
-    setPreparing(true);
+    setBusy(id);
     setDone(null);
 
     try {
-      const host = document.getElementById("package-plan-sheet");
-      const svg = host?.querySelector("svg");
-      if (!svg) {
-        setPreparing(false);
-        busyRef.current = false;
+      const base = exportBaseName(isHardscape, parsed, homePlan, hardscapePlan);
+
+      if (id === "svg") {
+        const svg = planSvg();
+        if (!svg) return;
+        const clone = svg.cloneNode(true) as SVGSVGElement;
+        clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        const serialized = new XMLSerializer().serializeToString(clone);
+        downloadBlob(
+          `<?xml version="1.0" encoding="UTF-8"?>\n${serialized}`,
+          `${base}.svg`,
+          "image/svg+xml",
+        );
+        setDone("svg");
         return;
       }
-      // Clone so we can inline a namespace + a dark backdrop without mutating
-      // the live, on-screen SVG.
-      const clone = svg.cloneNode(true) as SVGSVGElement;
-      clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-      const serialized = new XMLSerializer().serializeToString(clone);
-      const blob = new Blob(
-        ['<?xml version="1.0" encoding="UTF-8"?>\n', serialized],
-        { type: "image/svg+xml" },
-      );
-      const url = URL.createObjectURL(blob);
-      const name = exportFileName(isHardscape, parsed, homePlan, hardscapePlan);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = name;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      // Revoke after a tick so the download has the URL.
-      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-      setDone("svg");
+
+      if (id === "dxf") {
+        const dxf =
+          isHardscape && hardscapePlan
+            ? exportHardscapeDXF(hardscapePlan)
+            : homePlan
+              ? exportDWG(homePlan)
+              : null;
+        if (!dxf) return;
+        downloadBlob(dxf, `${base}.dxf`, "image/vnd.dxf");
+        setDone("dxf");
+        return;
+      }
+
+      if (id === "ifc") {
+        // Honest guard: the IFC writer is home-only. Hardscape IFC is a
+        // "coming soon" badge and never reaches this branch.
+        if (isHardscape || !homePlan) return;
+        const ifc = exportIFC4(homePlan);
+        downloadBlob(ifc, `${base}.ifc`, "application/x-step");
+        setDone("ifc");
+        return;
+      }
+
+      if (id === "pdf") {
+        const svg = planSvg();
+        if (!svg) return;
+        const pdf = await exportPlanPdf(svg, {
+          title: isHardscape
+            ? "Dimensioned Site Layout"
+            : "Dimensioned Floor Plan",
+          subtitle: pdfSubtitle(isHardscape, parsed, homePlan, hardscapePlan),
+        });
+        if (!pdf) return;
+        downloadBlob(pdf, `${base}.pdf`, "application/pdf");
+        setDone("pdf");
+        return;
+      }
     } catch {
       // Best-effort — a locked-down browser simply shows no confirmation.
     } finally {
-      setPreparing(false);
+      setBusy(null);
       busyRef.current = false;
     }
   }
@@ -285,77 +350,79 @@ function DeliverableList({
     <div className="rounded-card border border-border bg-surface p-5">
       <div className="flex items-center gap-2">
         <FileText className="size-4 text-copper" />
-        <h2 className="text-sm font-medium text-foreground">
-          Deliverable set
-        </h2>
+        <h2 className="text-sm font-medium text-foreground">Deliverable set</h2>
         <span className="ml-auto text-[10px] uppercase tracking-wide text-muted-2">
           Exports
         </span>
       </div>
 
       <ul className="mt-3 flex flex-col divide-y divide-border">
-        {formats.map((f) => (
-          <li key={f.id} className="flex items-start gap-3 py-3">
-            <span
-              className={cn(
-                "mt-0.5 grid size-6 shrink-0 place-items-center rounded-md border text-[10px] font-semibold uppercase",
-                f.status === "ready"
-                  ? "border-sage/40 bg-sage/15 text-sage"
-                  : "border-border bg-surface-2 text-muted-2",
+        {formats.map((f) => {
+          const isReady = f.status === "ready";
+          const isBusy = busy === f.id;
+          return (
+            <li key={f.id} className="flex items-start gap-3 py-3">
+              <span
+                className={cn(
+                  "mt-0.5 grid size-6 shrink-0 place-items-center rounded-md border text-[10px] font-semibold uppercase",
+                  isReady
+                    ? "border-sage/40 bg-sage/15 text-sage"
+                    : "border-border bg-surface-2 text-muted-2",
+                )}
+              >
+                {f.badge}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="flex flex-wrap items-center gap-2 text-sm text-foreground">
+                  {f.label}
+                  {!isReady && (
+                    <span className="rounded-full border border-border bg-surface-2 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-muted-2">
+                      Coming soon
+                    </span>
+                  )}
+                  {isReady && done === f.id && (
+                    <span className="inline-flex items-center gap-1 text-[10px] text-sage">
+                      <Check className="size-3" /> Downloaded
+                    </span>
+                  )}
+                </p>
+                <p className="mt-0.5 text-xs leading-relaxed text-muted-2">
+                  {f.description}
+                </p>
+              </div>
+              {isReady && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="shrink-0"
+                  disabled={!hasPlan || busy !== null}
+                  onClick={() => void runExport(f.id)}
+                  aria-label={`Download ${f.label}`}
+                >
+                  {isBusy ? (
+                    <Loader2 className="size-3.5 animate-spin" />
+                  ) : (
+                    <Download className="size-3.5" />
+                  )}
+                  {isBusy ? "Preparing" : "Download"}
+                </Button>
               )}
-            >
-              {f.id}
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="flex items-center gap-2 text-sm text-foreground">
-                {f.label}
-                {f.status === "planned" && (
-                  <span className="rounded-full border border-border bg-surface-2 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-muted-2">
-                    Coming soon
-                  </span>
-                )}
-                {f.status === "ready" && done === f.id && (
-                  <span className="inline-flex items-center gap-1 text-[10px] text-sage">
-                    <Check className="size-3" /> Downloaded
-                  </span>
-                )}
-              </p>
-              <p className="mt-0.5 text-xs leading-relaxed text-muted-2">
-                {f.description}
-              </p>
-            </div>
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ul>
 
-      <Button
-        onClick={prepareSet}
-        disabled={preparing}
-        size="lg"
-        className="mt-4 w-full"
-      >
-        {preparing ? (
-          <>
-            <Loader2 className="size-4 animate-spin" />
-            Preparing set…
-          </>
-        ) : (
-          <>
-            <Download className="size-4" />
-            Prepare &amp; download set
-          </>
-        )}
-      </Button>
-      <p className="mt-2 text-center text-[11px] leading-relaxed text-muted-2">
-        Downloads the dimensioned plan as a vector SVG — the formats marked
-        &ldquo;coming soon&rdquo; ship as the export pipeline grows.
+      <p className="mt-3 text-center text-[11px] leading-relaxed text-muted-2">
+        Every export runs in your browser — no upload, no account. DXF opens in
+        AutoCAD and every major CAD tool; native binary DWG ships with the
+        Atelier desktop app.
       </p>
     </div>
   );
 }
 
-/** Build a clean, descriptive file name for the exported sheet. */
-function exportFileName(
+/** Build a clean, descriptive file-name stem (no extension) for an export. */
+function exportBaseName(
   isHardscape: boolean,
   parsed: ParsedRequirements | null,
   homePlan: PlanGraph | null,
@@ -374,5 +441,24 @@ function exportFileName(
     : homePlan
       ? `-${homePlan.rooms.length}rm`
       : "";
-  return `${base}${tag}.svg`;
+  return `${base}${tag}`;
+}
+
+/** A one-line PDF subtitle describing the plan. */
+function pdfSubtitle(
+  isHardscape: boolean,
+  parsed: ParsedRequirements | null,
+  homePlan: PlanGraph | null,
+  hardscapePlan: HardscapePlan | null,
+): string {
+  if (isHardscape && hardscapePlan) {
+    const w = Math.round(hardscapePlan.bounds.width / MM_PER_FT);
+    const h = Math.round(hardscapePlan.bounds.height / MM_PER_FT);
+    return `${w}′ × ${h}′ site · ${hardscapePlan.elements.length} placed elements`;
+  }
+  if (!isHardscape && homePlan) {
+    const style = parsed ? `${parsed.style} · ` : "";
+    return `${style}${homePlan.rooms.length} rooms · ${homePlan.level}`;
+  }
+  return "Atelier deliverable set";
 }
