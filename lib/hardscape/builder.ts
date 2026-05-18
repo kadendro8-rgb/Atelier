@@ -3,15 +3,12 @@
  *
  * The kernel in this folder (`generate.ts`, `cost.ts`, `types.ts`) is pure and
  * UI-agnostic. This module is the thin, client-side seam between that kernel
- * and the `/builder` flow: display metadata for the brief builder, keyless
- * localStorage persistence for the brief and the generated plan, and the
- * project-type read shared with the home flow.
+ * and the UI: display metadata for the brief builder, and keyless localStorage
+ * persistence for the brief and the generated plan.
  *
  * Everything here is keyless and reload-safe — every storage read/write is
  * wrapped so a disabled / private-mode store never breaks the builder.
  */
-import { PROJECT_TYPES } from "@/lib/project-types";
-import type { ProjectType } from "@/lib/db/types";
 import type {
   HardscapeBrief,
   HardscapeElementKind,
@@ -19,37 +16,6 @@ import type {
   HardscapeMaterial,
   HardscapePlan,
 } from "./types";
-
-/* -------------------------------------------------------------------------- */
-/* Project-type read (shared key with the lot step)                           */
-/* -------------------------------------------------------------------------- */
-
-/** localStorage key the lot step persists the chosen project type under. */
-export const PROJECT_TYPE_KEY = "atelier:projectType";
-
-/** Narrow an arbitrary string to a known, registered `ProjectType`. */
-export function isProjectType(value: string): value is ProjectType {
-  return PROJECT_TYPES.some((t) => t.id === value);
-}
-
-/**
- * Resolve the active project type for a builder step. A `?type=` query value
- * (handed from the marketing hero) wins; otherwise the persisted lot-step
- * choice is used; otherwise `home`. Safe to call client-side only.
- */
-export function resolveProjectType(queryType?: string | null): ProjectType {
-  if (queryType && isProjectType(queryType)) {
-    const info = PROJECT_TYPES.find((t) => t.id === queryType);
-    if (info?.available) return queryType;
-  }
-  try {
-    const stored = window.localStorage.getItem(PROJECT_TYPE_KEY);
-    if (stored && isProjectType(stored)) return stored;
-  } catch {
-    // Storage unavailable — fall through to the default.
-  }
-  return "home";
-}
 
 /* -------------------------------------------------------------------------- */
 /* Display metadata for the brief builder                                     */

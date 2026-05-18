@@ -1,8 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
-import { Toaster } from "sonner";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { CommandPalette } from "@/components/CommandPalette";
 import "./globals.css";
 
 const inter = Inter({
@@ -22,32 +19,29 @@ const siteUrl = "https://atelier.design";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: {
-    default: "Atelier — Design the backyard before you leave the driveway",
-    template: "%s · Atelier",
-  },
+  title: "Atelier — Hardscape design generator",
   description:
-    "Atelier turns a conversation into a sited outdoor-living design — scaled layouts, photoreal renders, a line-item estimate, and a client portal that collects the deposit. Built for hardscape and outdoor-living contractors.",
+    "Describe a backyard and Atelier generates a scaled hardscape design — a 2D/3D site layout for patios, walkways, driveways and pool decks, with a ballpark installed-cost estimate, live as you edit the brief.",
   keywords: [
-    "outdoor living design",
-    "hardscape design software",
+    "hardscape design",
     "patio design tool",
-    "landscape estimate software",
-    "contractor sales tools",
+    "backyard design generator",
+    "hardscape cost estimate",
+    "pool deck design",
   ],
   openGraph: {
-    title: "Atelier — Outdoor-living design, on a contractor's timeline",
+    title: "Atelier — Hardscape design generator",
     description:
-      "From a backyard walk-through to a photoreal render and a paid deposit before you leave the driveway.",
+      "Describe a backyard. Get a real hardscape design — instantly.",
     url: siteUrl,
     siteName: "Atelier",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Atelier — Outdoor-living design, on a contractor's timeline",
+    title: "Atelier — Hardscape design generator",
     description:
-      "From a backyard walk-through to a photoreal render and a paid deposit before you leave the driveway.",
+      "Describe a backyard. Get a real hardscape design — instantly.",
   },
 };
 
@@ -61,22 +55,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
-      <body>
-        {children}
-        <CommandPalette />
-        <Toaster
-          theme="dark"
-          position="bottom-right"
-          toastOptions={{
-            style: {
-              background: "var(--color-surface-2)",
-              border: "1px solid var(--color-border-bright)",
-              color: "var(--color-foreground)",
-            },
-          }}
-        />
-        <SpeedInsights />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

@@ -1,9 +1,15 @@
 # Atelier
 
-Custom-home design software — a conversation becomes permit-ready plans, site
-plans, photoreal renders, and a client portal that collects the deposit.
+A hardscape design generator. Describe a backyard — patios, walkways,
+driveways, pool decks, steps — and Atelier produces a scaled site layout, a
+2D/3D visualization, and a ballpark installed-cost estimate, live as you edit
+the brief.
 
-Next.js 15 · React 19 · TypeScript · Tailwind v4 · Supabase.
+The whole product is a single page (`app/page.tsx`). It composes a controlled
+brief builder with a deterministic design kernel (`lib/hardscape/`): every
+brief edit re-derives the plan, so the same brief always lays out the same way.
+
+Next.js 15 · React 19 · TypeScript · Tailwind v4 · three.js.
 
 ## Scripts
 
@@ -11,16 +17,14 @@ Next.js 15 · React 19 · TypeScript · Tailwind v4 · Supabase.
 |---|---|
 | `npm run dev` | Local dev server |
 | `npm run build` | Production build |
+| `npm run typecheck` | TypeScript check |
 | `npm run lint` | ESLint |
-| `npm test` | Vitest (kernel tests) |
+| `npm test` | Vitest — the hardscape kernel test suites |
 
-## Factory
+## Structure
 
-Atelier is built by a disciplined agent "factory" — six specialist workers,
-strict quality gates, the product made excellent before the external
-(sales/marketing) wing comes online. See [`docs/factory.md`](docs/factory.md)
-and the per-worker specs in [`docs/factory/`](docs/factory/).
-
-The v2.0 product spec is [`docs/v2-spec.md`](docs/v2-spec.md); live build status
-is tracked in [`docs/v2-command-center.md`](docs/v2-command-center.md) and
-[`docs/v2-roadmap.md`](docs/v2-roadmap.md).
+- `app/page.tsx` — the hardscape design generator (the entire product).
+- `lib/hardscape/` — the pure, deterministic design kernel: types, brief
+  builder, layout generator, 3D scene builder, and cost estimator (with tests).
+- `components/builder/` — the brief builder, the 2D layout SVG, and the 3D
+  viewport.

@@ -1,14 +1,12 @@
 // Atelier — hardscape design kernel types.
 //
 // Hardscape is exterior site/concrete work: driveways, walkways, patios, pool
-// decks, steps and decorative borders. Unlike the `home` floor-plan kernel,
-// this models a *site layout* — a set of free-standing exterior elements — not
-// an enclosed building. The kernel works entirely in millimeters; UI layers
-// convert for display. `Vec2` is reused from the home kernel for consistency.
+// decks, steps and decorative borders. This models a *site layout* — a set of
+// free-standing exterior elements — not an enclosed building. The kernel works
+// entirely in millimeters; UI layers convert for display.
 
-import type { Vec2 } from "@/lib/kernel/types";
-
-export type { Vec2 };
+/** A 2D point in the kernel's millimeter coordinate space. */
+export type Vec2 = { x: number; y: number };
 
 /** The kinds of exterior elements a hardscape plan can contain. */
 export type HardscapeElementKind =

@@ -1,3 +1,0 @@
-# Independent Contractor Agreement (1099)
-
-For Stamp Network Partners...

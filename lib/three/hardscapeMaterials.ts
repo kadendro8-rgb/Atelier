@@ -1,22 +1,30 @@
 // Atelier — physically-based material presets for the hardscape 3D viewport.
 //
-// Companion to `lib/three/materials.ts` (the home viewport's wall/floor/roof
-// presets): this maps every `HardscapeMaterial` in the vocabulary to a
-// plausible PBR `meshStandardMaterial` parameter set, so an extruded slab
-// reads convincingly as the surface the contractor actually chose.
+// Maps every `HardscapeMaterial` in the vocabulary to a plausible PBR
+// `meshStandardMaterial` parameter set, so an extruded slab reads convincingly
+// as the surface the contractor actually chose.
 //
 // Units: `color` is a hex string, `roughness`/`metalness` are 0..1, and
-// `envMapIntensity` scales the contribution of the image-based lighting. The
-// `PbrPreset` shape is reused verbatim from `lib/three/materials.ts` so a
-// future textured-map material editor can unify both surfaces.
+// `envMapIntensity` scales the contribution of the image-based lighting.
 //
 // TODO(v2): textured albedo/normal/roughness maps per surface (stamped-pattern
 // normal maps, aggregate speckle, paver joint lines) instead of flat params.
 
-import type { PbrPreset } from "./materials";
 import type { HardscapeMaterial } from "@/lib/hardscape/types";
 
-export type { PbrPreset };
+/** PBR parameters for a single `meshStandardMaterial`. */
+export type PbrPreset = {
+  /** Human-readable preset name, shown in any future material picker. */
+  label: string;
+  /** Base/albedo color as a hex string. */
+  color: string;
+  /** Micro-surface roughness, 0 (mirror) … 1 (fully diffuse). */
+  roughness: number;
+  /** Metalness, 0 (dielectric) … 1 (conductor). */
+  metalness: number;
+  /** How strongly the environment map lights this surface. */
+  envMapIntensity: number;
+};
 
 /**
  * One PBR preset per hardscape surface material.

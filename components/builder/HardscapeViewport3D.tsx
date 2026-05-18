@@ -14,16 +14,12 @@
  * `buildHardscapeScene` converts 1:1 to meters, so a 20-foot patio reads as a
  * 20-foot patio.
  *
- * The renderer is created with `preserveDrawingBuffer: true` so the optional
- * `onCapture` callback can pull a geometry-accurate still straight off the
- * drawing buffer — the keyless "build render" (see `lib/render/capture.ts`).
  */
 
-import { Suspense, useId, useMemo, useRef, useState } from "react";
+import { Suspense, useId, useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Environment, OrbitControls } from "@react-three/drei";
 import { ACESFilmicToneMapping, PCFSoftShadowMap } from "three";
-import { Camera } from "lucide-react";
 import { buildHardscapeScene } from "@/lib/hardscape/scene";
 import type { HardscapePlan } from "@/lib/hardscape/types";
 import {
@@ -32,35 +28,16 @@ import {
   SUN_DAY_END,
   SUN_DAY_START,
 } from "@/lib/three/lighting";
-import type { RenderCapture } from "@/lib/render/capture";
 import { HardscapeSceneMeshes } from "./viewport/HardscapeSceneMeshes";
-import {
-  CaptureBridge,
-  type CaptureHandleRef,
-} from "./viewport/CaptureBridge";
 
-export function HardscapeViewport3D({
-  plan,
-  onCapture,
-}: {
-  plan: HardscapePlan;
-  /**
-   * When set, a "Capture render" control appears; clicking it draws a
-   * high-resolution still off the live scene and hands the PNG back here.
-   */
-  onCapture?: (capture: RenderCapture) => void;
-}) {
+export function HardscapeViewport3D({ plan }: { plan: HardscapePlan }) {
   // `buildHardscapeScene` is pure over an immutable plan — memoize on identity.
   const model = useMemo(() => buildHardscapeScene(plan), [plan]);
 
   // Time-of-day, in hours (24h clock). Default to mid-afternoon for a warm,
   // well-lit read with long-ish shadows across the slabs.
   const [hour, setHour] = useState(15);
-  const [capturing, setCapturing] = useState(false);
   const sliderId = useId();
-
-  // The in-Canvas CaptureBridge fills this ref with a capture closure.
-  const captureRef = useRef<CaptureHandleRef["current"]>(null);
 
   // Frame the camera relative to the site footprint so any plan size fits.
   const span = Math.max(model.size.width, model.size.depth, 1);
@@ -74,17 +51,6 @@ export function HardscapeViewport3D({
   // Resolve the sun on a parametric arc scaled to the footprint.
   const sun = useMemo(() => computeSun(hour, span * 2.2), [hour, span]);
 
-  function handleCapture() {
-    if (!onCapture || capturing) return;
-    const capture = captureRef.current?.();
-    if (capture) {
-      setCapturing(true);
-      onCapture(capture);
-      // Brief affordance — the parent surfaces the result.
-      window.setTimeout(() => setCapturing(false), 600);
-    }
-  }
-
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-surface">
       <div className="aspect-video w-full">
@@ -94,8 +60,6 @@ export function HardscapeViewport3D({
           gl={{
             antialias: true,
             toneMapping: ACESFilmicToneMapping,
-            // Keep the drawn frame readable so a still can be captured.
-            preserveDrawingBuffer: true,
           }}
         >
           {/* Ambient + hemisphere fill, both tracking the daylight level. */}
@@ -153,13 +117,10 @@ export function HardscapeViewport3D({
             maxPolarAngle={Math.PI / 2 - 0.04}
             target={[0, 0, 0]}
           />
-
-          {/* Imperative seam for geometry-accurate still capture. */}
-          <CaptureBridge handleRef={captureRef} />
         </Canvas>
       </div>
 
-      {/* Control strip — time-of-day, and an optional render-capture action. */}
+      {/* Control strip — time-of-day. */}
       <div className="flex items-center gap-3 border-t border-border bg-ink-2 px-4 py-2.5">
         <label
           htmlFor={sliderId}
@@ -182,18 +143,6 @@ export function HardscapeViewport3D({
         <span className="w-16 text-right font-mono text-xs text-foreground">
           {formatHour(hour)}
         </span>
-
-        {onCapture && (
-          <button
-            type="button"
-            onClick={handleCapture}
-            disabled={capturing}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-border-bright bg-surface px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:bg-surface-2 disabled:opacity-60"
-          >
-            <Camera className="size-3.5 text-copper" />
-            {capturing ? "Captured" : "Capture render"}
-          </button>
-        )}
       </div>
     </div>
   );
