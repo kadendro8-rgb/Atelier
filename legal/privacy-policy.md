@@ -1,3 +1,0 @@
-# Privacy Policy
-
-Atelier Design, Inc. ("we", "us") respects your privacy. We process data via Vercel, Cloudflare, Anthropic, and Stripe...
