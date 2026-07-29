@@ -1,0 +1,13 @@
+node_modules/
+.next/
+out/
+build/
+coverage/
+test-results/
+playwright-report/
+var/
+.env
+.env.local
+.env.*.local
+*.tsbuildinfo
+npm-debug.log*

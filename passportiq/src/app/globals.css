@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+/*
+ * PassportIQ design tokens — spec §5 aesthetic: dark charcoal, off-white, stone,
+ * muted green, restrained gold. Institutional, dense-but-clear. No confetti.
+ * Exact hex values are ASSUMED (spec missing) — see docs/00-SPEC-AUDIT.md §0.
+ */
+@theme {
+  /* Surfaces */
+  --color-charcoal-950: #141517;
+  --color-charcoal-900: #1b1d1f;
+  --color-charcoal-800: #232527;
+  --color-charcoal-700: #2e3134;
+
+  /* Text */
+  --color-offwhite: #faf8f5;
+  --color-stone-300: #c7c2bb;
+  --color-stone-400: #a8a29e;
+  --color-stone-500: #7d7873;
+
+  /* Accents — used sparingly */
+  --color-green-600: #4a7c59; /* positive / liquid */
+  --color-green-500: #5b8f6b;
+  --color-gold-500: #b08d46; /* restrained gold — emphasis only, never decoration */
+  --color-gold-400: #c4a25e;
+
+  /* Status */
+  --color-danger: #a4543f; /* muted terracotta for negatives/errors — no alarm red */
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace; /* figures render in mono for scanability */
+}
+
+body {
+  background-color: var(--color-charcoal-950);
+  color: var(--color-offwhite);
+  font-family: var(--font-sans);
+}

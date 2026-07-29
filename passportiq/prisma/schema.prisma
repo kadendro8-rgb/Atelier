@@ -1,0 +1,337 @@
+// PassportIQ — Milestone 1 schema (subset per docs/03-DATA-MODEL.md)
+// Money is always Decimal(18,2). Append-only tables: AssetValuation, NetWorthSnapshot, AuditEvent.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// VERIFIED exists so the schema doesn't churn later, but NO Milestone 1 code path may write it.
+// Self-entered data is never verified.
+enum VerificationStatus {
+  USER_REPORTED
+  ESTIMATED
+  VERIFIED
+}
+
+enum HouseholdRole {
+  OWNER
+  HOUSEHOLD_MEMBER
+}
+
+enum OwnerType {
+  USER
+  ENTITY
+}
+
+enum AssetCategory {
+  CASH
+  INVESTMENT
+  RETIREMENT
+  REAL_ESTATE
+  VEHICLE
+  BUSINESS_INTEREST
+  OTHER
+}
+
+enum Liquidity {
+  LIQUID
+  ILLIQUID
+}
+
+enum AccountType {
+  CHECKING
+  SAVINGS
+  BROKERAGE
+  RETIREMENT
+  OTHER
+}
+
+enum LiabilityType {
+  MORTGAGE
+  AUTO_LOAN
+  STUDENT_LOAN
+  CREDIT_CARD
+  PERSONAL_LOAN
+  OTHER
+}
+
+enum IncomeType {
+  SALARY
+  BONUS
+  BUSINESS
+  INVESTMENT
+  OTHER
+}
+
+// Provenance of a record. MOCK_AGGREGATION arrives in M2 and must always render as DEMO data.
+enum DataSource {
+  MANUAL
+  SEED
+  MOCK_AGGREGATION
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  displayName String
+  isAdmin     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  credential  LocalCredential?
+  sessions    Session[]
+  memberships HouseholdMember[]
+  incomes     IncomeSource[]
+  ownerships  AssetOwnership[]
+
+  @@map("users")
+}
+
+// Swap-out point for a hosted auth provider: only the identity module touches this table.
+model LocalCredential {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("local_credentials")
+}
+
+// Opaque 256-bit tokens; only the SHA-256 hash is stored.
+model Session {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  createdAt DateTime  @default(now())
+  expiresAt DateTime
+  revokedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Household {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members       HouseholdMember[]
+  legalEntities LegalEntity[]
+  accounts      Account[]
+  assets        Asset[]
+  liabilities   Liability[]
+  incomes       IncomeSource[]
+  snapshots     NetWorthSnapshot[]
+
+  @@map("households")
+}
+
+model HouseholdMember {
+  id          String        @id @default(cuid())
+  householdId String
+  userId      String
+  role        HouseholdRole
+  createdAt   DateTime      @default(now())
+
+  household Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([householdId, userId])
+  @@map("household_members")
+}
+
+model LegalEntity {
+  id          String   @id @default(cuid())
+  householdId String
+  name        String
+  entityType  String // e.g. "LLC", "TRUST" — free text in M1
+  // M1 single-owner simplification: the household owner's stake in this entity.
+  // A proper entity_stakes table arrives with multi-member households (BACKLOG).
+  ownerStakePct Decimal @default(100) @db.Decimal(7, 4)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  household  Household        @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  ownerships AssetOwnership[]
+
+  @@map("legal_entities")
+}
+
+// Accounts are containers/provenance; value lives on the linked Asset via valuations,
+// so there is exactly one source of value truth.
+model Account {
+  id              String      @id @default(cuid())
+  householdId     String
+  name            String
+  type            AccountType
+  institutionName String?
+  // Display-only last four digits; full account numbers are never stored in M1 (by design).
+  lastFour        String?
+  currency        String      @default("USD")
+  source          DataSource  @default(MANUAL)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  household Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  assets    Asset[]
+
+  @@index([householdId])
+  @@map("accounts")
+}
+
+model Asset {
+  id                 String        @id @default(cuid())
+  householdId        String
+  accountId          String?
+  name               String
+  category           AssetCategory
+  liquidity          Liquidity
+  isPrimaryResidence Boolean       @default(false)
+  currency           String        @default("USD")
+  source             DataSource    @default(MANUAL)
+  notes              String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  household   Household        @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  account     Account?         @relation(fields: [accountId], references: [id], onDelete: SetNull)
+  valuations  AssetValuation[]
+  ownerships  AssetOwnership[]
+  liabilities Liability[]      @relation("LinkedAsset")
+
+  @@index([householdId])
+  @@map("assets")
+}
+
+// APPEND-ONLY: corrections are new rows; application code never updates or deletes.
+model AssetValuation {
+  id                 String             @id @default(cuid())
+  assetId            String
+  value              Decimal            @db.Decimal(18, 2)
+  effectiveAt        DateTime
+  method             String // e.g. "USER_ESTIMATE", "STATEMENT_BALANCE"
+  verificationStatus VerificationStatus
+  createdAt          DateTime           @default(now())
+
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@index([assetId, effectiveAt])
+  @@map("asset_valuations")
+}
+
+model AssetOwnership {
+  id           String    @id @default(cuid())
+  assetId      String
+  ownerType    OwnerType
+  userId       String?
+  entityId     String?
+  ownershipPct Decimal   @db.Decimal(7, 4) // 0–100; per-asset total ≤ 100 (write-path invariant)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  asset  Asset        @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  user   User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entity LegalEntity? @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  @@unique([assetId, ownerType, userId, entityId])
+  @@map("asset_ownership")
+}
+
+model Liability {
+  id                 String             @id @default(cuid())
+  householdId        String
+  name               String
+  type               LiabilityType
+  balance            Decimal            @db.Decimal(18, 2)
+  asOf               DateTime
+  interestRateApr    Decimal?           @db.Decimal(6, 4)
+  linkedAssetId      String? // e.g. mortgage → primary residence
+  verificationStatus VerificationStatus
+  source             DataSource         @default(MANUAL)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  linkedAsset Asset?    @relation("LinkedAsset", fields: [linkedAssetId], references: [id], onDelete: SetNull)
+
+  @@index([householdId])
+  @@map("liabilities")
+}
+
+model IncomeSource {
+  id                 String             @id @default(cuid())
+  householdId        String
+  userId             String?
+  name               String
+  type               IncomeType
+  annualAmount       Decimal            @db.Decimal(18, 2)
+  verificationStatus VerificationStatus
+  source             DataSource         @default(MANUAL)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  household Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([householdId])
+  @@map("income_sources")
+}
+
+// APPEND-ONLY computed snapshots; every figure records the rule version that produced it.
+model NetWorthSnapshot {
+  id                               String   @id @default(cuid())
+  householdId                      String
+  ruleVersion                      String
+  grossAssets                      Decimal  @db.Decimal(18, 2)
+  totalLiabilities                 Decimal  @db.Decimal(18, 2)
+  netWorth                         Decimal  @db.Decimal(18, 2)
+  liquidNetWorth                   Decimal  @db.Decimal(18, 2)
+  primaryResidenceAdjustedNetWorth Decimal  @db.Decimal(18, 2)
+  debtToAssetRatio                 Decimal? @db.Decimal(9, 4)
+  inputsDigest                     String // SHA-256 over ordered inputs, for traceability
+  computedAt                       DateTime
+  createdAt                        DateTime @default(now())
+
+  household Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+
+  @@index([householdId, computedAt])
+  @@map("net_worth_snapshots")
+}
+
+// APPEND-ONLY audit log; written by src/modules/audit on every mutating action.
+// Metadata must never contain credentials, tokens, SSNs, or full account numbers.
+model AuditEvent {
+  id          String   @id @default(cuid())
+  actorUserId String?
+  householdId String?
+  action      String // e.g. "auth.login", "seed.household_created"
+  entityType  String?
+  entityId    String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([householdId, createdAt])
+  @@index([actorUserId, createdAt])
+  @@map("audit_events")
+}
+
+model RuleVersion {
+  id            String   @id @default(cuid())
+  code          String   @unique // e.g. "NW-2026.07"
+  description   String
+  effectiveFrom DateTime
+  createdAt     DateTime @default(now())
+
+  @@map("rule_versions")
+}
